@@ -23,8 +23,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * Properties File helper
@@ -41,6 +46,7 @@ import java.util.HashMap;
 public final class PropertiesFile {
     private File propsFile;
     private String filepath;
+    private JarFile jar;
     private HashMap<String, String> props = new HashMap<String, String>();
     private HashMap<String, String[]> comments = new HashMap<String, String[]>();
 
@@ -71,12 +77,58 @@ public final class PropertiesFile {
     }
 
     /**
+     * Loads a PropertiesFile stored inside a Jar file
+     * 
+     * @param jarpath
+     *            the path to the Jar file
+     * @param entry
+     *            the name of the file inside of the jar
+     * @throws UtilityException
+     *             if jarpath is null or empty<br>
+     *             or if entry is null or empty<br>
+     *             or if the Jar file is not found or unable to be read from<br>
+     *             or if the Jar file does not contain the entry
+     */
+    public PropertiesFile(String jarpath, String entry) throws UtilityException {
+        if (jarpath == null) {
+            throw new UtilityException("JarFile cannot be null");
+        }
+        else if (jarpath.trim().isEmpty()) {
+            throw new UtilityException("JarFile cannot be empty");
+        }
+        else if (entry == null) {
+            throw new UtilityException("Entry cannot be null");
+        }
+        else if (entry.trim().isEmpty()) {
+            throw new UtilityException("Entry cannot be empty");
+        }
+
+        try {
+            jar = new JarFile(jarpath);
+        }
+        catch (IOException ioe) {
+            throw new UtilityException("Unable to get JarFile");
+        }
+
+        JarEntry ent = jar.getJarEntry(entry);
+        if (ent == null) {
+            throw new UtilityException("JarFile does not contain Entry: ".concat(entry));
+        }
+        filepath = entry;
+        load();
+    }
+
+    /**
      * Loads the Properties File
      * 
      * @throws UtilityException
      *             if there was an error with reading the properties file
      */
     public void load() throws UtilityException {
+        if (jar != null) {
+            loadFromJar();
+            return;
+        }
         BufferedReader in = null;
         try {
             in = new BufferedReader(new FileReader(propsFile));
@@ -123,13 +175,67 @@ public final class PropertiesFile {
         }
     }
 
+    private void loadFromJar() throws UtilityException {
+        JarEntry entry = jar.getJarEntry(filepath);
+        BufferedReader in = null;
+        try {
+            in = new BufferedReader(new InputStreamReader(jar.getInputStream(entry)));
+            String inLine;
+            ArrayList<String> inComments = new ArrayList<String>();
+            while ((inLine = in.readLine()) != null) {
+                if (inLine.startsWith(";") || inLine.startsWith("#")) {
+                    inComments.add(inLine);
+                }
+                else {
+                    try {
+                        String[] propsLine = inLine.split("=");
+                        props.put(propsLine[0].trim(), propsLine[1].trim());
+                        if (!inComments.isEmpty()) {
+                            String[] commented = new String[inComments.size()];
+                            for (int index = 0; index < inComments.size(); index++) {
+                                commented[index] = inComments.get(index);
+                            }
+                            comments.put(propsLine[0], commented);
+                            inComments.clear();
+                        }
+                    }
+                    catch (ArrayIndexOutOfBoundsException aioobe) {
+                        //Incomplete Property, drop reference to it
+                        inComments.clear();
+                        continue;
+                    }
+                }
+            }
+        }
+        catch (IOException ioe) {
+            UtilsLogger.severe(String.format("A IOException occurred in File: '%s'", filepath), ioe);
+            throw new UtilityException(String.format("A IOException occurred in File: '%s'", filepath));
+        }
+        finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            }
+            catch (IOException e) {
+                //do nothing
+            }
+        }
+    }
+
     /**
-     * Saves the Properties File
+     * Saves the Properties File<br>
+     * <b>NOTE:</b> Saving is not supported for PropertieFiles inside of Jar Files
      * 
      * @throws UtilityException
-     *             if there was an error with writing the properties file
+     *             if there was an error with writing the properties file<br>
+     *             or if save is called for a PropertiesFile inside of a Jar
      */
     public void save() throws UtilityException {
+        if (jar != null) {
+            throw new UtilityException("Saving is not supported with PropertiesFiles inside of Jar files");
+        }
+
         BufferedWriter out = null;
         try {
             propsFile.delete();
@@ -273,9 +379,6 @@ public final class PropertiesFile {
         }
         else if (value == null) {
             throw new UtilityException("Value cannot be null");
-        }
-        else if (value.trim().isEmpty()) {
-            throw new UtilityException("Key cannot be empty");
         }
         props.put(key, value);
         addComment(key, comment);
@@ -841,6 +944,10 @@ public final class PropertiesFile {
         }
         props.put(key, String.valueOf(ch));
         addComment(key, comment);
+    }
+
+    public Map<String, String> getPropertiesMap() {
+        return Collections.unmodifiableMap(props);
     }
 
     /**
