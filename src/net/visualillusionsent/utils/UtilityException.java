@@ -43,7 +43,7 @@ public class UtilityException extends Exception {
      * <p>
      * Should not be constructed outside of VIUtils
      * 
-     * @param message
+     * @param msg
      *            the message of why the exception is being thrown
      */
     UtilityException(String msg) {
@@ -58,7 +58,7 @@ public class UtilityException extends Exception {
      * @param msg
      *            the message of why the exception is being thrown
      * @param form
-     *            the string to use in String.format()
+     *            the string to use in {@link String#format(String, Object...)}
      */
     UtilityException(String msg, String form) {
         super(msg);

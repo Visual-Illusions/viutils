@@ -102,7 +102,7 @@ public abstract class LocaleHelper {
      * @param form
      *            the String to format the message String with
      * @return translated message
-     * @see String#format(String, Object...);
+     * @see String#format(String, Object...)
      */
     public final String localeTranslateFormat(String key, String... form) {
         if (SystemUtils.SYSTEM_LOCALE != null && !SystemUtils.SYSTEM_LOCALE.equals("en_US")) {
@@ -135,7 +135,7 @@ public abstract class LocaleHelper {
      * @param form
      *            the String to format the message String with
      * @return translated message
-     * @see String#format(String, Object...);
+     * @see String#format(String, Object...)
      */
     public final String defaultTranslateFormat(String key, String... form) {
         try {

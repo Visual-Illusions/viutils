@@ -62,30 +62,30 @@ final class UtilsLocaleHelper extends LocaleHelper {
     }
 
     /**
-     * Static method call back to {@link LocaleHelper#localeTranslateFormat(String)}
+     * Static method call back to {@link LocaleHelper#localeTranslateFormat(String, String...)}
      * 
      * @param key
      *            the key to the translated message
      * @param form
      *            the String to format the message String with
      * @return translated message
-     * @see LocaleHelper#localeTranslate(String, String...)
-     * @see String#format(String, Object...);
+     * @see LocaleHelper#localeTranslateFormat(String, String...)
+     * @see String#format(String, Object...)
      */
     public static String localeTranslationFormat(String key, String form) {
         return instance.localeTranslateFormat(key, form);
     }
 
     /**
-     * Static method call back to {@link LocaleHelper#localeTranslateFormat(String)}
+     * Static method call back to {@link LocaleHelper#defaultTranslateFormat(String, String...)}
      * 
      * @param key
      *            the key to the translated message
      * @param form
      *            the String to format the message String with
      * @return translated message
-     * @see LocaleHelper#localeTranslate(String, String...)
-     * @see String#format(String, Object...);
+     * @see LocaleHelper#defaultTranslateFormat(String, String...)
+     * @see String#format(String, Object...)
      */
     public static String defaultTranslationFormat(String key, String form) {
         return instance.defaultTranslateFormat(key, form);

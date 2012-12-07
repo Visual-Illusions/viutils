@@ -63,7 +63,12 @@ public final class TaskManager {
 
     static {
         instance = new TaskManager();
-        scheduleContinuedTaskInMinutes(new TaskCacheClear(), 15, 15);
+        try {
+            scheduleContinuedTaskInMinutes(new TaskCacheClear(), 15, 15);
+        }
+        catch (UtilityException e) {
+            //task isnt null so exception shouldn't happen
+        }
     }
 
     /**
@@ -81,8 +86,14 @@ public final class TaskManager {
      * 
      * @param task
      *            the task to execute
+     * @throws UtilityException
+     * <br>
+     *             if task is null
      */
-    public static final void executeTask(Runnable task) {
+    public static final void executeTask(Runnable task) throws UtilityException {
+        if (task == null) {
+            throw new UtilityException("arg.null", "Runnable task");
+        }
         instance.threadpool.execute(task);
     }
 
@@ -93,8 +104,14 @@ public final class TaskManager {
      *            the tesk to execute
      * @param delay
      *            the delay before execution
+     * @throws UtilityException
+     * <br>
+     *             if task is null
      */
-    public static final ScheduledFuture<?> scheduleDelayedTaskInMicros(Runnable task, long delay) {
+    public static final ScheduledFuture<?> scheduleDelayedTaskInMicros(Runnable task, long delay) throws UtilityException {
+        if (task == null) {
+            throw new UtilityException("arg.null", "Runnable task");
+        }
         ScheduledFuture<?> stask = instance.threadpool.schedule(task, delay, micro);
         instance.tasks.put(task, stask);
         return stask;
@@ -107,8 +124,14 @@ public final class TaskManager {
      *            the tesk to execute
      * @param delay
      *            the delay before execution
+     * @throws UtilityException
+     * <br>
+     *             if task is null
      */
-    public static final ScheduledFuture<?> scheduleDelayedTaskInMillis(Runnable task, long delay) {
+    public static final ScheduledFuture<?> scheduleDelayedTaskInMillis(Runnable task, long delay) throws UtilityException {
+        if (task == null) {
+            throw new UtilityException("arg.null", "Runnable task");
+        }
         ScheduledFuture<?> stask = instance.threadpool.schedule(task, delay, milli);
         instance.tasks.put(task, stask);
         return stask;
@@ -121,8 +144,14 @@ public final class TaskManager {
      *            the tesk to execute
      * @param delay
      *            the delay before execution
+     * @throws UtilityException
+     * <br>
+     *             if task is null
      */
-    public static final ScheduledFuture<?> scheduleDelayedTaskInSeconds(Runnable task, long delay) {
+    public static final ScheduledFuture<?> scheduleDelayedTaskInSeconds(Runnable task, long delay) throws UtilityException {
+        if (task == null) {
+            throw new UtilityException("arg.null", "Runnable task");
+        }
         ScheduledFuture<?> stask = instance.threadpool.schedule(task, delay, sec);
         instance.tasks.put(task, stask);
         return stask;
@@ -135,8 +164,14 @@ public final class TaskManager {
      *            the tesk to execute
      * @param delay
      *            the delay before execution
+     * @throws UtilityException
+     * <br>
+     *             if task is null
      */
-    public static final ScheduledFuture<?> scheduleDelayedTaskInMinutes(Runnable task, long delay) {
+    public static final ScheduledFuture<?> scheduleDelayedTaskInMinutes(Runnable task, long delay) throws UtilityException {
+        if (task == null) {
+            throw new UtilityException("arg.null", "Runnable task");
+        }
         ScheduledFuture<?> stask = instance.threadpool.schedule(task, delay, min);
         instance.tasks.put(task, stask);
         return stask;
@@ -151,8 +186,14 @@ public final class TaskManager {
      *            the delay before initial execution
      * @param delay
      *            the delay between additional executions
+     * @throws UtilityException
+     * <br>
+     *             if task is null
      */
-    public static final ScheduledFuture<?> scheduleContinuedTaskInMicros(Runnable task, long initialdelay, long delay) {
+    public static final ScheduledFuture<?> scheduleContinuedTaskInMicros(Runnable task, long initialdelay, long delay) throws UtilityException {
+        if (task == null) {
+            throw new UtilityException("arg.null", "Runnable task");
+        }
         ScheduledFuture<?> stask = instance.threadpool.scheduleAtFixedRate(task, initialdelay, delay, micro);
         instance.tasks.put(task, stask);
         return stask;
@@ -167,8 +208,14 @@ public final class TaskManager {
      *            the delay before initial execution
      * @param delay
      *            the delay between additional executions
+     * @throws UtilityException
+     * <br>
+     *             if task is null
      */
-    public static final ScheduledFuture<?> scheduleContinuedTaskInMillis(Runnable task, long initialdelay, long delay) {
+    public static final ScheduledFuture<?> scheduleContinuedTaskInMillis(Runnable task, long initialdelay, long delay) throws UtilityException {
+        if (task == null) {
+            throw new UtilityException("arg.null", "Runnable task");
+        }
         ScheduledFuture<?> stask = instance.threadpool.scheduleAtFixedRate(task, initialdelay, delay, milli);
         instance.tasks.put(task, stask);
         return stask;
@@ -183,8 +230,14 @@ public final class TaskManager {
      *            the delay before initial execution
      * @param delay
      *            the delay between additional executions
+     * @throws UtilityException
+     * <br>
+     *             if task is null
      */
-    public static final ScheduledFuture<?> scheduleContinuedTaskInSeconds(Runnable task, long initialdelay, long delay) {
+    public static final ScheduledFuture<?> scheduleContinuedTaskInSeconds(Runnable task, long initialdelay, long delay) throws UtilityException {
+        if (task == null) {
+            throw new UtilityException("arg.null", "Runnable task");
+        }
         ScheduledFuture<?> stask = instance.threadpool.scheduleAtFixedRate(task, initialdelay, delay, sec);
         instance.tasks.put(task, stask);
         return stask;
@@ -199,8 +252,14 @@ public final class TaskManager {
      *            the delay before initial execution
      * @param delay
      *            the delay between additional executions
+     * @throws UtilityException
+     * <br>
+     *             if task is null
      */
-    public static final ScheduledFuture<?> scheduleContinuedTaskInMinutes(Runnable task, long initialdelay, long delay) {
+    public static final ScheduledFuture<?> scheduleContinuedTaskInMinutes(Runnable task, long initialdelay, long delay) throws UtilityException {
+        if (task == null) {
+            throw new UtilityException("arg.null", "Runnable task");
+        }
         ScheduledFuture<?> stask = instance.threadpool.scheduleAtFixedRate(task, initialdelay, delay, min);
         instance.tasks.put(task, stask);
         return stask;
@@ -217,8 +276,14 @@ public final class TaskManager {
      *            the delay between additional executions
      * @param timeunit
      *            the {@link TimeUnit} to use
+     * @throws UtilityException
+     * <br>
+     *             if task is null
      */
-    public static final ScheduledFuture<?> scheduleContinuedTask(Runnable task, long initialdelay, long delay, TimeUnit timeunit) {
+    public static final ScheduledFuture<?> scheduleContinuedTask(Runnable task, long initialdelay, long delay, TimeUnit timeunit) throws UtilityException {
+        if (task == null) {
+            throw new UtilityException("arg.null", "Runnable task");
+        }
         ScheduledFuture<?> stask = instance.threadpool.scheduleAtFixedRate(task, initialdelay, delay, timeunit);
         instance.tasks.put(task, stask);
         return stask;

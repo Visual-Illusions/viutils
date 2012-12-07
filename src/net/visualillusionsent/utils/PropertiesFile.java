@@ -56,6 +56,7 @@ public final class PropertiesFile {
      * @param filepath
      *            the path to the properties file
      * @throws UtilityException
+     * <br>
      *             if there was an error with either reading or writing the properties file
      */
     public PropertiesFile(String filepath) throws UtilityException {
@@ -84,6 +85,7 @@ public final class PropertiesFile {
      * @param entry
      *            the name of the file inside of the jar
      * @throws UtilityException
+     * <br>
      *             if jarpath is null or empty<br>
      *             or if entry is null or empty<br>
      *             or if the Jar file is not found or unable to be read from<br>
@@ -122,6 +124,7 @@ public final class PropertiesFile {
      * Loads the Properties File
      * 
      * @throws UtilityException
+     * <br>
      *             if there was an error with reading the properties file
      */
     public void load() throws UtilityException {
@@ -228,6 +231,7 @@ public final class PropertiesFile {
      * <b>NOTE:</b> Saving is not supported for PropertieFiles inside of Jar Files
      * 
      * @throws UtilityException
+     * <br>
      *             if there was an error with writing the properties file<br>
      *             or if save is called for a PropertiesFile inside of a Jar
      */
@@ -275,6 +279,7 @@ public final class PropertiesFile {
      *            the key to check
      * @return {@code true} if the PropertiesFile contains the key, {@code false} otherwise
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty
      */
     public boolean containsKey(String key) throws UtilityException {
@@ -293,6 +298,7 @@ public final class PropertiesFile {
      * @param key
      *            the key to be removed
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty
      */
     public void removeKey(String key) throws UtilityException {
@@ -317,6 +323,7 @@ public final class PropertiesFile {
      *            the key to get the property for
      * @return the property associated with the key if found
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty <br>
      *             or if property was not found
      */
@@ -341,6 +348,7 @@ public final class PropertiesFile {
      * @param value
      *            the property to be stored
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if value is null
      */
@@ -358,6 +366,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if value is null
      */
@@ -383,6 +392,7 @@ public final class PropertiesFile {
      *            the key to get the property for
      * @return the property associated with the key if found
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty <br>
      *             or if property was not found
      */
@@ -399,6 +409,7 @@ public final class PropertiesFile {
      * @param value
      *            the property to be stored (elements combined using a comma as a spacer)
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
@@ -417,6 +428,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
@@ -434,6 +446,7 @@ public final class PropertiesFile {
      *            the character(s) to split the property value with
      * @return the property associated with the key if found
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty <br>
      *             or if specified splitter is null or empty<br>
      *             or if property was not found
@@ -465,6 +478,7 @@ public final class PropertiesFile {
      * @param value
      *            the property to be stored (elements combined using a comma as a spacer)
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
@@ -486,6 +500,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
@@ -520,6 +535,7 @@ public final class PropertiesFile {
      *            the key to get the property for
      * @return byte associated with the property
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if the property is not a number<br>
      *             or if property is not found
@@ -547,6 +563,7 @@ public final class PropertiesFile {
      * @param value
      *            the byte value to be stored
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty
      */
     public void setByte(String key, byte value) throws UtilityException {
@@ -563,6 +580,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty
      */
     public void setByte(String key, byte value, String... comment) throws UtilityException {
@@ -584,6 +602,7 @@ public final class PropertiesFile {
      *            the key to get the property for
      * @return the property associated with the key if found
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty <br>
      *             or if property was not found
      */
@@ -600,6 +619,7 @@ public final class PropertiesFile {
      * @param value
      *            the property to be stored (elements combined using a comma as a spacer)
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
@@ -618,6 +638,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
@@ -635,6 +656,7 @@ public final class PropertiesFile {
      *            the character(s) to split the property value with
      * @return the property associated with the key if found
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty <br>
      *             or if specified splitter is null or empty<br>
      *             or if property was not found
@@ -666,6 +688,7 @@ public final class PropertiesFile {
      * @param value
      *            the property to be stored (elements combined using a comma as a spacer)
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
@@ -687,6 +710,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
@@ -721,6 +745,7 @@ public final class PropertiesFile {
      *            the key to get the property for
      * @return byte associated with the property
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if the property is not a number<br>
      *             or if property is not found
@@ -748,6 +773,7 @@ public final class PropertiesFile {
      * @param value
      *            the short value to be stored
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty
      */
     public void setShort(String key, short value) throws UtilityException {
@@ -764,6 +790,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty
      */
     public void setShort(String key, short value, String... comment) throws UtilityException {
@@ -785,6 +812,7 @@ public final class PropertiesFile {
      *            the key to get the property for
      * @return the property associated with the key if found
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty <br>
      *             or if property was not found
      */
@@ -800,6 +828,7 @@ public final class PropertiesFile {
      * @param value
      *            the property to be stored (elements combined using a comma as a spacer)
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
@@ -817,6 +846,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
@@ -834,6 +864,7 @@ public final class PropertiesFile {
      *            the character(s) to split the property value with
      * @return the property associated with the key if found
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty <br>
      *             or if specified splitter is null or empty<br>
      *             or if property was not found
@@ -864,6 +895,7 @@ public final class PropertiesFile {
      * @param value
      *            the property to be stored (elements combined using a comma as a spacer)
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
@@ -884,6 +916,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
@@ -918,6 +951,7 @@ public final class PropertiesFile {
      *            the key to get the property for
      * @return int associated with the property
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if the property is not a number<br>
      *             or if property is not found
@@ -945,6 +979,7 @@ public final class PropertiesFile {
      * @param value
      *            the int value to be stored
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty
      */
     public void setInt(String key, int value) throws UtilityException {
@@ -961,6 +996,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty
      */
     public void setInt(String key, int value, String... comment) throws UtilityException {
@@ -982,6 +1018,7 @@ public final class PropertiesFile {
      *            the key to get the property for
      * @return the property associated with the key if found
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty <br>
      *             or if property was not found
      */
@@ -997,6 +1034,7 @@ public final class PropertiesFile {
      * @param value
      *            the property to be stored (elements combined using a comma as a spacer)
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
@@ -1014,6 +1052,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
@@ -1031,6 +1070,7 @@ public final class PropertiesFile {
      *            the character(s) to split the property value with
      * @return the property associated with the key if found
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty <br>
      *             or if specified splitter is null or empty<br>
      *             or if property was not found
@@ -1061,6 +1101,7 @@ public final class PropertiesFile {
      * @param value
      *            the property to be stored (elements combined using a comma as a spacer)
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
@@ -1081,6 +1122,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
@@ -1115,6 +1157,7 @@ public final class PropertiesFile {
      *            the key to get the property for
      * @return long associated with the property
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if the property is not a number<br>
      *             or if property is not found
@@ -1142,6 +1185,7 @@ public final class PropertiesFile {
      * @param value
      *            the long value to be stored
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty
      */
     public void setLong(String key, long value) throws UtilityException {
@@ -1158,6 +1202,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty
      */
     public void setLong(String key, long value, String... comment) throws UtilityException {
@@ -1179,6 +1224,7 @@ public final class PropertiesFile {
      *            the key to get the property for
      * @return the property associated with the key if found
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty <br>
      *             or if property was not found
      */
@@ -1194,6 +1240,7 @@ public final class PropertiesFile {
      * @param value
      *            the property to be stored (elements combined using a comma as a spacer)
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
@@ -1211,6 +1258,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
@@ -1228,6 +1276,7 @@ public final class PropertiesFile {
      *            the character(s) to split the property value with
      * @return the property associated with the key if found
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty <br>
      *             or if specified splitter is null or empty<br>
      *             or if property was not found
@@ -1258,6 +1307,7 @@ public final class PropertiesFile {
      * @param value
      *            the property to be stored (elements combined using a comma as a spacer)
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
@@ -1278,6 +1328,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
@@ -1312,6 +1363,7 @@ public final class PropertiesFile {
      *            the key to get the property for
      * @return float associated with the property
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if the property is not a number<br>
      *             or if property is not found
@@ -1339,6 +1391,7 @@ public final class PropertiesFile {
      * @param value
      *            the float value to be stored
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty
      */
     public void setFloat(String key, float value) throws UtilityException {
@@ -1355,6 +1408,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty
      */
     public void setFloat(String key, float value, String... comment) throws UtilityException {
@@ -1376,6 +1430,7 @@ public final class PropertiesFile {
      *            the key to get the property for
      * @return the property associated with the key if found
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty <br>
      *             or if property was not found
      */
@@ -1391,6 +1446,7 @@ public final class PropertiesFile {
      * @param value
      *            the property to be stored (elements combined using a comma as a spacer)
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
@@ -1408,6 +1464,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
@@ -1425,6 +1482,7 @@ public final class PropertiesFile {
      *            the character(s) to split the property value with
      * @return the property associated with the key if found
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty <br>
      *             or if specified splitter is null or empty<br>
      *             or if property was not found
@@ -1455,6 +1513,7 @@ public final class PropertiesFile {
      * @param value
      *            the property to be stored (elements combined using a comma as a spacer)
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
@@ -1475,6 +1534,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
@@ -1509,6 +1569,7 @@ public final class PropertiesFile {
      *            the key to get the property for
      * @return double associated with the property
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if the property is not a number<br>
      *             or if property is not found
@@ -1536,6 +1597,7 @@ public final class PropertiesFile {
      * @param value
      *            the double value to be stored
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty
      */
     public void setDouble(String key, double value) throws UtilityException {
@@ -1552,6 +1614,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty
      */
     public void setDouble(String key, double value, String... comment) throws UtilityException {
@@ -1573,6 +1636,7 @@ public final class PropertiesFile {
      *            the key to get the property for
      * @return the property associated with the key if found
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty <br>
      *             or if property was not found
      */
@@ -1588,6 +1652,7 @@ public final class PropertiesFile {
      * @param value
      *            the property to be stored (elements combined using a comma as a spacer)
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
@@ -1605,6 +1670,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
@@ -1622,6 +1688,7 @@ public final class PropertiesFile {
      *            the character(s) to split the property value with
      * @return the property associated with the key if found
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty <br>
      *             or if specified splitter is null or empty<br>
      *             or if property was not found
@@ -1652,6 +1719,7 @@ public final class PropertiesFile {
      * @param value
      *            the property to be stored (elements combined using a comma as a spacer)
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
@@ -1672,6 +1740,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
@@ -1706,6 +1775,7 @@ public final class PropertiesFile {
      *            the key to get the property for
      * @return boolean associated with the property
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if property is not found
      * @see #parseBoolean(String)
@@ -1728,6 +1798,7 @@ public final class PropertiesFile {
      * @param value
      *            the boolean value to be stored
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty
      */
     public void setBoolean(String key, boolean value) throws UtilityException {
@@ -1744,6 +1815,7 @@ public final class PropertiesFile {
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty
      */
     public void setBoolean(String key, boolean value, String... comment) throws UtilityException {
@@ -1764,6 +1836,7 @@ public final class PropertiesFile {
      *            the key to get the property for
      * @return character associated with the property
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty<br>
      *             or if property is not found
      */
@@ -1782,9 +1855,10 @@ public final class PropertiesFile {
      * 
      * @param key
      *            the key for the property
-     * @param value
+     * @param ch
      *            the boolean value to be stored
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty
      */
     public void setCharacter(String key, char ch) throws UtilityException {
@@ -1796,11 +1870,12 @@ public final class PropertiesFile {
      * 
      * @param key
      *            the key for the property
-     * @param value
+     * @param ch
      *            the double value to be stored
      * @param comment
      *            the comments to add
      * @throws UtilityException
+     * <br>
      *             if specified key is null or empty
      */
     public void setCharacter(String key, char ch, String... comment) throws UtilityException {
