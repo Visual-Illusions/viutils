@@ -23,7 +23,7 @@ package net.visualillusionsent.utils;
  * Provides static methods to help with IP Address manipulations and checking
  * <p>
  * This File is part of the VIUtils<br>
- * &copy; 2012 Visual Illusions Entertainment <a href="http://visualillusionsent.net">http://visualillusionsent.net</a>
+ * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
  * 
  * @since VIUtils 1.0
  * @version 1.0
@@ -51,8 +51,14 @@ public final class IPAddressUtils {
      * @param ip
      *            the IP Address to check
      * @return {@code true} if IPv4, {@code false} otherwise
+     * @throws UtilityException
+     * <br>
+     *             if ip is null
      */
-    public static final boolean isIPv4Address(String ip) {
+    public static final boolean isIPv4Address(String ip) throws UtilityException {
+        if (ip == null) {
+            throw new UtilityException("arg.null", "String ip");
+        }
         return ip.matches(IPv4_REGEX);
     }
 
@@ -62,8 +68,14 @@ public final class IPAddressUtils {
      * @param ip
      *            the IP Address to check
      * @return {@code true} if IPv6, {@code false} otherwise
+     * @throws UtilityException
+     * <br>
+     *             if ip is null
      */
-    public static final boolean isIPv6Address(String ip) {
+    public static final boolean isIPv6Address(String ip) throws UtilityException {
+        if (ip == null) {
+            throw new UtilityException("arg.null", "String ip");
+        }
         return ip.matches(IPv6_REGEX);
     }
 
@@ -97,7 +109,7 @@ public final class IPAddressUtils {
      */
     public static long ipv4ToLong(byte[] address) throws UtilityException {
         if (address.length != 4) {
-            throw new UtilityException("byte array must be of length 4");
+            throw new UtilityException("byte.length");
         }
         long ipNum = 0;
         long multiplier = 1;
@@ -121,7 +133,7 @@ public final class IPAddressUtils {
      */
     public static String ipv4BytestoString(byte[] address) throws UtilityException {
         if (address.length != 4) {
-            throw new UtilityException("byte array must be of length 4");
+            throw new UtilityException("byte.length");
         }
         StringBuilder build = new StringBuilder();
         for (byte bytes : address) {

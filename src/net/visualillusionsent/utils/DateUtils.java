@@ -27,16 +27,27 @@ import java.util.Date;
  * Provides static methods to help with {@link Date} manipulations
  * <p>
  * This File is part of the VIUtils<br>
- * &copy; 2012 Visual Illusions Entertainment <a href="http://visualillusionsent.net">http://visualillusionsent.net</a>
+ * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
  * 
  * @since VIUtils 1.0
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
 public final class DateUtils {
-    private static DateFormat date_form = new SimpleDateFormat("dd-MMM-yyyy"), //
-            time_form = new SimpleDateFormat("HH:mm:ss"), //
-            datetime_form = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+    /**
+     * Date Format as dd-MMM-yyyy
+     */
+    private static DateFormat date_form = new SimpleDateFormat("dd-MMM-yyyy");
+
+    /**
+     * Date Format as HH:mm:ss
+     */
+    private static DateFormat time_form = new SimpleDateFormat("HH:mm:ss");
+
+    /**
+     * Date Formate as dd-MMM-yyyy HH:mm:ss
+     */
+    private static DateFormat datetime_form = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
 
     /**
      * This class should never be constructed
@@ -55,7 +66,7 @@ public final class DateUtils {
      */
     public static final String longToDate(long time) throws UtilityException {
         if (time < 0) {
-            throw new UtilityException("Time cannot be a negative number");
+            throw new UtilityException("time.negative");
         }
         Date date = new Date(time);
         return date_form.format(date);
@@ -73,7 +84,7 @@ public final class DateUtils {
      */
     public static final String longToTime(long time) throws UtilityException {
         if (time < 0) {
-            throw new UtilityException("Time cannot be a negative number");
+            throw new UtilityException("time.negative");
         }
         Date date = new Date(time);
         return time_form.format(date);
@@ -91,7 +102,7 @@ public final class DateUtils {
      */
     public static final String longToDateTime(long time) throws UtilityException {
         if (time < 0) {
-            throw new UtilityException("Time cannot be a negative number");
+            throw new UtilityException("time.negative");
         }
         Date date = new Date(time);
         return datetime_form.format(date);
@@ -112,10 +123,10 @@ public final class DateUtils {
      */
     public static final String longToFormatedDateTime(long time, String format) throws UtilityException {
         if (time < 0) {
-            throw new UtilityException("Time cannot be a negative number");
+            throw new UtilityException("time.negative");
         }
         else if (format == null) {
-            throw new UtilityException("Format cannot be null");
+            throw new UtilityException("arg.null", "format");
         }
         Date date = new Date(time);
         DateFormat form;
@@ -123,7 +134,7 @@ public final class DateUtils {
             form = new SimpleDateFormat(format);
         }
         catch (IllegalArgumentException iae) {
-            throw new UtilityException("Improper format syntax");
+            throw new UtilityException("format.invalid");
         }
         return form.format(date);
     }

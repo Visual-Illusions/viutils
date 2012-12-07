@@ -23,7 +23,7 @@ package net.visualillusionsent.utils;
  * Provides static methods to help with getting System information
  * <p>
  * This File is part of the VIUtils<br>
- * &copy; 2012 Visual Illusions Entertainment <a href="http://visualillusionsent.net">http://visualillusionsent.net</a>
+ * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
  * 
  * @since VIUtils 1.0
  * @version 1.0
@@ -51,5 +51,20 @@ public final class SystemUtils {
      * The System Version
      */
     public static String SYSTEM_VERSION = System.getProperty("os.version");
+
+    /**
+     * The System Country
+     */
+    public static String SYSTEM_COUNTRY = System.getProperty("user.country");
+
+    /**
+     * The System Language
+     */
+    public static String SYSTEM_LANGUAGE = System.getProperty("user.language");
+
+    /**
+     * The System Locale
+     */
+    public static String SYSTEM_LOCALE = SYSTEM_LANGUAGE.concat("_").concat(SYSTEM_COUNTRY);
 
 }

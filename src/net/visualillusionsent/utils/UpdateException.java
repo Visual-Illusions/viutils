@@ -24,13 +24,15 @@ package net.visualillusionsent.utils;
  * use the {@link #getMessage()} method to retrieve the reason why the update failed
  * <p>
  * This File is part of the VIUtils<br>
- * &copy; 2012 Visual Illusions Entertainment <a href="http://visualillusionsent.net">http://visualillusionsent.net</a>
+ * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
  * 
  * @since VIUtils 1.0
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
 public class UpdateException extends Exception {
+    private String form;
+
     /**
      * Serial Version
      */
@@ -46,6 +48,30 @@ public class UpdateException extends Exception {
      */
     UpdateException(String message) {
         super(message);
+    }
+
+    /**
+     * Gets the Message in English
+     * 
+     * @return message in English
+     */
+    public String getMessage() {
+        if (form != null) {
+            return UtilsLocaleHelper.defaultTranslationFormat(super.getMessage(), form);
+        }
+        return UtilsLocaleHelper.defaultTranslation(super.getMessage());
+    }
+
+    /**
+     * Gets the Message in the System Language if translation found and English if not found
+     * 
+     * @return message in System Language if found, English otherwise
+     */
+    public String getLocalizeMessage() {
+        if (form != null) {
+            return UtilsLocaleHelper.localeTranslationFormat(super.getMessage(), form);
+        }
+        return UtilsLocaleHelper.localeTranslation(super.getMessage());
     }
 
 }

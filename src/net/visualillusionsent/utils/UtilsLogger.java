@@ -35,7 +35,7 @@ import java.util.logging.SimpleFormatter;
  * For internal use by VIUtils to log errors
  * <p>
  * This File is part of the VIUtils<br>
- * &copy; 2012 Visual Illusions Entertainment <a href="http://visualillusionsent.net">http://visualillusionsent.net</a>
+ * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
  * 
  * @since VIUtuils 1.0
  * @version 1.0
