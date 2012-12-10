@@ -18,13 +18,15 @@
 package net.visualillusionsent.utils;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
 /**
  * Version Checker
  * <p>
- * Used to check if software is the latest version
+ * Used to check if software is the latest version<br>
+ * There is an included versionchecker.php in the resources/extras/ folder inside the jar.
  * <p>
  * This File is part of the VIUtils Java Software package (net.visualillusionsent.utils)<br>
  * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
@@ -56,14 +58,14 @@ public final class VersionChecker {
      * @return true if latest, false otherwise
      */
     public final boolean isLatest() {
+        BufferedReader in = null;
+        boolean is = true;
         try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(new URL(checkurl).openStream()));
+            in = new BufferedReader(new InputStreamReader(new URL(checkurl).openStream()));
             String inputLine;
             if ((inputLine = in.readLine()) != null) {
                 currver = inputLine;
             }
-            in.close();
-            boolean is = true;
             String checkVer = version.replaceAll("\\.", "");
             String current = currver.replaceAll("\\.", "");
             try {
@@ -75,10 +77,17 @@ public final class VersionChecker {
             catch (NumberFormatException nfe) {
                 is = version.equals(currver);
             }
-            return is;
         }
         catch (Exception E) {}
-        return true;
+        finally {
+            if (in != null) {
+                try {
+                    in.close();
+                }
+                catch (IOException e) {}
+            }
+        }
+        return is;
     }
 
     /**
