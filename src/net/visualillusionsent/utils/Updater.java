@@ -42,7 +42,7 @@ import java.util.jar.JarFile;
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
-public class Updater {
+public final class Updater {
     private String downloadurl, jarloc, jarname;
 
     public Updater(String downloadurl, String jarloc, String jarname) {
@@ -58,34 +58,35 @@ public class Updater {
      * @throws UpdateException
      *             use the getMessage() method to retrieve the reason why
      */
-    public boolean performUpdate() throws UpdateException {
-        UtilsLogger.info("Please wait, downloading latest version of " + jarname + "...");
+    public final boolean performUpdate() throws UpdateException {
+        UtilsLogger.info("Please wait, downloading latest version of ".concat(jarname).concat("..."));
 
         if (!jarloc.endsWith(".jar")) {
             UtilsLogger.info("The jar file location needs to end with .jar... Terminating update...");
-            throw new UpdateException("Failed to update due to: 'Incorrect File Extension'");
+            throw new UpdateException("update.fail", "Incorrect File Extension");
         }
 
         File local = new File(jarloc);
         if (!local.exists()) {
-            UtilsLogger.warning("[VIUtils] Unable to find " + jarloc + "... Terminating update...");
-            throw new UpdateException("Failed to update due to: 'FileNotFound'");
+            UtilsLogger.warning("Unable to find ".concat(jarloc).concat("... Terminating update..."));
+            throw new UpdateException("update.fail", "FileNotFound");
         }
 
         // BackUp just in case of failure
-        File bak = null;
-        try {
-            bak = backupjar(jarloc);
-        }
-        catch (IOException e) {
-            throw new UpdateException("Failed to update due to: 'Backup failed'");
+        File bak = backupjar(jarloc);
+
+        if (bak == null) {
+            throw new UpdateException("update.fail", "Backup failed");
         }
 
         if (loadAllClasses(jarloc)) {
+            OutputStream outputStream = null;
+            InputStream inputStream = null;
+            UpdateException uex = null;
             try {
-                OutputStream outputStream = new FileOutputStream(local);
+                outputStream = new FileOutputStream(local);
                 URL url = new URI(downloadurl).toURL();
-                InputStream inputStream = url.openConnection().getInputStream();
+                inputStream = url.openConnection().getInputStream();
 
                 byte[] buffer = new byte[1024];
                 int read = 0;
@@ -94,9 +95,7 @@ public class Updater {
                     outputStream.write(buffer, 0, read);
                 }
 
-                outputStream.close();
-                inputStream.close();
-                UtilsLogger.info("Successfully downloaded latest version of " + jarname + "!");
+                UtilsLogger.info("Successfully downloaded latest version of ".concat(jarname).concat("!"));
                 bak.delete();
                 return true;
             }
@@ -107,7 +106,7 @@ public class Updater {
                 if (restorejar(jarloc)) {
                     bak.delete();
                 }
-                throw new UpdateException("Failed to update due to: 'Failed to download'");
+                uex = new UpdateException("update.fail", "Failed to download");
             }
             catch (URISyntaxException urise) {
                 // Restore
@@ -115,7 +114,26 @@ public class Updater {
                     bak.delete();
                 }
                 UtilsLogger.warning("There was an error with the URI syntax... Restoring old version...", urise);
-                throw new UpdateException("Failed to update due to: 'Failed to download'");
+                uex = new UpdateException("update.fail", "Failed to download");
+            }
+            finally {
+                if (outputStream != null) {
+                    try {
+                        outputStream.close();
+                    }
+                    catch (IOException e) {}
+                }
+
+                if (inputStream != null) {
+                    try {
+                        inputStream.close();
+                    }
+                    catch (IOException e) {}
+                }
+
+                if (uex != null) {
+                    throw uex;
+                }
             }
         }
         return false;
@@ -128,7 +146,7 @@ public class Updater {
      *            The location of the jar file to be updated
      * @return true if successfully loaded all classes
      */
-    private boolean loadAllClasses(String jarloc) throws UpdateException {
+    private final boolean loadAllClasses(String jarloc) throws UpdateException {
         try {
             // Load the jar
             JarFile jar = new JarFile(jarloc);
@@ -147,7 +165,7 @@ public class Updater {
                     path = path.substring(0, path.length() - ".class".length());
 
                     // Load it
-                    ClassLoader.getSystemClassLoader().loadClass(path);
+                    Thread.currentThread().getContextClassLoader().loadClass(path);
                 }
             }
             jar.close();
@@ -155,39 +173,58 @@ public class Updater {
         }
         catch (IOException ioe) {
             UtilsLogger.severe("An IOException has occurred! Update terminated!", ioe);
-            throw new UpdateException("Failed to update due to: 'IOException during jar load'");
+            throw new UpdateException("update.fail", "IOException during jar load");
         }
         catch (ClassNotFoundException cnfe) {
             UtilsLogger.severe("An ClassNotFoundException has occurred! Update terminated!", cnfe);
-            throw new UpdateException("Failed to update due to: 'ClassNotFoundException during jar load'");
+            throw new UpdateException("update.fail", "ClassNotFoundException during jar load");
         }
         catch (Exception e) {
             UtilsLogger.severe("An Unexpected Exception has occurred! Update terminated!", e);
-            throw new UpdateException("Failed to update due to: 'Unexpected Exception during jar load'");
+            throw new UpdateException("update.fail", "Unexpected Exception during jar load");
         }
     }
 
-    private File backupjar(String jarfile) throws IOException {
-        File bak = new File(jarloc.substring(0, jarloc.lastIndexOf("/") + 1) + jarname + ".bak");
-        OutputStream outputStream = new FileOutputStream(bak);
-        InputStream inputStream = new FileInputStream(jarfile);
+    private final File backupjar(String jarfile) {
+        File bak = null;
+        OutputStream outputStream = null;
+        InputStream inputStream = null;
+        try {
+            bak = new File(jarloc.substring(0, jarloc.lastIndexOf("/") + 1).concat(jarname).concat(".bak"));
+            outputStream = new FileOutputStream(bak);
+            inputStream = new FileInputStream(jarfile);
 
-        int read = 0;
+            int read = 0;
 
-        while ((read = inputStream.read()) != -1) {
-            outputStream.write(read);
+            while ((read = inputStream.read()) != -1) {
+                outputStream.write(read);
+            }
         }
+        catch (IOException ioe) {
+            bak = null;
+        }
+        finally {
+            try {
+                outputStream.close();
+            }
+            catch (IOException e) {}
 
-        outputStream.close();
-        inputStream.close();
+            try {
+                inputStream.close();
+            }
+            catch (IOException e) {}
+        }
         return bak;
     }
 
-    private boolean restorejar(String jarfile) {
+    private final boolean restorejar(String jarfile) {
+        boolean toRet = false;
+        OutputStream outputStream = null;
+        InputStream inputStream = null;
         try {
-            File bak = new File(jarloc.substring(0, jarloc.lastIndexOf("/") + 1) + jarname + ".bak");
-            OutputStream outputStream = new FileOutputStream(jarfile);
-            InputStream inputStream = new FileInputStream(bak);
+            File bak = new File(jarloc.substring(0, jarloc.lastIndexOf("/") + 1).concat(jarname).concat(".bak"));
+            outputStream = new FileOutputStream(jarfile);
+            inputStream = new FileInputStream(bak);
 
             int read = 0;
 
@@ -195,11 +232,25 @@ public class Updater {
                 outputStream.write(read);
             }
 
-            outputStream.close();
-            inputStream.close();
-            return true;
+            toRet = true;
         }
-        catch (IOException IOE) {}
-        return false;
+        catch (IOException IOE) {
+            toRet = false;
+        }
+        finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                }
+                catch (IOException e) {}
+            }
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                }
+                catch (IOException e) {}
+            }
+        }
+        return toRet;
     }
 }

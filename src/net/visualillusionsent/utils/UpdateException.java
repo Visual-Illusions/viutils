@@ -30,7 +30,7 @@ package net.visualillusionsent.utils;
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
-public class UpdateException extends Exception {
+public final class UpdateException extends Exception {
     private String form;
 
     /**
@@ -48,6 +48,21 @@ public class UpdateException extends Exception {
      */
     UpdateException(String message) {
         super(message);
+    }
+
+    /**
+     * Class Constructor
+     * <p>
+     * Should not be constructed outside of VIUtils
+     * 
+     * @param message
+     *            the message of why the exception is being thrown
+     * @param form
+     *            the string to use in {@link String#format(String, Object...)}
+     */
+    UpdateException(String message, String form) {
+        super(message);
+        this.form = form;
     }
 
     /**

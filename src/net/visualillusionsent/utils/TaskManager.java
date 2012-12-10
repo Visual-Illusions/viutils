@@ -75,9 +75,11 @@ public final class TaskManager {
      * Internal use Constructor to initialize the Thread Pool
      */
     private TaskManager() {
-        threadpool = new ScheduledThreadPoolExecutor(128);
-        threadpool.setKeepAliveTime(10, sec);
-        threadpool.allowCoreThreadTimeOut(true);
+        threadpool = new ScheduledThreadPoolExecutor(15);
+        threadpool.setKeepAliveTime(3, min);
+        threadpool.allowCoreThreadTimeOut(false);
+        threadpool.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
+        threadpool.prestartAllCoreThreads();
         tasks = new HashMap<Runnable, ScheduledFuture<?>>();
     }
 

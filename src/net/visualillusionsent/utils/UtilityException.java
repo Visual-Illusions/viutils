@@ -30,7 +30,7 @@ package net.visualillusionsent.utils;
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
-public class UtilityException extends Exception {
+public final class UtilityException extends Exception {
     private String form;
 
     /**
@@ -70,7 +70,7 @@ public class UtilityException extends Exception {
      * 
      * @return message in English
      */
-    public String getMessage() {
+    public final String getMessage() {
         if (form != null) {
             return UtilsLocaleHelper.defaultTranslationFormat(super.getMessage(), form);
         }
@@ -82,7 +82,7 @@ public class UtilityException extends Exception {
      * 
      * @return message in System Language if found, English otherwise
      */
-    public String getLocalizeMessage() {
+    public final String getLocalizeMessage() {
         if (form != null) {
             return UtilsLocaleHelper.localeTranslationFormat(super.getMessage(), form);
         }

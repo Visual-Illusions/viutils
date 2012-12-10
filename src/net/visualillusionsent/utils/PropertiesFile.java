@@ -20,9 +20,11 @@ package net.visualillusionsent.utils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,7 +71,12 @@ public final class PropertiesFile {
         this.filepath = filepath;
         propsFile = new File(filepath);
         if (propsFile.exists()) {
-            load();
+            try {
+                load(new FileInputStream(propsFile));
+            }
+            catch (FileNotFoundException e) {
+                new UtilityException("file.ioe", filepath);
+            }
         }
         else {
             propsFile.mkdirs();
@@ -117,7 +124,12 @@ public final class PropertiesFile {
             throw new UtilityException("entry.missing", entry);
         }
         filepath = entry;
-        load();
+        try {
+            load(jar.getInputStream(ent));
+        }
+        catch (IOException e) {
+            new UtilityException("file.ioe", filepath);
+        }
     }
 
     /**
@@ -127,14 +139,11 @@ public final class PropertiesFile {
      * <br>
      *             if there was an error with reading the properties file
      */
-    public void load() throws UtilityException {
-        if (jar != null) {
-            loadFromJar();
-            return;
-        }
+    public void load(InputStream instream) throws UtilityException {
+        UtilityException uex = null;
         BufferedReader in = null;
         try {
-            in = new BufferedReader(new FileReader(propsFile));
+            in = new BufferedReader(new InputStreamReader(instream, "UTF-8"));
             String inLine;
             ArrayList<String> inComments = new ArrayList<String>();
             while ((inLine = in.readLine()) != null) {
@@ -164,64 +173,19 @@ public final class PropertiesFile {
         }
         catch (IOException ioe) {
             UtilsLogger.severe(String.format("An IOException occurred in File: '%s'", filepath), ioe);
-            throw new UtilityException("file.ioe", filepath);
+            uex = new UtilityException("file.ioe", filepath);
         }
         finally {
-            try {
-                if (in != null) {
+            if (in != null) {
+                try {
                     in.close();
                 }
-            }
-            catch (IOException e) {
-                //do nothing
-            }
-        }
-    }
-
-    private void loadFromJar() throws UtilityException {
-        JarEntry entry = jar.getJarEntry(filepath);
-        BufferedReader in = null;
-        try {
-            in = new BufferedReader(new InputStreamReader(jar.getInputStream(entry)));
-            String inLine;
-            ArrayList<String> inComments = new ArrayList<String>();
-            while ((inLine = in.readLine()) != null) {
-                if (inLine.startsWith(";") || inLine.startsWith("#")) {
-                    inComments.add(inLine);
-                }
-                else {
-                    try {
-                        String[] propsLine = inLine.split("=");
-                        props.put(propsLine[0].trim(), propsLine[1].trim());
-                        if (!inComments.isEmpty()) {
-                            String[] commented = new String[inComments.size()];
-                            for (int index = 0; index < inComments.size(); index++) {
-                                commented[index] = inComments.get(index);
-                            }
-                            comments.put(propsLine[0], commented);
-                            inComments.clear();
-                        }
-                    }
-                    catch (ArrayIndexOutOfBoundsException aioobe) {
-                        //Incomplete Property, drop reference to it
-                        inComments.clear();
-                        continue;
-                    }
+                catch (IOException e) {
+                    //do nothing
                 }
             }
-        }
-        catch (IOException ioe) {
-            UtilsLogger.severe(String.format("An IOException occurred in File: '%s'", filepath), ioe);
-            throw new UtilityException("file.ioe", filepath);
-        }
-        finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            }
-            catch (IOException e) {
-                //do nothing
+            if (uex != null) {
+                throw uex;
             }
         }
     }
@@ -452,13 +416,7 @@ public final class PropertiesFile {
      *             or if property was not found
      */
     public String[] getStringArray(String key, String splitBy) throws UtilityException {
-        if (key == null) {
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if (key.isEmpty()) {
-            throw new UtilityException("arg.empty", "String key");
-        }
-        else if (splitBy == null) {
+        if (splitBy == null) {
             throw new UtilityException("arg.null", "String splitBy");
         }
         else if (splitBy.isEmpty()) {
@@ -541,12 +499,6 @@ public final class PropertiesFile {
      *             or if property is not found
      */
     public byte getByte(String key) throws UtilityException {
-        if (key == null) {
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if (key.trim().isEmpty()) {
-            throw new UtilityException("arg.empty", "String key");
-        }
         try {
             return Byte.parseByte(getString(key));
         }
@@ -662,13 +614,7 @@ public final class PropertiesFile {
      *             or if property was not found
      */
     public byte[] getByteArray(String key, String splitBy) throws UtilityException {
-        if (key == null) {
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if (key.trim().isEmpty()) {
-            throw new UtilityException("arg.empty", "String key");
-        }
-        else if (splitBy == null) {
+        if (splitBy == null) {
             throw new UtilityException("arg.null", "String splitBy");
         }
         else if (splitBy.isEmpty()) {
@@ -751,12 +697,6 @@ public final class PropertiesFile {
      *             or if property is not found
      */
     public short getShort(String key) throws UtilityException {
-        if (key == null) {
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if (key.trim().isEmpty()) {
-            throw new UtilityException("arg.empty", "String key");
-        }
         try {
             return Short.parseShort(getString(key));
         }
@@ -870,13 +810,7 @@ public final class PropertiesFile {
      *             or if property was not found
      */
     public short[] getShortArray(String key, String splitBy) throws UtilityException {
-        if (key == null) {
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if (key.trim().isEmpty()) {
-            throw new UtilityException("arg.empty", "String key");
-        }
-        else if (splitBy == null) {
+        if (splitBy == null) {
             throw new UtilityException("arg.null", "String splitBy");
         }
         else if (splitBy.isEmpty()) {
@@ -957,12 +891,6 @@ public final class PropertiesFile {
      *             or if property is not found
      */
     public int getInt(String key) throws UtilityException {
-        if (key == null) {
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if (key.trim().isEmpty()) {
-            throw new UtilityException("arg.empty", "String key");
-        }
         try {
             return Integer.parseInt(getString(key));
         }
@@ -1076,13 +1004,7 @@ public final class PropertiesFile {
      *             or if property was not found
      */
     public int[] getIntArray(String key, String splitBy) throws UtilityException {
-        if (key == null) {
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if (key.trim().isEmpty()) {
-            throw new UtilityException("arg.empty", "String key");
-        }
-        else if (splitBy == null) {
+        if (splitBy == null) {
             throw new UtilityException("arg.null", "String splitBy");
         }
         else if (splitBy.isEmpty()) {
@@ -1163,12 +1085,6 @@ public final class PropertiesFile {
      *             or if property is not found
      */
     public long getLong(String key) throws UtilityException {
-        if (key == null) {
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if (key.trim().isEmpty()) {
-            throw new UtilityException("arg.empty", "String key");
-        }
         try {
             return Long.parseLong(getString(key));
         }
@@ -1282,13 +1198,7 @@ public final class PropertiesFile {
      *             or if property was not found
      */
     public long[] getLongArray(String key, String splitBy) throws UtilityException {
-        if (key == null) {
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if (key.trim().isEmpty()) {
-            throw new UtilityException("arg.empty", "String key");
-        }
-        else if (splitBy == null) {
+        if (splitBy == null) {
             throw new UtilityException("arg.null", "String splitBy");
         }
         else if (splitBy.isEmpty()) {
@@ -1369,12 +1279,6 @@ public final class PropertiesFile {
      *             or if property is not found
      */
     public float getFloat(String key) throws UtilityException {
-        if (key == null) {
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if (key.trim().isEmpty()) {
-            throw new UtilityException("arg.empty", "String key");
-        }
         try {
             return Float.parseFloat(getString(key));
         }
@@ -1488,13 +1392,7 @@ public final class PropertiesFile {
      *             or if property was not found
      */
     public float[] getFloatArray(String key, String splitBy) throws UtilityException {
-        if (key == null) {
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if (key.trim().isEmpty()) {
-            throw new UtilityException("arg.empty", "String key");
-        }
-        else if (splitBy == null) {
+        if (splitBy == null) {
             throw new UtilityException("arg.null", "String splitBy");
         }
         else if (splitBy.isEmpty()) {
@@ -1575,12 +1473,6 @@ public final class PropertiesFile {
      *             or if property is not found
      */
     public double getDouble(String key) throws UtilityException {
-        if (key == null) {
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if (key.trim().isEmpty()) {
-            throw new UtilityException("arg.empty", "String key");
-        }
         try {
             return Double.parseDouble(getString(key));
         }
@@ -1694,13 +1586,7 @@ public final class PropertiesFile {
      *             or if property was not found
      */
     public double[] getDoubleArray(String key, String splitBy) throws UtilityException {
-        if (key == null) {
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if (key.trim().isEmpty()) {
-            throw new UtilityException("arg.empty", "String key");
-        }
-        else if (splitBy == null) {
+        if (splitBy == null) {
             throw new UtilityException("arg.null", "String splitBy");
         }
         else if (splitBy.isEmpty()) {
@@ -1781,12 +1667,6 @@ public final class PropertiesFile {
      * @see #parseBoolean(String)
      */
     public boolean getBoolean(String key) throws UtilityException {
-        if (key == null) {
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if (key.trim().isEmpty()) {
-            throw new UtilityException("arg.empty", "String key");
-        }
         return parseBoolean(getString(key));
     }
 
@@ -1937,6 +1817,12 @@ public final class PropertiesFile {
             return false;
         }
         else {
+            if (property.matches("(?i:".concat(UtilsLocaleHelper.localeTranslation("on")).concat("|").concat(UtilsLocaleHelper.localeTranslation("true")).concat("|").concat(UtilsLocaleHelper.localeTranslation("yes")).concat("|").concat(UtilsLocaleHelper.localeTranslation("allow")).concat(")"))) {
+                return true;
+            }
+            else if (property.matches("(?i:".concat(UtilsLocaleHelper.localeTranslation("off")).concat("|").concat(UtilsLocaleHelper.localeTranslation("false")).concat("|").concat(UtilsLocaleHelper.localeTranslation("no")).concat("|").concat(UtilsLocaleHelper.localeTranslation("deny")).concat(")"))) {
+                return false;
+            }
             throw new UtilityException("Property not a boolean");
         }
     }

@@ -35,9 +35,25 @@ import java.security.CodeSource;
  * @author Jason (darkdiplomat)
  */
 public abstract class LocaleHelper {
+    /**
+     * The language.txt file for knowing which languages are supported
+     */
     private static PropertiesFile utils_lang;
+
+    /**
+     * The .lang file that has the proper translations
+     */
     private static PropertiesFile utils_sysLang;
+
+    /**
+     * The default English message file
+     */
     private static PropertiesFile utils_eng;
+
+    /**
+     * Overrides the System default code
+     */
+    protected static String localeCodeOverride;
 
     /**
      * Gets the translated message for the given key
@@ -48,20 +64,11 @@ public abstract class LocaleHelper {
      */
     public final String localeTranslate(String key) {
         try {
-            if (utils_lang == null) {
-                utils_lang = new PropertiesFile(getJarPath(), "resources/lang/languages.txt");
+            checkLangFiles();
+            if (utils_sysLang.containsKey(key)) {
+                return utils_sysLang.getString(key);
             }
-            if (SystemUtils.SYSTEM_LOCALE != null && !SystemUtils.SYSTEM_LOCALE.equals("en_US")) {
-                if (utils_sysLang == null && utils_lang.containsKey(SystemUtils.SYSTEM_LOCALE)) {
-                    utils_sysLang = new PropertiesFile(getJarPath(), "resources/lang/".concat(SystemUtils.SYSTEM_LOCALE).concat(".lang"));
-                }
-                else {
-                    return defaultTranslate(key);
-                }
-                if (utils_sysLang.containsKey(key)) {
-                    return utils_sysLang.getString(key);
-                }
-            }
+            return defaultTranslate(key);
         }
         catch (Exception e) {
             //whoops
@@ -78,16 +85,13 @@ public abstract class LocaleHelper {
      */
     public final String defaultTranslate(String key) {
         try {
-            if (utils_eng == null) {
-                utils_eng = new PropertiesFile(getJarPath(), "resources/lang/en_US.lang");
-            }
+            checkLangFiles();
             if (utils_eng.containsKey(key)) {
                 return utils_eng.getString(key);
             }
         }
         catch (Exception e) {
             //whoops
-            e.printStackTrace();
         }
 
         //May have forgot a translation and left a regular message, or something went wrong...
@@ -105,24 +109,17 @@ public abstract class LocaleHelper {
      * @see String#format(String, Object...)
      */
     public final String localeTranslateFormat(String key, String... form) {
-        if (SystemUtils.SYSTEM_LOCALE != null && !SystemUtils.SYSTEM_LOCALE.equals("en_US")) {
-            try {
-                if (utils_lang == null) {
-                    utils_lang = new PropertiesFile(getJarPath(), "resources/lang/languages.txt");
-                }
-                if (utils_sysLang == null && utils_lang.containsKey(SystemUtils.SYSTEM_LOCALE)) {
-                    utils_sysLang = new PropertiesFile(getJarPath(), "resources/lang/".concat(SystemUtils.SYSTEM_LOCALE).concat(".lang"));
-                }
-                else {
-                    return defaultTranslateFormat(key, form);
-                }
-                if (utils_sysLang.containsKey(key)) {
-                    return String.format(utils_sysLang.getString(key), (Object[]) form);
-                }
+
+        try {
+            checkLangFiles();
+            if (utils_sysLang.containsKey(key)) {
+                return String.format(utils_sysLang.getString(key), (Object[]) form);
             }
-            catch (Exception e) {
-                //whoops
-            }
+            return defaultTranslateFormat(key, form);
+        }
+        catch (Exception e) {
+            //whoops
+            e.printStackTrace();
         }
         return defaultTranslateFormat(key, form);
     }
@@ -139,9 +136,7 @@ public abstract class LocaleHelper {
      */
     public final String defaultTranslateFormat(String key, String... form) {
         try {
-            if (utils_eng == null) {
-                utils_eng = new PropertiesFile(getJarPath(), "resources/lang/en_US.lang");
-            }
+            checkLangFiles();
             if (utils_eng.containsKey(key)) {
                 return String.format(utils_eng.getString(key), (Object[]) form);
             }
@@ -151,6 +146,25 @@ public abstract class LocaleHelper {
         }
         //May have forgot a translation and left a regular message
         return String.format(key, (Object[]) form);
+    }
+
+    private final void checkLangFiles() throws UtilityException, URISyntaxException {
+        if (utils_lang == null) {
+            utils_lang = new PropertiesFile(getJarPath(), "resources/lang/languages.txt");
+        }
+        if (utils_eng == null) {
+            utils_eng = new PropertiesFile(getJarPath(), "resources/lang/en_US.lang");
+        }
+        if (localeCodeOverride != null && !localeCodeOverride.equals("en_US") && localeCodeOverride.matches("([a-z]{2, 3})_([A-Z]{2, 3})")) {
+            if (utils_sysLang == null && utils_lang.containsKey(localeCodeOverride)) {
+                utils_sysLang = new PropertiesFile(getJarPath(), "resources/lang/".concat(localeCodeOverride).concat(".lang"));
+            }
+        }
+        else if (SystemUtils.SYSTEM_LOCALE != null && !SystemUtils.SYSTEM_LOCALE.equals("en_US")) {
+            if (utils_sysLang == null && utils_lang.containsKey(SystemUtils.SYSTEM_LOCALE)) {
+                utils_sysLang = new PropertiesFile(getJarPath(), "resources/lang/".concat(utils_sysLang.getString(SystemUtils.SYSTEM_LOCALE)).concat(".lang"));
+            }
+        }
     }
 
     /**

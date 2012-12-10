@@ -1,0 +1,42 @@
+﻿# This file NEEDS to be in UTF-8 format!
+true=verdadero
+yes=sí
+on=a
+allow=permitir
+false=mal
+no=no
+off=de
+deny=rechazar
+time.negative=El tiempo puede ser un número negativo!
+arg.null='%s' no puede ser nulo nciht
+arg.empty='%s' debe ser nciht vacío
+format.invalid=Sytax formato no válido
+jarfile.missing=Archivo Jar no se pudo encontrar
+entry.missing='%s' no es una entrada válida en el archivo jar
+file.ioe=IOException en el archivo:%s
+jar.save=Almacene dentro de un archivo JAR no está soportado por PropertiesFile
+key.missing=Propiedad CLAVE:%s no encontrado
+prop.nan=Propiedad CLAVE:%s no es un número
+str.nan=Índice String:%s no es un número
+start.gte=startIndex es mayor que o igual args.length
+byte.length=matriz de bytes debe ser de 4 a largo
+end.gte=endIndex mayor o igual args.length
+startgte.end=startIndex es mayor que o igual a endIndex
+update.fail=actualizar falló porque: '%s'
+##################################################
+# Copyright 2012 Visual Illusions Entertainment.
+#  
+# This file is part of VIUtils.
+#
+# VIUtils is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# VIUtils is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License along with VIUtils.
+# If not, see http://www.gnu.org/licenses/lgpl.html
+####################################################
