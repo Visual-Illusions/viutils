@@ -27,8 +27,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -139,7 +141,7 @@ public final class PropertiesFile {
      * <br>
      *             if there was an error with reading the properties file
      */
-    public void load(InputStream instream) throws UtilityException {
+    private final void load(InputStream instream) throws UtilityException {
         UtilityException uex = null;
         BufferedReader in = null;
         try {
@@ -151,22 +153,29 @@ public final class PropertiesFile {
                     inComments.add(inLine);
                 }
                 else {
+                    String[] propsLine = null;
                     try {
-                        String[] propsLine = inLine.split("=");
+                        propsLine = inLine.split("=");
                         props.put(propsLine[0].trim(), propsLine[1].trim());
-                        if (!inComments.isEmpty()) {
-                            String[] commented = new String[inComments.size()];
-                            for (int index = 0; index < inComments.size(); index++) {
-                                commented[index] = inComments.get(index);
-                            }
-                            comments.put(propsLine[0], commented);
-                            inComments.clear();
-                        }
                     }
                     catch (ArrayIndexOutOfBoundsException aioobe) {
-                        //Incomplete Property, drop reference to it
+                        //Empty value?
+                        if (inLine.contains("=")) {
+                            props.put(propsLine[0], "");
+                        }
+                        //Incomplete property, drop reference
+                        else {
+                            inComments.clear();
+                            continue;
+                        }
+                    }
+                    if (!inComments.isEmpty()) {
+                        String[] commented = new String[inComments.size()];
+                        for (int index = 0; index < inComments.size(); index++) {
+                            commented[index] = inComments.get(index);
+                        }
+                        comments.put(propsLine[0], commented);
                         inComments.clear();
-                        continue;
                     }
                 }
             }
@@ -191,6 +200,38 @@ public final class PropertiesFile {
     }
 
     /**
+     * Reloads the PropertiesFile from its source
+     * 
+     * @throws UtilityException
+     * <br>
+     *             if there was an error with reading the properties file<br>
+     *             or if the Jar file is not found or unable to be read from<br>
+     *             or if the Jar file does not contain the entry
+     */
+    public final void reload() throws UtilityException {
+        if (jar != null) {
+            JarEntry ent = jar.getJarEntry(filepath);
+            if (ent == null) {
+                throw new UtilityException("entry.missing", filepath);
+            }
+            try {
+                load(jar.getInputStream(ent));
+            }
+            catch (IOException e) {
+                new UtilityException("file.ioe", filepath);
+            }
+        }
+        else {
+            try {
+                load(new FileInputStream(propsFile));
+            }
+            catch (FileNotFoundException e) {
+                new UtilityException("file.ioe", filepath);
+            }
+        }
+    }
+
+    /**
      * Saves the Properties File<br>
      * <b>NOTE:</b> Saving is not supported for PropertieFiles inside of Jar Files
      * 
@@ -199,7 +240,7 @@ public final class PropertiesFile {
      *             if there was an error with writing the properties file<br>
      *             or if save is called for a PropertiesFile inside of a Jar
      */
-    public void save() throws UtilityException {
+    public final void save() throws UtilityException {
         if (jar != null) {
             throw new UtilityException("jar.save");
         }
@@ -1779,14 +1820,14 @@ public final class PropertiesFile {
     }
 
     /**
-     * Internal Method for adding comments to keys
+     * Method for adding comments to keys
      * 
      * @param key
      *            the key to add comments for
      * @param comment
      *            the comment(s) to be added
      */
-    private void addComment(String key, String... comment) {
+    public void addComment(String key, String... comment) {
         if (comment != null && comment.length > 0) {
             for (int i = 0; i < comment.length; i++) {
                 if (comment[i] == null) {
@@ -1798,6 +1839,55 @@ public final class PropertiesFile {
             }
             comments.put(key, comment);
         }
+    }
+
+    /**
+     * Gets all the comments attached to the property key
+     * 
+     * @param key
+     *            the property key
+     * @return comments if found, {@code null} if no comments found
+     */
+    public String[] getComments(String key) {
+        if (comments.containsKey(key)) {
+            return comments.get(key);
+        }
+        return null;
+    }
+
+    /**
+     * Removes a comment from a property key
+     * 
+     * @param key
+     *            the property key
+     * @param comment
+     *            the comment to be removed
+     */
+    public void removeComment(String key, String comment) {
+        if (comments.containsKey(key)) {
+            List<String> comms = Arrays.asList(comments.get(key));
+            comms.remove(comment);
+            comments.put(key, comms.toArray(new String[] {}));
+        }
+    }
+
+    /**
+     * Removes all the comments from a property key
+     * 
+     * @param key
+     *            the property key to remove comments for
+     */
+    public void removeAllCommentsFromKey(String key) {
+        if (comments.containsKey(key)) {
+            comments.remove(key);
+        }
+    }
+
+    /**
+     * Removes all the comments from all the properties in the file
+     */
+    public void removeAllCommentsFromFile() {
+        comments.clear();
     }
 
     /**
