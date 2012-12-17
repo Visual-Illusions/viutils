@@ -30,7 +30,7 @@ import java.security.CodeSource;
  * This File is part of the VIUtils<br>
  * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
  * 
- * @since VIUtils 1.0
+ * @since 1.0
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
@@ -119,7 +119,6 @@ public abstract class LocaleHelper {
         }
         catch (Exception e) {
             //whoops
-            e.printStackTrace();
         }
         return defaultTranslateFormat(key, form);
     }

@@ -29,7 +29,7 @@ import java.util.Date;
  * This File is part of the VIUtils<br>
  * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
  * 
- * @since VIUtils 1.0
+ * @since 1.0
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
@@ -119,7 +119,7 @@ public final class DateUtils {
      * @throws UtilityException
      * <br>
      *             if time is less than 0<br>
-     *             or if the format is invalid/{@code null}
+     *             if the format is invalid/{@code null}
      */
     public static final String longToFormatedDateTime(long time, String format) throws UtilityException {
         if (time < 0) {

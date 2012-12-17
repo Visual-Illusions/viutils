@@ -43,7 +43,7 @@ import java.util.jar.JarFile;
  * This File is part of the VIUtils<br>
  * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
  * 
- * @since VIUtils 1.0
+ * @since 1.0
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
@@ -77,7 +77,7 @@ public final class PropertiesFile {
                 load(new FileInputStream(propsFile));
             }
             catch (FileNotFoundException e) {
-                new UtilityException("file.ioe", filepath);
+                new UtilityException("file.err.ioe", filepath);
             }
         }
         else {
@@ -130,7 +130,7 @@ public final class PropertiesFile {
             load(jar.getInputStream(ent));
         }
         catch (IOException e) {
-            new UtilityException("file.ioe", filepath);
+            new UtilityException("file.err.ioe", filepath);
         }
     }
 
@@ -182,7 +182,7 @@ public final class PropertiesFile {
         }
         catch (IOException ioe) {
             UtilsLogger.severe(String.format("An IOException occurred in File: '%s'", filepath), ioe);
-            uex = new UtilityException("file.ioe", filepath);
+            uex = new UtilityException("file.err.ioe", filepath);
         }
         finally {
             if (in != null) {
@@ -218,7 +218,7 @@ public final class PropertiesFile {
                 load(jar.getInputStream(ent));
             }
             catch (IOException e) {
-                new UtilityException("file.ioe", filepath);
+                new UtilityException("file.err.ioe", filepath);
             }
         }
         else {
@@ -226,7 +226,7 @@ public final class PropertiesFile {
                 load(new FileInputStream(propsFile));
             }
             catch (FileNotFoundException e) {
-                new UtilityException("file.ioe", filepath);
+                new UtilityException("file.err.ioe", filepath);
             }
         }
     }
@@ -263,7 +263,7 @@ public final class PropertiesFile {
         }
         catch (IOException ioe) {
             UtilsLogger.severe(String.format("An IOException occurred in File: '%s'", filepath), ioe);
-            throw new UtilityException("file.ioe", filepath);
+            throw new UtilityException("file.err.ioe", filepath);
         }
         finally {
             if (out != null) {

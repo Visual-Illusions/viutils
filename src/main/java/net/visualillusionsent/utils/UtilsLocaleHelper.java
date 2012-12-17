@@ -23,6 +23,8 @@ package net.visualillusionsent.utils;
  * This File is part of the VIUtils<br>
  * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
  * 
+ * @since 1.0
+ * @version 1.0
  * @author Jason (darkdiplomat)
  */
 final class UtilsLocaleHelper extends LocaleHelper {
@@ -72,7 +74,7 @@ final class UtilsLocaleHelper extends LocaleHelper {
      * @see LocaleHelper#localeTranslateFormat(String, String...)
      * @see String#format(String, Object...)
      */
-    public static String localeTranslationFormat(String key, String form) {
+    public static String localeTranslationFormat(String key, String... form) {
         return instance.localeTranslateFormat(key, form);
     }
 
@@ -87,7 +89,7 @@ final class UtilsLocaleHelper extends LocaleHelper {
      * @see LocaleHelper#defaultTranslateFormat(String, String...)
      * @see String#format(String, Object...)
      */
-    public static String defaultTranslationFormat(String key, String form) {
+    public static String defaultTranslationFormat(String key, String... form) {
         return instance.defaultTranslateFormat(key, form);
     }
 }

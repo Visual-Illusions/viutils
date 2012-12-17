@@ -14,7 +14,6 @@ arg.empty='%s' darf nciht leer sein
 format.invalid=Ungültige Format Sytax
 jarfile.missing=Konnte Jar Datei nicht finden
 entry.missing='%s' ist kein gültiger Eintrag in der Jar Datei
-file.ioe=Eine IOException in Datei: %s
 jar.save=Speichern innerhalb einer Jar Datei wird von PropertiesFile nicht unterstützt
 key.missing=Property für KEY: %s wurde nicht gefunden
 prop.nan=Property für KEY: %s ist keine Zahl
@@ -24,6 +23,12 @@ byte.length=byte array muss 4 lang sein
 end.gte=endIndex größer als oder gleich args.length
 startgte.end=startIndex größer als oder gleich endIndex
 update.fail=Update fehlgeschlagen: '%s'
+file.err.ioe=Eine IOException in Datei: %s
+file.err.exist=%s is not an existing file
+file.err.read=Could not read File: %s
+file.err.write=Could not write to File: %s
+file.err.path=%s path equals %s path
+file.err.dir=%s is a Directory, not a file
 ##################################################
 # Copyright 2012 Visual Illusions Entertainment.
 #  

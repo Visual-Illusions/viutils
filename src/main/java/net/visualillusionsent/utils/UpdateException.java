@@ -18,36 +18,36 @@
 package net.visualillusionsent.utils;
 
 /**
- * Utility Exception
+ * Update Exception
  * <p>
- * Thrown when a used utility has improper arguments given to it or when something goes wrong<br>
- * use the {@link #getMessage()} or {@link #getLocalizedMessage()} method to retrieve the reason why the utility method failed
+ * Thrown from {@link Updater} when an exception occurs during an update<br>
+ * use the {@link #getMessage()} method to retrieve the reason why the update failed
  * <p>
  * This File is part of the VIUtils<br>
  * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
  * 
- * @since VIUtils 1.0
+ * @since 1.0
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
-public final class UtilityException extends Exception {
+public final class UpdateException extends Exception {
     private String form;
 
     /**
      * Serial Version
      */
-    private static final long serialVersionUID = 042216122012L;
+    private static final long serialVersionUID = 121212062012L;
 
     /**
      * Class Constructor
      * <p>
      * Should not be constructed outside of VIUtils
      * 
-     * @param msg
+     * @param message
      *            the message of why the exception is being thrown
      */
-    UtilityException(String msg) {
-        super(msg);
+    UpdateException(String message) {
+        super(message);
     }
 
     /**
@@ -55,13 +55,13 @@ public final class UtilityException extends Exception {
      * <p>
      * Should not be constructed outside of VIUtils
      * 
-     * @param msg
+     * @param message
      *            the message of why the exception is being thrown
      * @param form
      *            the string to use in {@link String#format(String, Object...)}
      */
-    UtilityException(String msg, String form) {
-        super(msg);
+    UpdateException(String message, String form) {
+        super(message);
         this.form = form;
     }
 
@@ -70,8 +70,7 @@ public final class UtilityException extends Exception {
      * 
      * @return message in English
      */
-    @Override
-    public final String getMessage() {
+    public String getMessage() {
         if (form != null) {
             return UtilsLocaleHelper.defaultTranslationFormat(super.getMessage(), form);
         }
@@ -83,11 +82,11 @@ public final class UtilityException extends Exception {
      * 
      * @return message in System Language if found, English otherwise
      */
-    @Override
-    public final String getLocalizedMessage() {
+    public String getLocalizeMessage() {
         if (form != null) {
             return UtilsLocaleHelper.localeTranslationFormat(super.getMessage(), form);
         }
         return UtilsLocaleHelper.localeTranslation(super.getMessage());
     }
+
 }

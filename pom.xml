@@ -1,0 +1,56 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>net.visualillusionsent</groupId>
+  <artifactId>viutils</artifactId>
+  <version>1.0.0</version>
+  <name>Visual Illusions Java Utilities Library</name>
+  <properties>
+    <!-- UTF-8 Encoding! -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <plugins>
+      <!-- Compile -->
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+      <!-- JAR creation plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3.1</version>
+        <configuration>
+          <archive>
+            <addMavenDescriptor>false</addMavenDescriptor>
+            <manifest>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <Sealed>true</Sealed>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <url>http://visualillusionsent.net</url>
+  <inceptionYear>2012</inceptionYear>
+  <organization>
+  	<name>Visual Illusions Entertainment</name>
+  	<url>http://visualillusionsent.net</url>
+  </organization>
+  <scm>
+  	<url>https://dev.visualillusionsent.net/VIUtils</url>
+  </scm>
+  <issueManagement>
+  	<url>https://dev.visualillusionsent.net/VIUtils</url>
+  	<system>GitLab</system>
+  </issueManagement>
+</project>
