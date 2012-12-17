@@ -36,17 +36,20 @@ import java.net.URL;
  * @author Jason (darkdiplomat)
  */
 public final class VersionChecker {
-    private String version, currver, checkurl;
+    private String jarname, version, currver, checkurl;
 
     /**
      * class constructor
      * 
+     * @param jarname
+     *            the name of the jar being version checked
      * @param version
      *            A string representation of the software version
      * @param checkurl
      *            A string representation of the url to verify version though
      */
-    public VersionChecker(String version, String checkurl) {
+    public VersionChecker(String jarname, String version, String checkurl) {
+        this.jarname = jarname;
         this.version = version;
         this.currver = version;
         this.checkurl = checkurl;
@@ -70,9 +73,12 @@ public final class VersionChecker {
             String current = currver.replaceAll("\\.", "");
             try {
                 if (checkVer.length() < current.length()) {
-                    checkVer.concat("0");
+                    checkVer = StringUtils.padCharRight(checkVer, current.length(), '0');
                 }
-                is = Float.parseFloat(checkVer) >= Float.parseFloat(current);
+                else if (current.length() < checkVer.length()) {
+                    current = StringUtils.padCharRight(current, checkVer.length(), '0');
+                }
+                is = Long.parseLong(checkVer) >= Long.parseLong(current);
             }
             catch (NumberFormatException nfe) {
                 is = version.equals(currver);
@@ -91,11 +97,25 @@ public final class VersionChecker {
     }
 
     /**
-     * gets the current version
+     * Gets the current version
      * 
      * @return currver
      */
     public final String getCurrentVersion() {
         return currver;
+    }
+
+    /**
+     * Gets a pre-generated update availible message
+     * 
+     * @return updateavailiblemessage
+     */
+    public final String getUpdateAvailibleMessage() {
+        if (!isLatest()) {
+            return "An update is availible for: '".concat(jarname).concat("' - v").concat(currver);
+        }
+        else {
+            return "Current Version of: '".concat(jarname).concat("' is installed");
+        }
     }
 }

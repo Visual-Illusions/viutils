@@ -24,6 +24,11 @@ byte.length=byte array must be of length 4
 end.gte=endIndex greater than or equal to args.length
 startgte.end=startIndex greater than or equal to endIndex
 update.fail=Failed to update due to:'%s'
+file.err.exist=Parameter is not an existing file
+file.err.delete=Could not delete original file.
+file.err.rename=Could not rename temp file.
+file.err.read=Could not read File: %s
+file.err.write=Could not write to File: %s
 ##################################################
 # Copyright 2012 Visual Illusions Entertainment.
 #  

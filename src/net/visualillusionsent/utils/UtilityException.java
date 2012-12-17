@@ -21,7 +21,7 @@ package net.visualillusionsent.utils;
  * Utility Exception
  * <p>
  * Thrown when a used utility has improper arguments given to it or when something goes wrong<br>
- * use the {@link #getMessage()} method to retrieve the reason why the utility method failed
+ * use the {@link #getMessage()} or {@link #getLocalizedMessage()} method to retrieve the reason why the utility method failed
  * <p>
  * This File is part of the VIUtils<br>
  * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
@@ -70,6 +70,7 @@ public final class UtilityException extends Exception {
      * 
      * @return message in English
      */
+    @Override
     public final String getMessage() {
         if (form != null) {
             return UtilsLocaleHelper.defaultTranslationFormat(super.getMessage(), form);
@@ -82,7 +83,8 @@ public final class UtilityException extends Exception {
      * 
      * @return message in System Language if found, English otherwise
      */
-    public final String getLocalizeMessage() {
+    @Override
+    public final String getLocalizedMessage() {
         if (form != null) {
             return UtilsLocaleHelper.localeTranslationFormat(super.getMessage(), form);
         }

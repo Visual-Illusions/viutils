@@ -52,25 +52,7 @@ public final class StringUtils {
      *             or if spacer is equal to null
      */
     public static final String joinString(String[] args, String spacer, int startIndex) throws UtilityException {
-        if (args == null) {
-            throw new UtilityException("arg.null", "String[] args");
-        }
-        else if (args.length == 0) {
-            throw new UtilityException("arg.empty", "String[] args");
-        }
-        else if (startIndex >= args.length) {
-            throw new UtilityException("start.gte");
-        }
-        else if (spacer == null) {
-            throw new UtilityException("arg.null", "String spacer");
-        }
-
-        StringBuilder sb = new StringBuilder();
-        for (int index = startIndex; index < args.length; index++) {
-            sb.append(args[index]);
-            sb.append(spacer);
-        }
-        return sb.toString();
+        return joinString(args, spacer, startIndex, (args.length - 1));
     }
 
     /**
@@ -117,53 +99,92 @@ public final class StringUtils {
             sb.append(args[index]);
             sb.append(spacer);
         }
-        return sb.toString();
+        String preRet = sb.toString().trim();
+        return preRet.substring(0, preRet.lastIndexOf(spacer)); //Remove last spacer
     }
 
     /**
      * Pads to the right of a {@link String} with spaces ' '<br>
      * NOTE: Padding also takes into account existing characters so a padAmount less that the give String has no effect
-     * <p>
-     * Code origin: <a href="http://www.rgagnon.com/javadetails/java-0448.html">http://www.rgagnon.com/javadetails/java-0448.html</a>
      * 
      * @param toPad
      *            the {@link String} to be padded
      * @param padAmount
      *            the amount to pad
-     * @return the formated string
+     * @return the padded string
      * @throws UtilityException
      */
-    public static String padRight(String toPad, int padAmount) throws UtilityException {
+    public static final String padRight(String toPad, int padAmount) throws UtilityException {
+        return padCharRight(toPad, padAmount, ' ');
+    }
+
+    /**
+     * Pads to the right of a {@link String} with specified character<br>
+     * NOTE: Padding also takes into account existing characters so a padAmount less that the give String has no effect
+     * 
+     * @param toPad
+     *            the {@link String} to be padded
+     * @param padAmount
+     *            the amount to pad
+     * @param padChar
+     *            character to pad the String with
+     * @return the padded string
+     * @throws UtilityException
+     */
+    public static final String padCharRight(String toPad, int padAmount, char padChar) throws UtilityException {
         if (toPad == null) {
             throw new UtilityException("arg.null", "String toPad");
         }
         else if (toPad.isEmpty()) {
             throw new UtilityException("arg.empty", "String toPad");
         }
-        return String.format("%1$-".concat(String.valueOf(padAmount)).concat("s"), toPad);
+        StringBuffer padded = new StringBuffer(toPad);
+        while (padded.length() < padAmount) {
+            padded.append(padChar);
+        }
+        return padded.toString();
     }
 
     /**
      * Pads to the left of a {@link String} with spaces ' '<br>
      * NOTE: Padding also takes into account existing characters so a padAmount less that the give String has no effect
-     * <p>
-     * Code origin: <a href="http://www.rgagnon.com/javadetails/java-0448.html">http://www.rgagnon.com/javadetails/java-0448.html</a>
      * 
      * @param toPad
      *            the {@link String} to be padded
      * @param padAmount
      *            the amount to pad
-     * @return the formated string
+     * @return the padded string
      * @throws UtilityException
      */
-    public static String padLeft(String toPad, int padAmount) throws UtilityException {
+    public static final String padLeft(String toPad, int padAmount) throws UtilityException {
+        return padCharLeft(toPad, padAmount, ' ');
+    }
+
+    /**
+     * Pads to the left of a {@link String} with specified character<br>
+     * NOTE: Padding also takes into account existing characters so a padAmount less that the give String has no effect
+     * 
+     * @param toPad
+     *            the {@link String} to be padded
+     * @param padAmount
+     *            the amount to pad
+     * @param padChar
+     *            character to pad the String with
+     * @return the padded string
+     * @throws UtilityException
+     */
+    public static final String padCharLeft(String toPad, int padAmount, char padChar) throws UtilityException {
         if (toPad == null) {
             throw new UtilityException("arg.null", "String toPad");
         }
         else if (toPad.isEmpty()) {
             throw new UtilityException("arg.empty", "String toPad");
         }
-        return String.format("%1$".concat(String.valueOf(padAmount)).concat("s"), toPad);
+        StringBuffer padded = new StringBuffer(toPad);
+        while (padded.length() < padAmount) {
+            padded.insert(0, padChar);
+        }
+        return padded.toString();
     }
 
     /**
@@ -226,15 +247,31 @@ public final class StringUtils {
         else if (splitBy.isEmpty()) {
             throw new UtilityException("splitby.empty", "String splitBy");
         }
-        String[] strsp = str.split(splitBy);
-        byte[] toRet = new byte[strsp.length];
-        for (int index = 0; index < strsp.length; index++) {
-            try {
+        return stringArrayToByteArray(str.split(splitBy));
+    }
 
-                toRet[index] = Byte.parseByte(strsp[index].trim());
+    /**
+     * Converts a String Array into a byte array
+     * 
+     * @param strarr
+     *            the string array to convert
+     * @return byte array
+     * @throws UtilityException
+     */
+    public static byte[] stringArrayToByteArray(String[] strarr) throws UtilityException {
+        if (strarr == null) {
+            throw new UtilityException("arg.null", "String strarr");
+        }
+        else if (strarr.length < 1) {
+            throw new UtilityException("arg.empty", "String strarr");
+        }
+        byte[] toRet = new byte[strarr.length];
+        for (int index = 0; index < strarr.length; index++) {
+            try {
+                toRet[index] = Byte.parseByte(strarr[index].trim());
             }
             catch (NumberFormatException nfe) {
-                throw new UtilityException("str.nan", strsp[index]);
+                throw new UtilityException("str.nan", strarr[index]);
             }
         }
         return toRet;
@@ -275,13 +312,29 @@ public final class StringUtils {
         else if (spacer == null) {
             throw new UtilityException("arg.null", "String spacer");
         }
-        StringBuilder build = new StringBuilder();
-        for (byte theByte : bytes) {
-            build.append(theByte);
-            build.append(",");
+        return joinString(byteArrayToStringArray(bytes), spacer, 0);
+    }
+
+    /**
+     * Converts the elements of the byte array to Strings
+     * 
+     * @param bytes
+     *            the byte array to convert
+     * @return string array
+     * @throws UtilityException
+     */
+    public static String[] byteArrayToStringArray(byte[] bytes) throws UtilityException {
+        if (bytes == null) {
+            throw new UtilityException("arg.null", "byte[] bytes");
         }
-        String preRet = build.toString().trim();
-        return preRet.substring(0, preRet.lastIndexOf(',')); //Remove last spacer
+        else if (bytes.length == 0) {
+            throw new UtilityException("arg.empty", "byte[] bytes");
+        }
+        String[] arr = new String[bytes.length];
+        for (int index = 0; index < bytes.length; index++) {
+            arr[index] = String.valueOf(bytes[index]);
+        }
+        return arr;
     }
 
     /**
@@ -324,15 +377,31 @@ public final class StringUtils {
         else if (splitBy.isEmpty()) {
             throw new UtilityException("splitby.empty", "String splitBy");
         }
-        String[] strsp = str.split(splitBy);
-        short[] toRet = new short[strsp.length];
-        for (int index = 0; index < strsp.length; index++) {
-            try {
+        return stringArrayToShortArray(str.split(splitBy));
+    }
 
-                toRet[index] = Short.parseShort(strsp[index].trim());
+    /**
+     * Converts a String Array into a short array
+     * 
+     * @param strarr
+     *            the string array to convert
+     * @return short array
+     * @throws UtilityException
+     */
+    public static short[] stringArrayToShortArray(String[] strarr) throws UtilityException {
+        if (strarr == null) {
+            throw new UtilityException("arg.null", "String strarr");
+        }
+        else if (strarr.length < 1) {
+            throw new UtilityException("arg.empty", "String strarr");
+        }
+        short[] toRet = new short[strarr.length];
+        for (int index = 0; index < strarr.length; index++) {
+            try {
+                toRet[index] = Short.parseShort(strarr[index].trim());
             }
             catch (NumberFormatException nfe) {
-                throw new UtilityException("str.nan", strsp[index]);
+                throw new UtilityException("str.nan", strarr[index]);
             }
         }
         return toRet;
@@ -372,13 +441,29 @@ public final class StringUtils {
         if (spacer == null) {
             throw new UtilityException("arg.null", "String spacer");
         }
-        StringBuilder build = new StringBuilder();
-        for (short theShort : shorts) {
-            build.append(theShort);
-            build.append(spacer);
+        return joinString(shortArrayToStringArray(shorts), spacer, 0);
+    }
+
+    /**
+     * Converts the elements of the short array to Strings
+     * 
+     * @param shorts
+     *            the short array to be converted
+     * @return string array
+     * @throws UtilityException
+     */
+    public static String[] shortArrayToStringArray(short[] shorts) throws UtilityException {
+        if (shorts == null) {
+            throw new UtilityException("arg.null", "short[] shorts");
         }
-        String preRet = build.toString().trim();
-        return preRet.substring(0, preRet.lastIndexOf("spacer")); //Remove last spacer
+        else if (shorts.length == 0) {
+            throw new UtilityException("arg.empty", "short[] shorts");
+        }
+        String[] arr = new String[shorts.length];
+        for (int index = 0; index < shorts.length; index++) {
+            arr[index] = String.valueOf(shorts[index]);
+        }
+        return arr;
     }
 
     /**
@@ -419,15 +504,31 @@ public final class StringUtils {
         else if (splitBy.isEmpty()) {
             throw new UtilityException("arg.empty", "String splitBy");
         }
-        String[] strsp = str.split(splitBy);
-        int[] toRet = new int[strsp.length];
-        for (int index = 0; index < strsp.length; index++) {
-            try {
+        return stringArrayToIntArray(str.split(splitBy));
+    }
 
-                toRet[index] = Integer.parseInt(strsp[index].trim());
+    /**
+     * Converts a String Array into a int array
+     * 
+     * @param strarr
+     *            the string array to convert
+     * @return int array
+     * @throws UtilityException
+     */
+    public static int[] stringArrayToIntArray(String[] strarr) throws UtilityException {
+        if (strarr == null) {
+            throw new UtilityException("arg.null", "String strarr");
+        }
+        else if (strarr.length < 1) {
+            throw new UtilityException("arg.empty", "String strarr");
+        }
+        int[] toRet = new int[strarr.length];
+        for (int index = 0; index < strarr.length; index++) {
+            try {
+                toRet[index] = Short.parseShort(strarr[index].trim());
             }
             catch (NumberFormatException nfe) {
-                throw new UtilityException("str.nan", strsp[index]);
+                throw new UtilityException("str.nan", strarr[index]);
             }
         }
         return toRet;
@@ -468,13 +569,29 @@ public final class StringUtils {
         if (spacer == null) {
             throw new UtilityException("arg.null", "String spacer");
         }
-        StringBuilder build = new StringBuilder();
-        for (int theInt : ints) {
-            build.append(theInt);
-            build.append(spacer);
+        return joinString(intArrayToStringArray(ints), spacer, 0);
+    }
+
+    /**
+     * Converts the elements of the int array to Strings
+     * 
+     * @param ints
+     *            the int array to convert
+     * @return string array
+     * @throws UtilityException
+     */
+    public static String[] intArrayToStringArray(int[] ints) throws UtilityException {
+        if (ints == null) {
+            throw new UtilityException("arg.null", "int[] ints");
         }
-        String preRet = build.toString().trim();
-        return preRet.substring(0, preRet.lastIndexOf("spacer")); //Remove last spacer
+        else if (ints.length == 0) {
+            throw new UtilityException("arg.empty", "int[] ints");
+        }
+        String[] arr = new String[ints.length];
+        for (int index = 0; index < ints.length; index++) {
+            arr[index] = String.valueOf(ints[index]);
+        }
+        return arr;
     }
 
     /**
@@ -515,14 +632,31 @@ public final class StringUtils {
         else if (splitBy.isEmpty()) {
             throw new UtilityException("arg.empty", "String splitBy");
         }
-        String[] strsp = str.split(splitBy);
-        long[] toRet = new long[strsp.length];
-        for (int index = 0; index < strsp.length; index++) {
+        return stringArrayToLongArray(str.split(splitBy));
+    }
+
+    /**
+     * Converts a String Array into a long array
+     * 
+     * @param strarr
+     *            the string array to convert
+     * @return long array
+     * @throws UtilityException
+     */
+    public static long[] stringArrayToLongArray(String[] strarr) throws UtilityException {
+        if (strarr == null) {
+            throw new UtilityException("arg.null", "String strarr");
+        }
+        else if (strarr.length < 1) {
+            throw new UtilityException("arg.empty", "String strarr");
+        }
+        long[] toRet = new long[strarr.length];
+        for (int index = 0; index < strarr.length; index++) {
             try {
-                toRet[index] = Long.parseLong(strsp[index].trim());
+                toRet[index] = Short.parseShort(strarr[index].trim());
             }
             catch (NumberFormatException nfe) {
-                throw new UtilityException("str.nan", strsp[index]);
+                throw new UtilityException("str.nan", strarr[index]);
             }
         }
         return toRet;
@@ -563,13 +697,29 @@ public final class StringUtils {
         if (spacer == null) {
             throw new UtilityException("arg.null", "String spacer");
         }
-        StringBuilder build = new StringBuilder();
-        for (long theLong : longs) {
-            build.append(theLong);
-            build.append(spacer);
+        return joinString(longArrayToStringArray(longs), spacer, 0);
+    }
+
+    /**
+     * Converts the elements of the long array to Strings
+     * 
+     * @param longs
+     *            the long array to convert
+     * @return string array
+     * @throws UtilityException
+     */
+    public static String[] longArrayToStringArray(long[] longs) throws UtilityException {
+        if (longs == null) {
+            throw new UtilityException("arg.null", "long[] longs");
         }
-        String preRet = build.toString().trim();
-        return preRet.substring(0, preRet.lastIndexOf("spacer")); //Remove last spacer
+        else if (longs.length == 0) {
+            throw new UtilityException("arg.empty", "long[] longs");
+        }
+        String[] arr = new String[longs.length];
+        for (int index = 0; index < longs.length; index++) {
+            arr[index] = String.valueOf(longs[index]);
+        }
+        return arr;
     }
 
     /**
@@ -610,15 +760,31 @@ public final class StringUtils {
         else if (splitBy.isEmpty()) {
             throw new UtilityException("arg.empty", "String splitBy");
         }
-        String[] strsp = str.split(splitBy);
-        float[] toRet = new float[strsp.length];
-        for (int index = 0; index < strsp.length; index++) {
-            try {
+        return stringArrayToFloatArray(str.split(splitBy));
+    }
 
-                toRet[index] = Float.parseFloat(strsp[index].trim());
+    /**
+     * Converts a String Array into a float array
+     * 
+     * @param strarr
+     *            the string array to convert
+     * @return float array
+     * @throws UtilityException
+     */
+    public static float[] stringArrayToFloatArray(String[] strarr) throws UtilityException {
+        if (strarr == null) {
+            throw new UtilityException("arg.null", "String strarr");
+        }
+        else if (strarr.length < 1) {
+            throw new UtilityException("arg.empty", "String strarr");
+        }
+        float[] toRet = new float[strarr.length];
+        for (int index = 0; index < strarr.length; index++) {
+            try {
+                toRet[index] = Short.parseShort(strarr[index].trim());
             }
             catch (NumberFormatException nfe) {
-                throw new UtilityException("str.nan", strsp[index]);
+                throw new UtilityException("str.nan", strarr[index]);
             }
         }
         return toRet;
@@ -659,13 +825,29 @@ public final class StringUtils {
         if (spacer == null) {
             throw new UtilityException("arg.null", "String spacer");
         }
-        StringBuilder build = new StringBuilder();
-        for (float theFloat : floats) {
-            build.append(theFloat);
-            build.append(spacer);
+        return joinString(floatArrayToStringArray(floats), spacer, 0);
+    }
+
+    /**
+     * Converts the elements of the float array to Strings
+     * 
+     * @param floats
+     *            the float array to convert
+     * @return string array
+     * @throws UtilityException
+     */
+    public static String[] floatArrayToStringArray(float[] floats) throws UtilityException {
+        if (floats == null) {
+            throw new UtilityException("arg.null", "float[] floats");
         }
-        String preRet = build.toString().trim();
-        return preRet.substring(0, preRet.lastIndexOf("spacer")); //Remove last spacer
+        else if (floats.length == 0) {
+            throw new UtilityException("arg.empty", "float[] floats");
+        }
+        String[] arr = new String[floats.length];
+        for (int index = 0; index < floats.length; index++) {
+            arr[index] = String.valueOf(floats[index]);
+        }
+        return arr;
     }
 
     /**
@@ -708,15 +890,31 @@ public final class StringUtils {
         else if (splitBy.isEmpty()) {
             throw new UtilityException("arg.empty", "String splitBy");
         }
-        String[] strsp = str.split(splitBy);
-        double[] toRet = new double[strsp.length];
-        for (int index = 0; index < strsp.length; index++) {
-            try {
+        return stringArrayToDoubleArray(str.split(splitBy));
+    }
 
-                toRet[index] = Double.parseDouble(strsp[index].trim());
+    /**
+     * Converts a String Array into a float array
+     * 
+     * @param strarr
+     *            the string array to convert
+     * @return float array
+     * @throws UtilityException
+     */
+    public static double[] stringArrayToDoubleArray(String[] strarr) throws UtilityException {
+        if (strarr == null) {
+            throw new UtilityException("arg.null", "String strarr");
+        }
+        else if (strarr.length < 1) {
+            throw new UtilityException("arg.empty", "String strarr");
+        }
+        double[] toRet = new double[strarr.length];
+        for (int index = 0; index < strarr.length; index++) {
+            try {
+                toRet[index] = Short.parseShort(strarr[index].trim());
             }
             catch (NumberFormatException nfe) {
-                throw new UtilityException("str.nan", strsp[index]);
+                throw new UtilityException("str.nan", strarr[index]);
             }
         }
         return toRet;
@@ -758,12 +956,28 @@ public final class StringUtils {
         if (spacer == null) {
             throw new UtilityException("arg.null", "String spacer");
         }
-        StringBuilder build = new StringBuilder();
-        for (double theDouble : doubles) {
-            build.append(theDouble);
-            build.append(spacer);
+        return joinString(doubleArrayToStringArray(doubles), spacer, 0);
+    }
+
+    /**
+     * Converts the elements of the double array to Strings
+     * 
+     * @param doubles
+     *            the double array to convert
+     * @return string array
+     * @throws UtilityException
+     */
+    public static String[] doubleArrayToStringArray(double[] doubles) throws UtilityException {
+        if (doubles == null) {
+            throw new UtilityException("arg.null", "double[] doubles");
         }
-        String preRet = build.toString().trim();
-        return preRet.substring(0, preRet.lastIndexOf("spacer")); //Remove last spacer
+        else if (doubles.length == 0) {
+            throw new UtilityException("arg.empty", "double[] doubles");
+        }
+        String[] arr = new String[doubles.length];
+        for (int index = 0; index < doubles.length; index++) {
+            arr[index] = String.valueOf(doubles[index]);
+        }
+        return arr;
     }
 }

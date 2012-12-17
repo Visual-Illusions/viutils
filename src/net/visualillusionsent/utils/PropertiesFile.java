@@ -233,7 +233,7 @@ public final class PropertiesFile {
 
     /**
      * Saves the Properties File<br>
-     * <b>NOTE:</b> Saving is not supported for PropertieFiles inside of Jar Files
+     * <b>NOTE:</b> Saving is not supported for PropertiesFiles inside of Jar Files
      * 
      * @throws UtilityException
      * <br>
