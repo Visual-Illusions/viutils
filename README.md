@@ -26,7 +26,7 @@ converting numbers to Strings or Strings to numbers, and padding a String
 Offical JavaDocs can be found @ http://docs.visualillusionsent.net/VIUtils/
 
 ## License ##
-###### &copy; 2012 [Visual Illusions Entertainment](http://visualillusionsent.net/ "vi") ######
+###### &copy; 2012-2013 [Visual Illusions Entertainment](http://visualillusionsent.net/ "vi") ######
 
 VIUtils is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by

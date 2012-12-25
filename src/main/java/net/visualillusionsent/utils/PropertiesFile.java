@@ -1892,7 +1892,7 @@ public final class PropertiesFile {
      * 
      * @param property
      *            the property to parse
-     * @return boolean value associated with the property
+     * @return {@code boolean value} associated with the property
      * @throws UtilityException
      *             if value does not parse as boolean
      */
@@ -1912,5 +1912,54 @@ public final class PropertiesFile {
             }
             throw new UtilityException("Property not a boolean");
         }
+    }
+
+    /**
+     * Checks is an {@link Object} is equal to the {@code PropertiesFile}
+     * 
+     * @return {@code true} if equal; {@code false} otherwise
+     * @see Object#equals(Object)
+     */
+    public final boolean equals(Object obj) {
+        if (!(obj instanceof PropertiesFile)) {
+            return false;
+        }
+        PropertiesFile that = (PropertiesFile) obj;
+        if (!this.filepath.equals(that.filepath)) {
+            return false;
+        }
+        if (this.propsFile != null && this.propsFile != that.propsFile) {
+            return false;
+        }
+        if (this.jar != null && this.jar != that.jar) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Returns a string representation of the {@code PropertiesFile} as {@code PropertiesFile[FilePath=%s]}
+     * 
+     * @return string representation of the {@code PropertiesFile}
+     * @see Object#toString()
+     */
+    @Override
+    public final String toString() {
+        return String.format("PropertiesFile[FilePath=%s]", propsFile != null ? propsFile.getAbsolutePath() : jar.getName());
+    }
+
+    /**
+     * Returns a hash code value for the {@code PropertiesFile}.
+     * 
+     * @return hash
+     * @see Object#hashCode()
+     */
+    @Override
+    public final int hashCode() {
+        int hash = 9;
+        hash = 45 * hash + filepath.hashCode();
+        hash = 54 * hash + (propsFile != null ? propsFile.hashCode() : 0);
+        hash = 45 * hash + (jar != null ? jar.hashCode() : 0);
+        return hash;
     }
 }

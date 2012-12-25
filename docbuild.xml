@@ -31,8 +31,8 @@
         version="true"
         windowtitle="VIUtils">
       <link href="http://docs.oracle.com/javase/7/docs/api/"/>
-      <header><![CDATA[<h2><strong>VIUtils</strong> v1.0</h2>]]></header>
-      <footer><![CDATA[<h2><strong>VIUtils</strong> v1.0</h2>]]></footer>
+      <header><![CDATA[<h3><strong>VIUtils</strong> v1.0</h3>]]></header>
+      <footer><![CDATA[<h3><strong>VIUtils</strong> v1.0</h3>]]></footer>
       <bottom><![CDATA[<i>Copyright &copy; 2012-2013 Visual Illusions Entertainment. All Rights Reserved.</i>]]></bottom>
     </javadoc>
   </target>
