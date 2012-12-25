@@ -18,6 +18,7 @@
 package net.visualillusionsent.utils;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -34,6 +35,7 @@ import java.util.Date;
  * @author Jason (darkdiplomat)
  */
 public final class DateUtils {
+
     /**
      * Date Format as dd-MMM-yyyy
      */
@@ -65,10 +67,15 @@ public final class DateUtils {
      *             if time is less than 0
      */
     public static final String longToDate(long time) throws UtilityException {
+        //Is time negative?
         if (time < 0) {
             throw new UtilityException("time.negative");
         }
+
+        //Create a Date object from the time given
         Date date = new Date(time);
+
+        //Format it and return
         return date_form.format(date);
     }
 
@@ -83,10 +90,15 @@ public final class DateUtils {
      *             if time is less than 0
      */
     public static final String longToTime(long time) throws UtilityException {
+        //Is time negative?
         if (time < 0) {
             throw new UtilityException("time.negative");
         }
+
+        //Create a Date object from the time given
         Date date = new Date(time);
+
+        //Format it and return
         return time_form.format(date);
     }
 
@@ -101,10 +113,15 @@ public final class DateUtils {
      *             if time is less than 0
      */
     public static final String longToDateTime(long time) throws UtilityException {
+        // Is time negative?
         if (time < 0) {
             throw new UtilityException("time.negative");
         }
+
+        //Create a Date object from the time given
         Date date = new Date(time);
+
+        //Format it and return
         return datetime_form.format(date);
     }
 
@@ -112,30 +129,57 @@ public final class DateUtils {
      * Returns the Date and/or Time as a {@link String} formatted as specified
      * 
      * @param time
-     *            the time in milliseconds
+     *            the time in milliseconds as per: the difference between the current time and 00:00:00 January 1, 1970 UTC.
      * @param format
      *            the format to use
      * @return date and time as a string formatted as specifed
      * @throws UtilityException
      * <br>
      *             if time is less than 0<br>
-     *             if the format is invalid/{@code null}
+     *             if the format is invalid or {@code null}
      */
     public static final String longToFormatedDateTime(long time, String format) throws UtilityException {
+        //Is time negative?
         if (time < 0) {
             throw new UtilityException("time.negative");
         }
+        //Is format null?
         else if (format == null) {
             throw new UtilityException("arg.null", "format");
         }
+
+        //Create a Date object from the time given
         Date date = new Date(time);
+
+        //Create DateFormat object and verify the format is valid
         DateFormat form;
         try {
             form = new SimpleDateFormat(format);
         }
         catch (IllegalArgumentException iae) {
+            //Invalid format throws an UtilityException
             throw new UtilityException("format.invalid");
         }
+
+        //Format it and return
         return form.format(date);
+    }
+
+    /**
+     * Parses a {@link String} date into a {@link Date} object
+     * 
+     * @param date
+     * @return
+     * @throws UtilityException
+     */
+    public static final Date getDateFromString(String date) throws UtilityException {
+        Date theDate = null;
+        try {
+            theDate = datetime_form.parse(date);
+        }
+        catch (ParseException e) {
+            throw new UtilityException("ERROR UNDEFINED");
+        }
+        return theDate;
     }
 }

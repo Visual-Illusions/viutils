@@ -126,15 +126,12 @@ public final class FileUtils {
         else if (lines.length < 1) {
             throw new UtilityException("arg.empty", "String... lines");
         }
-        //Is it a file?
         else if (!file.isFile()) {
             throw new UtilityException("file.err.exist", file.getName());
         }
-        //Can we read the file?
         else if (!file.canRead()) {
             throw new UtilityException("file.err.read", file.getName());
         }
-        //Can we write to the file?
         else if (!file.canWrite()) {
             throw new UtilityException("file.err.write", file.getName());
         }
@@ -144,17 +141,11 @@ public final class FileUtils {
         PrintWriter pwriter = null;
 
         try {
-            //Convert lines array into a list for easier parsing
             List<String> listlines = Arrays.asList(lines);
-
-            //Store the lines in the file for later output
             List<String> outLines = new ArrayList<String>();
 
-            //Prepare to read File
             breader = new BufferedReader(new FileReader(file));
 
-            //Read from the original file and store the line
-            //unless content matches data to be removed.
             String inLine = null;
             while ((inLine = breader.readLine()) != null) {
                 if (!listlines.contains(inLine)) {
@@ -162,7 +153,6 @@ public final class FileUtils {
                 }
             }
 
-            //Write out the lines that shall remain
             pwriter = new PrintWriter(new FileWriter(file, false));
             for (String outLine : outLines) {
                 pwriter.println(outLine);
@@ -198,7 +188,7 @@ public final class FileUtils {
      *             if clone is null or empty<br>
      * @see #cloneFile(File, File)
      */
-    public static void cloneFile(String toClone, String clone) throws UtilityException {
+    public static final void cloneFile(String toClone, String clone) throws UtilityException {
         if (toClone == null) {
             throw new UtilityException("arg.null", "String toClone");
         }
@@ -230,7 +220,7 @@ public final class FileUtils {
      *             if clone is null or empty
      * @see #cloneFile(File, File)
      */
-    public static void cloneFile(File toClone, String clone) throws UtilityException {
+    public static final void cloneFile(File toClone, String clone) throws UtilityException {
         if (toClone == null) {
             throw new UtilityException("arg.null", "File toClone");
         }
@@ -256,7 +246,7 @@ public final class FileUtils {
      *             if clone is null, path matches toClone, or is a directory<br>
      *             if some other IOException occurrs
      */
-    public static void cloneFile(File toClone, File clone) throws UtilityException {
+    public static final void cloneFile(File toClone, File clone) throws UtilityException {
         if (toClone == null) {
             throw new UtilityException("arg.null", "File file");
         }
@@ -269,11 +259,9 @@ public final class FileUtils {
         else if (toClone.getPath().equals(clone.getPath())) {
             throw new UtilityException("file.err.path", toClone.getName(), clone.getName());
         }
-        //Is it a file?
         else if (!toClone.isFile()) {
             throw new UtilityException("file.err.exist", toClone.getName());
         }
-        //Can we read the file?
         else if (!toClone.canRead()) {
             throw new UtilityException("file.err.read", toClone.getName());
         }
@@ -283,14 +271,13 @@ public final class FileUtils {
         FileOutputStream outstream = null;
 
         try {
-            //Prepare to read File
             instream = new FileInputStream(toClone);
-            //Prepare output writer
             outstream = new FileOutputStream(clone);
 
             int inByte;
             while ((inByte = instream.read()) != -1) {
                 outstream.write(inByte);
+                outstream.flush();
             }
         }
         catch (IOException ex) {

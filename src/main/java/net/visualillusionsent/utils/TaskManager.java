@@ -19,6 +19,7 @@ package net.visualillusionsent.utils;
 
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -75,10 +76,11 @@ public final class TaskManager {
      * Internal use Constructor to initialize the Thread Pool
      */
     private TaskManager() {
-        threadpool = new ScheduledThreadPoolExecutor(15);
-        threadpool.setKeepAliveTime(3, min);
+        threadpool = new ScheduledThreadPoolExecutor(8);
+        threadpool.setKeepAliveTime(5, sec);
         threadpool.allowCoreThreadTimeOut(false);
         threadpool.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
+        threadpool.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
         threadpool.prestartAllCoreThreads();
         tasks = new HashMap<Runnable, ScheduledFuture<?>>();
     }
@@ -100,12 +102,28 @@ public final class TaskManager {
     }
 
     /**
+     * Submits a task to be executed. Execution may not happen immediately depending on the queued tasks
+     * 
+     * @param task
+     *            the task to execute
+     * @return a Future representing pending completion of the task
+     * @throws UtilityException
+     */
+    public static final Future<?> submitTask(Runnable task) throws UtilityException {
+        if (task == null) {
+            throw new UtilityException("arg.null", "Runnable task");
+        }
+        return instance.threadpool.submit(task);
+    }
+
+    /**
      * Executes a task after a delay in microseconds
      * 
      * @param task
      *            the tesk to execute
      * @param delay
      *            the delay before execution
+     * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      * @throws UtilityException
      * <br>
      *             if task is null
@@ -126,6 +144,7 @@ public final class TaskManager {
      *            the tesk to execute
      * @param delay
      *            the delay before execution
+     * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      * @throws UtilityException
      * <br>
      *             if task is null
@@ -146,6 +165,7 @@ public final class TaskManager {
      *            the tesk to execute
      * @param delay
      *            the delay before execution
+     * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      * @throws UtilityException
      * <br>
      *             if task is null
@@ -166,6 +186,7 @@ public final class TaskManager {
      *            the tesk to execute
      * @param delay
      *            the delay before execution
+     * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      * @throws UtilityException
      * <br>
      *             if task is null
@@ -188,6 +209,7 @@ public final class TaskManager {
      *            the delay before initial execution
      * @param delay
      *            the delay between additional executions
+     * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      * @throws UtilityException
      * <br>
      *             if task is null
@@ -210,6 +232,7 @@ public final class TaskManager {
      *            the delay before initial execution
      * @param delay
      *            the delay between additional executions
+     * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      * @throws UtilityException
      * <br>
      *             if task is null
@@ -232,6 +255,7 @@ public final class TaskManager {
      *            the delay before initial execution
      * @param delay
      *            the delay between additional executions
+     * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      * @throws UtilityException
      * <br>
      *             if task is null
@@ -254,6 +278,7 @@ public final class TaskManager {
      *            the delay before initial execution
      * @param delay
      *            the delay between additional executions
+     * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      * @throws UtilityException
      * <br>
      *             if task is null
@@ -278,6 +303,7 @@ public final class TaskManager {
      *            the delay between additional executions
      * @param timeunit
      *            the {@link TimeUnit} to use
+     * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      * @throws UtilityException
      * <br>
      *             if task is null
@@ -297,7 +323,7 @@ public final class TaskManager {
     private static final void clearCompletedTasks() {
         synchronized (lock) {
             for (Runnable task : instance.tasks.keySet()) {
-                if (instance.tasks.get(task).isDone()) {
+                if (instance.tasks.get(task).isDone() || instance.tasks.get(task).isCancelled()) {
                     instance.tasks.remove(task);
                 }
             }

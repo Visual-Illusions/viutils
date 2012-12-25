@@ -44,6 +44,7 @@ import java.util.jar.JarFile;
  */
 public final class Updater {
     private String downloadurl, jarloc, jarname;
+    private final static int CLASS_LENGTH = ".class".length();
 
     public Updater(String downloadurl, String jarloc, String jarname) {
         this.downloadurl = downloadurl;
@@ -162,7 +163,7 @@ public final class Updater {
                 if (name.endsWith(".class") && !name.contains("$")) {
                     // convert to package
                     String path = name.replaceAll("/", ".");
-                    path = path.substring(0, path.length() - ".class".length());
+                    path = path.substring(0, path.length() - CLASS_LENGTH);
 
                     // Load it
                     Thread.currentThread().getContextClassLoader().loadClass(path);
@@ -194,10 +195,11 @@ public final class Updater {
             outputStream = new FileOutputStream(bak);
             inputStream = new FileInputStream(jarfile);
 
+            byte[] buffer = new byte[512];
             int read = 0;
 
-            while ((read = inputStream.read()) != -1) {
-                outputStream.write(read);
+            while ((read = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, read);
             }
         }
         catch (IOException ioe) {

@@ -26,7 +26,11 @@ import java.net.URL;
  * Version Checker
  * <p>
  * Used to check if software is the latest version<br>
- * There is an included versionchecker.php in the resources/extras/ folder inside the jar.
+ * There is an included versionchecker.php in the resources/extras/ folder inside the jar.<br>
+ * All non-numerical digits are removed when checking a version.<br>
+ * ie: #.#b# or SNAPSHOT-#.#.# becomes ###<br>
+ * If the version lengths do not match, 0 is appened to the end for verifications.<br>
+ * ie: Version = ## Current = ### Version becomes ##0
  * <p>
  * This File is part of the VIUtils Java Software package (net.visualillusionsent.utils)<br>
  * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
@@ -36,17 +40,20 @@ import java.net.URL;
  * @author Jason (darkdiplomat)
  */
 public final class VersionChecker {
-    private String jarname, version, currver, checkurl;
+    private final String jarname, checkurl, version;
+    private String currver;
+    private long lastCheck = 0L;
+    private boolean isLatest = false;
 
     /**
-     * class constructor
+     * Creates a new {@code VersionChecker}
      * 
      * @param jarname
      *            the name of the jar being version checked
      * @param version
-     *            A string representation of the software version
+     *            A {@link String} representation of the software version
      * @param checkurl
-     *            A string representation of the url to verify version though
+     *            A {@link String} representation of the url to verify version though
      */
     public VersionChecker(String jarname, String version, String checkurl) {
         this.jarname = jarname;
@@ -56,32 +63,23 @@ public final class VersionChecker {
     }
 
     /**
-     * checks if version is latest
+     * Checks if version is latest<br>
+     * NOTE: Site queries are limited to once every 5 minutes.
      * 
-     * @return true if latest, false otherwise
+     * @return {@code true} if latest; {@code false} otherwise
      */
     public final boolean isLatest() {
         BufferedReader in = null;
-        boolean is = true;
+        long currentTime = System.currentTimeMillis();
+        if ((lastCheck + 600000) > currentTime) { //If recently checked, reuse value rather than spam the site
+            return isLatest;
+        }
+
         try {
-            in = new BufferedReader(new InputStreamReader(new URL(checkurl).openStream()));
             String inputLine;
+            in = new BufferedReader(new InputStreamReader(new URL(checkurl).openStream()));
             if ((inputLine = in.readLine()) != null) {
                 currver = inputLine;
-            }
-            String checkVer = version.replaceAll("\\.", "");
-            String current = currver.replaceAll("\\.", "");
-            try {
-                if (checkVer.length() < current.length()) {
-                    checkVer = StringUtils.padCharRight(checkVer, current.length(), '0');
-                }
-                else if (current.length() < checkVer.length()) {
-                    current = StringUtils.padCharRight(current, checkVer.length(), '0');
-                }
-                is = Long.parseLong(checkVer) >= Long.parseLong(current);
-            }
-            catch (NumberFormatException nfe) {
-                is = version.equals(currver);
             }
         }
         catch (Exception E) {}
@@ -93,7 +91,24 @@ public final class VersionChecker {
                 catch (IOException e) {}
             }
         }
-        return is;
+        lastCheck = currentTime;
+
+        String checkVer = version.replaceAll("[^\\d]", "");
+        String current = currver.replaceAll("[^\\d]", "");
+        try {
+            if (checkVer.length() < current.length()) {
+                checkVer = StringUtils.padCharRight(checkVer, current.length(), '0');
+            }
+            else if (current.length() < checkVer.length()) {
+                current = StringUtils.padCharRight(current, checkVer.length(), '0');
+            }
+            isLatest = Long.parseLong(checkVer) >= Long.parseLong(current);
+        }
+        catch (Exception e) {
+            isLatest = version.equals(currver);
+        }
+
+        return isLatest;
     }
 
     /**
@@ -108,7 +123,8 @@ public final class VersionChecker {
     /**
      * Gets a pre-generated update availible message
      * 
-     * @return updateavailiblemessage
+     * @return update: An update is availible for: 'Jar' - v'Version'<br>
+     *         latest: Current Version of: 'Jar' is installed
      */
     public final String getUpdateAvailibleMessage() {
         if (!isLatest()) {

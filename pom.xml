@@ -51,6 +51,10 @@
   </scm>
   <issueManagement>
   	<url>https://dev.visualillusionsent.net/VIUtils</url>
-  	<system>GitLab</system>
+  	<system>Gitlab</system>
   </issueManagement>
+  <ciManagement>
+  	<system>Jenkins</system>
+  	<url>http://ci.visualillusionsent.net</url>
+  </ciManagement>
 </project>

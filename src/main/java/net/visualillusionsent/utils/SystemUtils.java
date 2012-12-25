@@ -67,4 +67,40 @@ public final class SystemUtils {
      */
     public static String SYSTEM_LOCALE = SYSTEM_LANGUAGE.concat("_").concat(SYSTEM_COUNTRY);
 
+    /**
+     * Tells if the OS is a Windows based OS
+     * 
+     * @return {@code true} if Windows; {@code false} otherwise
+     */
+    public static final boolean isWindows() {
+        return (SYSTEM_OS.toLowerCase().indexOf("win") >= 0);
+
+    }
+
+    /**
+     * Tells if the OS is a MacOS based OS
+     * 
+     * @return {@code true} if MacOS; {@code false} otherwise
+     */
+    public static final boolean isMac() {
+        return (SYSTEM_OS.toLowerCase().indexOf("mac") >= 0);
+    }
+
+    /**
+     * Tells if the OS is a Unix based OS (Linux/MacOSX)
+     * 
+     * @return {@code true} if Unix; {@code false} otherwise
+     */
+    public static final boolean isUnix() {
+        return (SYSTEM_OS.toLowerCase().indexOf("nix") >= 0 || SYSTEM_OS.toLowerCase().indexOf("nux") >= 0 || SYSTEM_OS.toLowerCase().indexOf("aix") > 0);
+    }
+
+    /**
+     * Tells if the OS is a Solaris OS
+     * 
+     * @return {@code true} if Solaris; {@code false} otherwise
+     */
+    public static final boolean isSolaris() {
+        return (SYSTEM_OS.toLowerCase().indexOf("sunos") >= 0);
+    }
 }

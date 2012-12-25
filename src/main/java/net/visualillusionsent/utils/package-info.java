@@ -22,6 +22,8 @@ converting numbers to Strings or Strings to numbers, and padding a String
 <p>
 {@link TaskManager} provides a Thread Pool and methods for managing Tasks either delayed or meant to be continuous
 <p>
+{@link VersionChecker} provides a Software Version query system, used with the included versionchecker.php (jar:resources/extras/)
+<p>
 VIUtils is free software: you can redistribute it and/or modify it<br>
 under the terms of the GNU Lesser General Public License as published by the Free Software Foundation,<br>
 either version 3 of the License, or (at your option) any later version.
