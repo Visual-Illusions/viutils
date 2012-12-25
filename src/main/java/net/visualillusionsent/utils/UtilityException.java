@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Visual Illusions Entertainment.
+ * Copyright © 2012-2013 Visual Illusions Entertainment.
  *  
  * This file is part of VIUtils.
  *
