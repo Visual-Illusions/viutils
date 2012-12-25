@@ -18,13 +18,8 @@
 package net.visualillusionsent.utils;
 
 /**
- * Update Exception
- * <p>
  * Thrown from {@link Updater} when an exception occurs during an update<br>
  * use the {@link #getMessage()} method to retrieve the reason why the update failed
- * <p>
- * This File is part of the VIUtils<br>
- * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
  * 
  * @since 1.0
  * @version 1.0

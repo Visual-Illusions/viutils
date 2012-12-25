@@ -18,12 +18,7 @@
 package net.visualillusionsent.utils;
 
 /**
- * System Utilities
- * <p>
- * Provides static methods to help with getting System information
- * <p>
- * This File is part of the VIUtils<br>
- * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
+ * Provides static fields and methods to help with getting System information
  * 
  * @since 1.0
  * @version 1.0

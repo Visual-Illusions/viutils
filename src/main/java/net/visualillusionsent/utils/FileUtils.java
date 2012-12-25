@@ -30,12 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * File Utilities
- * <p>
  * Provides static methods to help with {@link File} manipulations
- * <p>
- * This File is part of the VIUtils<br>
- * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
  * 
  * @since 1.0
  * @version 1.0

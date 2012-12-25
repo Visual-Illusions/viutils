@@ -2,7 +2,7 @@
 #### Visual Illusions Java Utilities Library ####
 
 ## About ##
-VIUtils is designed to use Java 7 or higher
+VIUtils is designed to use Java 6 or higher
 and contains a many Utility functions and methods for use in Java Programs.
 
 **DateUtils** provides methods for converting timestamps into formated Strings

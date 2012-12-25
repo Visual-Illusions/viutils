@@ -23,12 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Date Utilities
- * <p>
  * Provides static methods to help with {@link Date} manipulations
- * <p>
- * This File is part of the VIUtils<br>
- * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
  * 
  * @since 1.0
  * @version 1.0
@@ -169,7 +164,8 @@ public final class DateUtils {
      * Parses a {@link String} date into a {@link Date} object
      * 
      * @param date
-     * @return
+     *            the {@link String} representation of the Date
+     * @return {@link Date} parsed from the date parameter
      * @throws UtilityException
      */
     public static final Date getDateFromString(String date) throws UtilityException {

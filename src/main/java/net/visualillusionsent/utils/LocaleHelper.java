@@ -26,9 +26,6 @@ import java.security.CodeSource;
  * If extending this class you should include a folder called resources in your jar and in that a folder called lang.<br>
  * Then include a text file called languages.txt that contains keys like the language.txt included with VIUtils.<br>
  * You should also include a en_US.lang file with default English messages for your implementation.
- * <p>
- * This File is part of the VIUtils<br>
- * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
  * 
  * @since 1.0
  * @version 1.0

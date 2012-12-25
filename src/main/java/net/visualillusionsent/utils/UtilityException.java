@@ -22,9 +22,6 @@ package net.visualillusionsent.utils;
  * <p>
  * Thrown when a used utility has improper arguments given to it or when something goes wrong<br>
  * use the {@link #getMessage()} or {@link #getLocalizedMessage()} method to retrieve the reason why the utility method failed
- * <p>
- * This File is part of the VIUtils<br>
- * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
  * 
  * @since 1.0
  * @version 1.0

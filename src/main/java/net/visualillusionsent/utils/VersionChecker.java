@@ -31,9 +31,6 @@ import java.net.URL;
  * ie: #.#b# or SNAPSHOT-#.#.# becomes ###<br>
  * If the version lengths do not match, 0 is appened to the end for verifications.<br>
  * ie: Version = ## Current = ### Version becomes ##0
- * <p>
- * This File is part of the VIUtils Java Software package (net.visualillusionsent.utils)<br>
- * &copy; 2012 <a href="http://visualillusionsent.net">Visual Illusions Entertainment</a>
  * 
  * @since 1.0
  * @version 1.0
