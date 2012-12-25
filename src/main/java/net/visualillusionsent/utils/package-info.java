@@ -2,7 +2,7 @@
 VIUtils - Visual Illusions Java Utilities Library<br>
 &copy; 2012 Visual Illusions Entertainment
 <p>
-VIUtils is designed to use Java 7 or higher<br>
+VIUtils is designed to use Java 6 or higher<br>
 and contains a many Utility functions and methods for use in Java Programs.
 <p>
 VIUtils is free software: you can redistribute it and/or modify it<br>
