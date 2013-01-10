@@ -24,10 +24,13 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * Provides static methods to help with {@link File} manipulations
@@ -37,6 +40,7 @@ import java.util.List;
  * @author Jason (darkdiplomat)
  */
 public final class FileUtils {
+    private static int BUFFER = 512;
 
     /**
      * Removes a line from a {@link File}
@@ -286,6 +290,53 @@ public final class FileUtils {
             catch (IOException e) {}
             if (ue != null) {
                 throw ue;
+            }
+        }
+    }
+
+    /**
+     * Clones a {@link File} from a {@link Jar}
+     * 
+     * @param jarPath
+     *            the path to the jar
+     * @param fileToMove
+     *            the file to be cloned (ie: resources/README.txt)
+     * @oaram pathTo
+     *        the path to clone the file to
+     * @throws UtilityException
+     * <br>
+     *             if an IOException occurrs
+     */
+    public static final void cloneFileFromJar(String jarPath, String fileToMove, String pathTo) throws UtilityException {
+        JarFile jar = null;
+        FileOutputStream out = null;
+        UtilityException toThrow = null;
+        try {
+            jar = new JarFile(jarPath);
+            JarEntry entry = jar.getJarEntry(fileToMove);
+            InputStream in = jar.getInputStream(entry);
+            out = new FileOutputStream(pathTo);
+            byte[] buffer = new byte[BUFFER];
+            int readBytes = 0;
+            while ((readBytes = in.read(buffer, 0, buffer.length)) != -1) {
+                out.write(buffer, 0, readBytes);
+            }
+        }
+        catch (IOException e) {
+            toThrow = new UtilityException("Exception occured while moving file from Jar...", e);
+        }
+        finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                if (jar != null) {
+                    jar.close();
+                }
+            }
+            catch (IOException e) {}
+            if (toThrow != null) {
+                throw toThrow;
             }
         }
     }

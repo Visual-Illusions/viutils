@@ -11,7 +11,7 @@ es_UY=es_ES
 es_VE=es_ES
 ru_RU=ru_RU
 ##################################################
-# Copyright 2012 Visual Illusions Entertainment.
+# Copyright 2012-2013 Visual Illusions Entertainment.
 #  
 # This file is part of VIUtils.
 #

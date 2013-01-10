@@ -1,4 +1,5 @@
 ﻿# This file NEEDS to be in UTF-8 format!
+# Translation help from Google (http://translate.google.com)
 true=verdadero
 yes=sí
 on=a
@@ -23,13 +24,13 @@ end.gte=endIndex mayor o igual args.length
 startgte.end=startIndex es mayor que o igual a endIndex
 update.fail=actualizar falló porque: '%s'
 file.ioe=IOException en el archivo:%s
-file.err.exist=%s is not an existing file
-file.err.read=Could not read File: %s
-file.err.write=Could not write to File: %s
-file.err.path=%s path equals %s path
-file.err.dir=%s is a Directory, not a file
+file.err.exist=%s no es un archivo existente
+file.err.read=No se pudo leer el archivo:%s
+file.err.write=No se pudo escribir en el archivo:%s
+file.err.path=%s %s es igual camino
+file.err.dir=%s no es un directorio, no un archivo
 ##################################################
-# Copyright 2012 Visual Illusions Entertainment.
+# Copyright 2012-2013 Visual Illusions Entertainment.
 #  
 # This file is part of VIUtils.
 #

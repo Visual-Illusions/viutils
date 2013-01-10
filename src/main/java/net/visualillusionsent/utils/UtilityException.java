@@ -47,6 +47,10 @@ public final class UtilityException extends Exception {
         super(msg);
     }
 
+    UtilityException(String msg, Throwable thrown) {
+        super(msg, thrown);
+    }
+
     /**
      * Class Constructor
      * <p>

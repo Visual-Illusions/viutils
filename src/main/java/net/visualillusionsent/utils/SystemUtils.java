@@ -63,6 +63,11 @@ public final class SystemUtils {
     public static String SYSTEM_LOCALE = SYSTEM_LANGUAGE.concat("_").concat(SYSTEM_COUNTRY);
 
     /**
+     * The Java Version
+     */
+    public static String JAVA_VERSION = System.getProperty("java.version");
+
+    /**
      * Tells if the OS is a Windows based OS
      * 
      * @return {@code true} if Windows; {@code false} otherwise

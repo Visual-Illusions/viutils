@@ -24,13 +24,13 @@ end.gte=endIndex größer als oder gleich args.length
 startgte.end=startIndex größer als oder gleich endIndex
 update.fail=Update fehlgeschlagen: '%s'
 file.err.ioe=Eine IOException in Datei: %s
-file.err.exist=%s is not an existing file
-file.err.read=Could not read File: %s
-file.err.write=Could not write to File: %s
-file.err.path=%s path equals %s path
-file.err.dir=%s is a Directory, not a file
+file.err.exist=%s ist keine existierende Datei
+file.err.read=Konnte datei nicht lesen: %s
+file.err.write=Konnte nicht in Datei schreiben: %s
+file.err.path=%s pfad ist gleich %s
+file.err.dir=%s ist ein Ordner, keine Datei.
 ##################################################
-# Copyright 2012 Visual Illusions Entertainment.
+# Copyright 2012-2013 Visual Illusions Entertainment.
 #  
 # This file is part of VIUtils.
 #

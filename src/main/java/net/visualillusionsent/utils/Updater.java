@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -41,12 +42,14 @@ import java.util.jar.JarFile;
  */
 public final class Updater {
     private String downloadurl, jarloc, jarname;
-    private final static int CLASS_LENGTH = ".class".length();
+    private final static int CLASS_LENGTH = 6;
+    private final String user_agent;
 
     public Updater(String downloadurl, String jarloc, String jarname) {
         this.downloadurl = downloadurl;
         this.jarloc = jarloc;
         this.jarname = jarname;
+        this.user_agent = "Java/" + SystemUtils.JAVA_VERSION + " (" + SystemUtils.SYSTEM_OS + "; " + jarname + "; Updater/1.0) VIUtils/1.0";
     }
 
     /**
@@ -84,6 +87,16 @@ public final class Updater {
             try {
                 outputStream = new FileOutputStream(local);
                 URL url = new URI(downloadurl).toURL();
+
+                HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+                HttpURLConnection.setFollowRedirects(true);
+                huc.setConnectTimeout(2000);
+                huc.setReadTimeout(2000);
+                huc.setRequestMethod("GET");
+                huc.setRequestProperty("User-Agent", user_agent);
+                huc.setDoOutput(true);
+                huc.connect();
+
                 inputStream = url.openConnection().getInputStream();
 
                 byte[] buffer = new byte[1024];

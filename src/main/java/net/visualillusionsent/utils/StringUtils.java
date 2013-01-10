@@ -47,7 +47,7 @@ public final class StringUtils {
      *             or if spacer is equal to null
      */
     public static final String joinString(String[] args, String spacer, int startIndex) throws UtilityException {
-        return joinString(args, spacer, startIndex, (args.length - 1));
+        return joinString(args, spacer, startIndex, args.length);
     }
 
     /**
