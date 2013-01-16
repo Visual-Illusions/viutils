@@ -64,7 +64,7 @@ public final class DateUtils {
     public static final String longToDate(long time) throws UtilityException {
         //Is time negative?
         if (time < 0) {
-            throw new UtilityException("time.negative");
+            throw new UtilityException("Time cannot be a negative number");
         }
 
         //Create a Date object from the time given
@@ -87,7 +87,7 @@ public final class DateUtils {
     public static final String longToTime(long time) throws UtilityException {
         //Is time negative?
         if (time < 0) {
-            throw new UtilityException("time.negative");
+            throw new UtilityException("Time cannot be a negative number");
         }
 
         //Create a Date object from the time given
@@ -110,7 +110,7 @@ public final class DateUtils {
     public static final String longToDateTime(long time) throws UtilityException {
         // Is time negative?
         if (time < 0) {
-            throw new UtilityException("time.negative");
+            throw new UtilityException("Time cannot be a negative number");
         }
 
         //Create a Date object from the time given
@@ -136,7 +136,7 @@ public final class DateUtils {
     public static final String longToFormatedDateTime(long time, String format) throws UtilityException {
         //Is time negative?
         if (time < 0) {
-            throw new UtilityException("time.negative");
+            throw new UtilityException("Time cannot be a negative number");
         }
         //Is format null?
         else if (format == null) {
@@ -153,7 +153,7 @@ public final class DateUtils {
         }
         catch (IllegalArgumentException iae) {
             //Invalid format throws an UtilityException
-            throw new UtilityException("format.invalid");
+            throw new UtilityException("Invalid format syntax");
         }
 
         //Format it and return
@@ -173,8 +173,8 @@ public final class DateUtils {
         try {
             theDate = datetime_form.parse(date);
         }
-        catch (ParseException e) {
-            throw new UtilityException("ERROR UNDEFINED");
+        catch (ParseException pe) {
+            throw new UtilityException(pe.getMessage());
         }
         return theDate;
     }

@@ -8,27 +8,6 @@ false=false
 no=no
 off=off
 deny=deny
-time.negative=Time cannot be a negative number
-arg.null='%s' cannot be null
-arg.empty='%s' cannot be empty
-format.invalid=Invalid format syntax
-jarfile.missing=Unable to get JarFile
-entry.missing=JarFile does not contain Entry: %s
-jar.save=Saving is not supported with PropertiesFiles inside of Jar files
-key.missing=Property for KEY: %s was not found.
-prop.nan=Property for KEY: %s was not a number.
-str.nan=String Index: %s was not a number
-start.gte=startIndex greater than or equal to args.length
-byte.length=byte array must be of length 4
-end.gte=endIndex greater than or equal to args.length
-startgte.end=startIndex greater than or equal to endIndex
-update.fail=Failed to update due to:'%s'
-file.err.ioe=An IOException occurred in File: %s
-file.err.exist=%s is not an existing file
-file.err.read=Could not read File: %s
-file.err.write=Could not write to File: %s
-file.err.path=%s path equals %s path
-file.err.dir=%s is a Directory, not a file
 ##################################################
 # Copyright 2012-2013 Visual Illusions Entertainment.
 #  

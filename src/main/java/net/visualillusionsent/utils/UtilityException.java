@@ -17,6 +17,10 @@
  */
 package net.visualillusionsent.utils;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Utility Exception
  * <p>
@@ -27,13 +31,30 @@ package net.visualillusionsent.utils;
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
-public final class UtilityException extends Exception {
-    private String[] form;
+public final class UtilityException extends RuntimeException {
+    private static final Map<String, String> errors;
 
     /**
      * Serial Version
      */
     private static final long serialVersionUID = 042216122012L;
+
+    static {
+        HashMap<String, String> temp = new HashMap<String, String>();
+        temp.put("arg.null", "'%s' cannot be null");
+        temp.put("arg.empty", "'%s' cannot be empty");
+        temp.put("file.err.ioe", "An IOException occurred in File: %s");
+        temp.put("file.err.exist", "%s is not an existing file");
+        temp.put("file.err.read", "Could not read File: %s");
+        temp.put("file.err.write", "Could not write to File: %s");
+        temp.put("file.err.path", "%s path equals %s path");
+        temp.put("file.err.dir", "%s is a Directory, not a file");
+        temp.put("key.missing", "Property for KEY: %s was not found.");
+        temp.put("prop.nan", "Property for KEY: %s was not a number.");
+        temp.put("str.nan", "String Index: %s was not a number");
+        temp.put("entry.missing", "JarFile does not contain Entry: %s");
+        errors = Collections.unmodifiableMap(temp);
+    }
 
     /**
      * Class Constructor
@@ -51,44 +72,14 @@ public final class UtilityException extends Exception {
         super(msg, thrown);
     }
 
-    /**
-     * Class Constructor
-     * <p>
-     * Should not be constructed outside of VIUtils
-     * 
-     * @param msg
-     *            the message of why the exception is being thrown
-     * @param form
-     *            the string to use in {@link String#format(String, Object...)}
-     */
-    UtilityException(String msg, String... form) {
-        super(msg);
-        this.form = form;
+    UtilityException(String error, String... form) {
+        super(parseError(error, form));
     }
 
-    /**
-     * Gets the Message in English
-     * 
-     * @return message in English
-     */
-    @Override
-    public final String getMessage() {
-        if (form != null) {
-            return UtilsLocaleHelper.defaultTranslationFormat(super.getMessage(), form);
+    private final static String parseError(String error, String[] form) {
+        if (errors.containsKey(error)) {
+            return String.format(errors.get(error), (Object[]) form);
         }
-        return UtilsLocaleHelper.defaultTranslation(super.getMessage());
-    }
-
-    /**
-     * Gets the Message in the System Language if translation found and English if not found
-     * 
-     * @return message in System Language if found, English otherwise
-     */
-    @Override
-    public final String getLocalizedMessage() {
-        if (form != null) {
-            return UtilsLocaleHelper.localeTranslationFormat(super.getMessage(), form);
-        }
-        return UtilsLocaleHelper.localeTranslation(super.getMessage());
+        return error;
     }
 }

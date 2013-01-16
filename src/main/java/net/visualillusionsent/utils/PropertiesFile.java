@@ -115,7 +115,7 @@ public final class PropertiesFile {
             jar = new JarFile(jarpath);
         }
         catch (IOException ioe) {
-            throw new UtilityException("jarfile.missing");
+            throw new UtilityException("Unable to get JarFile");
         }
 
         JarEntry ent = jar.getJarEntry(entry);
@@ -239,7 +239,7 @@ public final class PropertiesFile {
      */
     public final void save() throws UtilityException {
         if (jar != null) {
-            throw new UtilityException("jar.save");
+            throw new UtilityException("Saving is not supported with PropertiesFiles inside of Jar files");
         }
 
         BufferedWriter out = null;

@@ -64,20 +64,20 @@ public final class Updater {
 
         if (!jarloc.endsWith(".jar")) {
             UtilsLogger.info("The jar file location needs to end with .jar... Terminating update...");
-            throw new UpdateException("update.fail", "Incorrect File Extension");
+            throw new UpdateException("Incorrect File Extension");
         }
 
         File local = new File(jarloc);
         if (!local.exists()) {
             UtilsLogger.warning("Unable to find ".concat(jarloc).concat("... Terminating update..."));
-            throw new UpdateException("update.fail", "FileNotFound");
+            throw new UpdateException("FileNotFound");
         }
 
         // BackUp just in case of failure
         File bak = backupjar(jarloc);
 
         if (bak == null) {
-            throw new UpdateException("update.fail", "Backup failed");
+            throw new UpdateException("Backup failed");
         }
 
         if (loadAllClasses(jarloc)) {
@@ -117,7 +117,7 @@ public final class Updater {
                 if (restorejar(jarloc)) {
                     bak.delete();
                 }
-                uex = new UpdateException("update.fail", "Failed to download");
+                uex = new UpdateException("Failed to download");
             }
             catch (URISyntaxException urise) {
                 // Restore
@@ -125,7 +125,7 @@ public final class Updater {
                     bak.delete();
                 }
                 UtilsLogger.warning("There was an error with the URI syntax... Restoring old version...", urise);
-                uex = new UpdateException("update.fail", "Failed to download");
+                uex = new UpdateException("Failed to download");
             }
             finally {
                 if (outputStream != null) {
@@ -184,15 +184,15 @@ public final class Updater {
         }
         catch (IOException ioe) {
             UtilsLogger.severe("An IOException has occurred! Update terminated!", ioe);
-            throw new UpdateException("update.fail", "IOException during jar load");
+            throw new UpdateException("IOException during jar load");
         }
         catch (ClassNotFoundException cnfe) {
             UtilsLogger.severe("An ClassNotFoundException has occurred! Update terminated!", cnfe);
-            throw new UpdateException("update.fail", "ClassNotFoundException during jar load");
+            throw new UpdateException("ClassNotFoundException during jar load");
         }
         catch (Exception e) {
             UtilsLogger.severe("An Unexpected Exception has occurred! Update terminated!", e);
-            throw new UpdateException("update.fail", "Unexpected Exception during jar load");
+            throw new UpdateException("Unexpected Exception during jar load");
         }
     }
 

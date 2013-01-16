@@ -8,27 +8,6 @@ false=ложный
 no=нет
 off=от
 deny=отказывать
-time.negative=Время может быть отрицательным числом!
-arg.null='%s' не может быть пустым
-arg.empty='%s' должно быть пустым
-format.invalid=Неправильный синтаксис формата
-jarfile.missing=Jar файл не может быть найден
-entry.missing='%s' не является допустимым запись в файл JAR
-jar.save=Сохранение в Jar-файл не поддерживается PropertiesFile
-key.missing=Недвижимость KEY:%s не найден
-prop.nan=Недвижимость KEY:%s не является числом
-str.nan=String Index:Струнный индекс:%s не является числом
-start.gte=StartIndex больше или равна args.length
-byte.length=Массив должен быть 4 длинных
-end.gte=больше или равна endIndex args.length
-startgte.end=StartIndex больше или равна endIndex
-update.fail=обновление не удалось, потому что:'%s'
-file.err.ioe=IO ошибка в файле:%s
-file.err.exist=%s is not an existing file
-file.err.read=Could not read File: %s
-file.err.write=Could not write to File: %s
-file.err.path=%s path equals %s path
-file.err.dir=%s is a Directory, not a file
 ##################################################
 # Copyright 2012-2013 Visual Illusions Entertainment.
 #  

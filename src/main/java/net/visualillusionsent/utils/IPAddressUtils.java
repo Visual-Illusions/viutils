@@ -104,7 +104,7 @@ public final class IPAddressUtils {
      */
     public static long ipv4ToLong(byte[] address) throws UtilityException {
         if (address.length != 4) {
-            throw new UtilityException("byte.length");
+            throw new UtilityException("byte array must be of length 4");
         }
         long ipNum = 0;
         long multiplier = 1;
@@ -128,7 +128,7 @@ public final class IPAddressUtils {
      */
     public static String ipv4BytestoString(byte[] address) throws UtilityException {
         if (address.length != 4) {
-            throw new UtilityException("byte.length");
+            throw new UtilityException("byte array must be of length 4");
         }
         StringBuilder build = new StringBuilder();
         for (byte bytes : address) {

@@ -47,7 +47,7 @@ public final class StringUtils {
      *             or if spacer is equal to null
      */
     public static final String joinString(String[] args, String spacer, int startIndex) throws UtilityException {
-        return joinString(args, spacer, startIndex, args.length);
+        return joinString(args, spacer, startIndex, args.length - 1);
     }
 
     /**
@@ -77,13 +77,13 @@ public final class StringUtils {
             throw new UtilityException("arg.empty", "String[] args");
         }
         else if (startIndex >= args.length) {
-            throw new UtilityException("start.gte");
+            throw new UtilityException("startIndex greater than args.length");
         }
-        else if (startIndex >= endIndex) {
-            throw new UtilityException("startgte.end");
+        else if (startIndex > endIndex) {
+            throw new UtilityException("startIndex greater than endIndex");
         }
         else if (endIndex >= args.length) {
-            throw new UtilityException("end.gte");
+            throw new UtilityException("endIndex greater than or equal to args.length");
         }
         else if (spacer == null) {
             throw new UtilityException("arg.null", "String spacer");

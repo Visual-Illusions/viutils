@@ -8,27 +8,6 @@ false=falsch
 no=nein
 off=aus
 deny=verweigern
-time.negative=Zeit darf keine negative Zahl sein!
-arg.null='%s' darf nciht null sein
-arg.empty='%s' darf nciht leer sein
-format.invalid=Ungültige Format Sytax
-jarfile.missing=Konnte Jar Datei nicht finden
-entry.missing='%s' ist kein gültiger Eintrag in der Jar Datei
-jar.save=Speichern innerhalb einer Jar Datei wird von PropertiesFile nicht unterstützt
-key.missing=Property für KEY: %s wurde nicht gefunden
-prop.nan=Property für KEY: %s ist keine Zahl
-str.nan=String Index: %s ist keine Zahl
-start.gte=startIndex größer als oder gleich args.length
-byte.length=byte array muss 4 lang sein
-end.gte=endIndex größer als oder gleich args.length
-startgte.end=startIndex größer als oder gleich endIndex
-update.fail=Update fehlgeschlagen: '%s'
-file.err.ioe=Eine IOException in Datei: %s
-file.err.exist=%s ist keine existierende Datei
-file.err.read=Konnte datei nicht lesen: %s
-file.err.write=Konnte nicht in Datei schreiben: %s
-file.err.path=%s pfad ist gleich %s
-file.err.dir=%s ist ein Ordner, keine Datei.
 ##################################################
 # Copyright 2012-2013 Visual Illusions Entertainment.
 #  

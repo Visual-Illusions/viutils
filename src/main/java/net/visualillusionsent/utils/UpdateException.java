@@ -26,7 +26,7 @@ package net.visualillusionsent.utils;
  * @author Jason (darkdiplomat)
  */
 public final class UpdateException extends Exception {
-    private String form;
+    private final static String update_fail = "Failed to update due to:'%s'";
 
     /**
      * Serial Version
@@ -38,50 +38,10 @@ public final class UpdateException extends Exception {
      * <p>
      * Should not be constructed outside of VIUtils
      * 
-     * @param message
-     *            the message of why the exception is being thrown
+     * @param reason
+     *            the reason of why the exception is being thrown
      */
-    UpdateException(String message) {
-        super(message);
+    UpdateException(String reason) {
+        super(String.format(update_fail, reason));
     }
-
-    /**
-     * Class Constructor
-     * <p>
-     * Should not be constructed outside of VIUtils
-     * 
-     * @param message
-     *            the message of why the exception is being thrown
-     * @param form
-     *            the string to use in {@link String#format(String, Object...)}
-     */
-    UpdateException(String message, String form) {
-        super(message);
-        this.form = form;
-    }
-
-    /**
-     * Gets the Message in English
-     * 
-     * @return message in English
-     */
-    public String getMessage() {
-        if (form != null) {
-            return UtilsLocaleHelper.defaultTranslationFormat(super.getMessage(), form);
-        }
-        return UtilsLocaleHelper.defaultTranslation(super.getMessage());
-    }
-
-    /**
-     * Gets the Message in the System Language if translation found and English if not found
-     * 
-     * @return message in System Language if found, English otherwise
-     */
-    public String getLocalizeMessage() {
-        if (form != null) {
-            return UtilsLocaleHelper.localeTranslationFormat(super.getMessage(), form);
-        }
-        return UtilsLocaleHelper.localeTranslation(super.getMessage());
-    }
-
 }

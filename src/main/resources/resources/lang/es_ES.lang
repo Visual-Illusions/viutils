@@ -8,27 +8,6 @@ false=mal
 no=no
 off=de
 deny=rechazar
-time.negative=El tiempo puede ser un número negativo!
-arg.null='%s' no puede ser nulo nciht
-arg.empty='%s' debe ser nciht vacío
-format.invalid=Sytax formato no válido
-jarfile.missing=Archivo Jar no se pudo encontrar
-entry.missing='%s' no es una entrada válida en el archivo jar
-jar.save=Almacene dentro de un archivo JAR no está soportado por PropertiesFile
-key.missing=Propiedad CLAVE:%s no encontrado
-prop.nan=Propiedad CLAVE:%s no es un número
-str.nan=Índice String:%s no es un número
-start.gte=startIndex es mayor que o igual args.length
-byte.length=matriz de bytes debe ser de 4 a largo
-end.gte=endIndex mayor o igual args.length
-startgte.end=startIndex es mayor que o igual a endIndex
-update.fail=actualizar falló porque: '%s'
-file.ioe=IOException en el archivo:%s
-file.err.exist=%s no es un archivo existente
-file.err.read=No se pudo leer el archivo:%s
-file.err.write=No se pudo escribir en el archivo:%s
-file.err.path=%s %s es igual camino
-file.err.dir=%s no es un directorio, no un archivo
 ##################################################
 # Copyright 2012-2013 Visual Illusions Entertainment.
 #  
