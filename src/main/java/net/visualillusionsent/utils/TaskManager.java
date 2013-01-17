@@ -17,7 +17,6 @@
  */
 package net.visualillusionsent.utils;
 
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
@@ -61,24 +60,17 @@ public final class TaskManager {
 
     static {
         instance = new TaskManager();
-        try {
-            scheduleContinuedTaskInMinutes(new TaskCacheClear(), 15, 15);
-        }
-        catch (UtilityException e) {
-            //task isnt null so exception shouldn't happen
-        }
     }
 
     /**
      * Internal use Constructor to initialize the Thread Pool
      */
     private TaskManager() {
-        threadpool = new ScheduledThreadPoolExecutor(16);
+        threadpool = new ScheduledThreadPoolExecutor(8);
         threadpool.setKeepAliveTime(5, sec);
-        threadpool.allowCoreThreadTimeOut(false);
+        threadpool.allowCoreThreadTimeOut(true);
         threadpool.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
         threadpool.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
-        threadpool.prestartAllCoreThreads();
         tasks = new HashMap<Runnable, ScheduledFuture<?>>();
     }
 
@@ -315,19 +307,6 @@ public final class TaskManager {
     }
 
     /**
-     * Runs periodically to clean up completed tasks from the cache
-     */
-    private static final void clearCompletedTasks() {
-        synchronized (lock) {
-            for (Runnable task : instance.tasks.keySet()) {
-                if (instance.tasks.get(task).isDone() || instance.tasks.get(task).isCancelled()) {
-                    instance.tasks.remove(task);
-                }
-            }
-        }
-    }
-
-    /**
      * Removes a task from the pool
      * 
      * @param task
@@ -352,21 +331,9 @@ public final class TaskManager {
     }
 
     /**
-     * Task Cache clearing class
-     * <p>
-     * Calls back to {@link TaskManager#clearCompletedTasks} every 15 minutes
-     * 
-     * @since VIUtils 1.0
-     * @version 1.0
-     * @author Jason (darkdiplomat)
+     * Terminates the ThreadPool
      */
-    private static final class TaskCacheClear implements Runnable { // Cleans up completed tasks
-        @Override
-        public void run() {
-            try {
-                clearCompletedTasks();
-            }
-            catch (ConcurrentModificationException cme) {}
-        }
+    public static final void terminateThreadPool() {
+        instance.threadpool.shutdownNow();
     }
 }
