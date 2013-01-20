@@ -201,7 +201,7 @@ public final class FileUtils {
             throw new UtilityException("arg.empty", "String clone");
         }
         else if (toClone.equals(clone)) {
-            throw new UtilityException("*UNDEFINED MESSAGE*: toClone equals clone");
+            throw new UtilityException("toClone equals clone");
         }
         cloneFile(new File(toClone), clone);
     }

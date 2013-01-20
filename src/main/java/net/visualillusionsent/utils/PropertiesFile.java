@@ -206,6 +206,8 @@ public final class PropertiesFile {
      *             or if the Jar file does not contain the entry
      */
     public final void reload() throws UtilityException {
+        props.clear();
+        comments.clear();
         if (jar != null) {
             JarEntry ent = jar.getJarEntry(filepath);
             if (ent == null) {

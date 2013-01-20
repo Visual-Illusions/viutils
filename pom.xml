@@ -1,17 +1,53 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  
   <groupId>net.visualillusionsent</groupId>
   <artifactId>viutils</artifactId>
   <version>1.0.0</version>
+  <packaging>jar</packaging>
+  
   <name>Visual Illusions Java Utilities Library</name>
+  <description>VIUtils contains many Utility functions and methods for use in Java Programs</description>
+  <url>http://visualillusionsent.net</url>
+  <inceptionYear>2012</inceptionYear>
+  <organization>
+    <name>Visual Illusions Entertainment</name>
+    <url>http://visualillusionsent.net</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License v3</name>
+      <url>http://www.gnu.org/licenses/lgpl.html</url>
+      <distribution>repo</distribution>
+      <comments/>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>darkdiplomat</id>
+      <name>Jason Jones</name>
+      <email>darkdiplomat@visualillusionsent.net</email>
+    </developer>
+  </developers>
+  <scm>
+    <url>https://github.com/Visual-Illusions/viutils</url>
+    <connection>Gitlab</connection>
+    <developerConnection>Visual Illusions Entertainment</developerConnection>
+  </scm>
+  <issueManagement>
+    <url>https://github.com/Visual-Illusions/viutils/issues</url>
+    <system>GitHub</system>
+  </issueManagement>
+  <ciManagement>
+    <system>Jenkins</system>
+    <url>http://ci.visualillusionsent.net</url>
+  </ciManagement>
   <properties>
-    <!-- UTF-8 Encoding! -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
-      <!-- Compile -->
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.3.2</version>
@@ -20,7 +56,6 @@
           <target>1.6</target>
         </configuration>
       </plugin>
-      <!-- JAR creation plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -40,42 +75,4 @@
       </plugin>
     </plugins>
   </build>
-  <url>http://visualillusionsent.net</url>
-  <inceptionYear>2012</inceptionYear>
-  <organization>
-  	<name>Visual Illusions Entertainment</name>
-  	<url>http://visualillusionsent.net</url>
-  </organization>
-  <scm>
-  	<url>https://dev.visualillusionsent.net/VIUtils</url>
-  	<connection>Gitlab</connection>
-  	<developerConnection>Visual Illusions Entertainment</developerConnection>
-  </scm>
-  <issueManagement>
-  	<url>https://dev.visualillusionsent.net/VIUtils</url>
-  	<system>Gitlab</system>
-  </issueManagement>
-  <ciManagement>
-  	<system>Jenkins</system>
-  	<url>http://ci.visualillusionsent.net</url>
-  </ciManagement>
-  <description>VIUtils is designed to use Java 6 or higher
-and contains a many Utility functions and methods for use in Java Programs.
-
-**DateUtils** provides methods for converting timestamps into formated Strings
-
-**FileUtils** provides methods for removing a line from a File
-
-**IPAddressUtils** provides methods for checking and converting IP Address
-
-**LocaleHelper** provides a helpful message translation system
-
-**PropertiesFile** provides methods for setting up a Properties File including adding/removing comments and keys/values
-
-**StringUtils** provides methods for String manipulations including joining String arrays, 
-converting numbers to Strings or Strings to numbers, and padding a String
-
-**SystemUtils** provides fields for quick referencing System properties
-
-**TaskManager** provides a Thread Pool and methods for managing Tasks either delayed or meant to be continuous</description>
 </project>
