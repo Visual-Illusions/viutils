@@ -29,7 +29,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
@@ -48,8 +48,8 @@ public final class PropertiesFile {
     private File propsFile;
     private String filepath;
     private JarFile jar;
-    private HashMap<String, String> props = new HashMap<String, String>();
-    private HashMap<String, String[]> comments = new HashMap<String, String[]>();
+    private LinkedHashMap<String, String> props = new LinkedHashMap<String, String>();
+    private LinkedHashMap<String, String[]> comments = new LinkedHashMap<String, String[]>();
 
     /**
      * Creates or loads a PropertiesFile
