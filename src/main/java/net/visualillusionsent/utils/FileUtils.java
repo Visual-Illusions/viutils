@@ -295,10 +295,10 @@ public final class FileUtils {
     }
 
     /**
-     * Clones a {@link File} from a {@link Jar}
+     * Clones a {@link File} from a {@link JarFile}
      * 
      * @param jarPath
-     *            the path to the jar
+     *            the path to the {@link JarFile}
      * @param fileToMove
      *            the file to be cloned (ie: resources/README.txt)
      * @oaram pathTo
