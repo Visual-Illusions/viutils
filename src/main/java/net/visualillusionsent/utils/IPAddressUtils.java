@@ -84,7 +84,7 @@ public final class IPAddressUtils {
      */
     public static byte[] longToIPv4(long address) {
         byte[] ip = new byte[4];
-        for (int index = 3; index >= 0; index--) {
+        for (int index = 0; index < 4; index++) {
             ip[index] = (byte) (address % 256);
             address = address / 256;
         }

@@ -47,7 +47,7 @@ public final class StringUtils {
      *             or if spacer is equal to null
      */
     public static final String joinString(String[] args, String spacer, int startIndex) throws UtilityException {
-        return joinString(args, spacer, startIndex, args.length - 1);
+        return joinString(args, spacer, startIndex, args.length);
     }
 
     /**
@@ -82,7 +82,7 @@ public final class StringUtils {
         else if (startIndex > endIndex) {
             throw new UtilityException("startIndex greater than endIndex");
         }
-        else if (endIndex >= args.length) {
+        else if (endIndex > args.length) {
             throw new UtilityException("endIndex greater than or equal to args.length");
         }
         else if (spacer == null) {
@@ -134,7 +134,7 @@ public final class StringUtils {
             throw new UtilityException("arg.empty", "String toPad");
         }
         StringBuffer padded = new StringBuffer(toPad);
-        while (padded.length() < padAmount) {
+        while ((padded.length() - toPad.length()) < padAmount) {
             padded.append(padChar);
         }
         return padded.toString();
@@ -176,7 +176,7 @@ public final class StringUtils {
             throw new UtilityException("arg.empty", "String toPad");
         }
         StringBuffer padded = new StringBuffer(toPad);
-        while (padded.length() < padAmount) {
+        while ((padded.length() - toPad.length()) < padAmount) {
             padded.insert(0, padChar);
         }
         return padded.toString();
