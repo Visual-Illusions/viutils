@@ -301,8 +301,8 @@ public final class FileUtils {
      *            the path to the {@link JarFile}
      * @param fileToMove
      *            the file to be cloned (ie: resources/README.txt)
-     * @oaram pathTo
-     *        the path to clone the file to
+     * @param pathTo
+     *            the path to clone the file to
      * @throws UtilityException
      * <br>
      *             if an IOException occurrs
