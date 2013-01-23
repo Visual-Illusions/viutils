@@ -74,11 +74,13 @@ public final class PropertiesFile {
                 load(new FileInputStream(propsFile));
             }
             catch (FileNotFoundException e) {
-                new UtilityException("file.err.ioe", filepath);
+                throw new UtilityException("file.err.ioe", filepath);
             }
         }
         else {
-            propsFile.mkdirs();
+            if (!propsFile.mkdirs()) {
+                throw new UtilityException("File to make directory path for FilePath: ".concat(filepath));
+            }
             save();
         }
     }
@@ -127,7 +129,7 @@ public final class PropertiesFile {
             load(jar.getInputStream(ent));
         }
         catch (IOException e) {
-            new UtilityException("file.err.ioe", filepath);
+            throw new UtilityException("file.err.ioe", filepath);
         }
     }
 
@@ -217,7 +219,7 @@ public final class PropertiesFile {
                 load(jar.getInputStream(ent));
             }
             catch (IOException e) {
-                new UtilityException("file.err.ioe", filepath);
+                throw new UtilityException("file.err.ioe", filepath);
             }
         }
         else {
@@ -225,7 +227,7 @@ public final class PropertiesFile {
                 load(new FileInputStream(propsFile));
             }
             catch (FileNotFoundException e) {
-                new UtilityException("file.err.ioe", filepath);
+                throw new UtilityException("file.err.ioe", filepath);
             }
         }
     }
@@ -246,7 +248,9 @@ public final class PropertiesFile {
 
         BufferedWriter out = null;
         try {
-            propsFile.delete();
+            if (!propsFile.delete()) {
+                throw new UtilityException("file.err.ioe", filepath);
+            }
             propsFile = new File(filepath);
             out = new BufferedWriter(new FileWriter(propsFile, true));
             for (String prop : props.keySet()) {
@@ -269,9 +273,7 @@ public final class PropertiesFile {
                 try {
                     out.close();
                 }
-                catch (IOException e) {
-                    //do nothing
-                }
+                catch (IOException e) {}
             }
         }
     }

@@ -30,42 +30,42 @@ public final class SystemUtils {
     /**
      * The System Line Separator (Windows = \r\n Unix = \n Older Macs = \r)
      */
-    public static String LINE_SEP = System.getProperty("line.separator");
+    public static final String LINE_SEP = System.getProperty("line.separator");
 
     /**
      * The System Operation System
      */
-    public static String SYSTEM_OS = System.getProperty("os.name");
+    public static final String SYSTEM_OS = System.getProperty("os.name");
 
     /**
      * The System Architecture (x86 [32Bit] x64 x86-64 [64Bit])
      */
-    public static String SYSTEM_ARCH = System.getProperty("os.arch");
+    public static final String SYSTEM_ARCH = System.getProperty("os.arch");
 
     /**
      * The System Version
      */
-    public static String SYSTEM_VERSION = System.getProperty("os.version");
+    public static final String SYSTEM_VERSION = System.getProperty("os.version");
 
     /**
      * The System Country
      */
-    public static String SYSTEM_COUNTRY = System.getProperty("user.country");
+    public static final String SYSTEM_COUNTRY = System.getProperty("user.country");
 
     /**
      * The System Language
      */
-    public static String SYSTEM_LANGUAGE = System.getProperty("user.language");
+    public static final String SYSTEM_LANGUAGE = System.getProperty("user.language");
 
     /**
      * The System Locale
      */
-    public static String SYSTEM_LOCALE = SYSTEM_LANGUAGE.concat("_").concat(SYSTEM_COUNTRY);
+    public static final String SYSTEM_LOCALE = SYSTEM_LANGUAGE.concat("_").concat(SYSTEM_COUNTRY);
 
     /**
      * The Java Version
      */
-    public static String JAVA_VERSION = System.getProperty("java.version");
+    public static final String JAVA_VERSION = System.getProperty("java.version");
 
     /**
      * Tells if the OS is a Windows based OS

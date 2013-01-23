@@ -37,7 +37,6 @@ import java.net.URL;
  */
 public final class VersionChecker {
     private final String programName, checkurl, user_agent;
-    private final String post = "program=%s&version=%s&build=%s&isBeta=%b&isRC=%b";
     private final String formated_Post;
     private String currver;
     private long lastCheck = 0L;
@@ -65,7 +64,7 @@ public final class VersionChecker {
         this.currver = version;
         this.checkurl = checkurl;
         this.user_agent = "Java/" + SystemUtils.JAVA_VERSION + " (" + SystemUtils.SYSTEM_OS + "; " + programName + "/" + version + "; VersionChecker/1.0) VIUtils/1.0";
-        this.formated_Post = String.format(post, programName, version, build, isBeta, isRC);
+        this.formated_Post = String.format("program=%s&version=%s&build=%s&isBeta=%b&isRC=%b", programName, version, build, isBeta, isRC);
     }
 
     /**
@@ -99,7 +98,7 @@ public final class VersionChecker {
             out.flush();
             in = new BufferedReader(new InputStreamReader(huc.getInputStream()));
 
-            if ((inputLine = in.readLine()) != null) { /* Response Received */}
+            inputLine = in.readLine();
             lastCheck = currentTime;
         }
         catch (Exception ex) {}

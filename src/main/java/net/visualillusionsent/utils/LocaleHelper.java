@@ -50,7 +50,7 @@ public abstract class LocaleHelper {
     /**
      * Overrides the System default code
      */
-    protected static String localeCodeOverride;
+    protected String localeCodeOverride;
 
     /**
      * Gets the translated message for the given key
