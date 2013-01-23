@@ -36,7 +36,7 @@ public final class TaskManager {
     /**
      * The ThreadPool object
      */
-    private final ScheduledThreadPoolExecutor threadpool;
+    private ScheduledThreadPoolExecutor threadpool;
 
     /**
      * The Map of Tasks
@@ -46,7 +46,7 @@ public final class TaskManager {
     /**
      * TaskManager instance
      */
-    private static TaskManager instance;
+    private static TaskManager $;
 
     /**
      * Synchronization Lock Object
@@ -59,7 +59,7 @@ public final class TaskManager {
     private static final TimeUnit micro = TimeUnit.MICROSECONDS, milli = TimeUnit.MILLISECONDS, sec = TimeUnit.SECONDS, min = TimeUnit.MINUTES;
 
     static {
-        instance = new TaskManager();
+        $ = new TaskManager();
     }
 
     /**
@@ -87,7 +87,7 @@ public final class TaskManager {
         if (task == null) {
             throw new UtilityException("arg.null", "Runnable task");
         }
-        instance.threadpool.execute(task);
+        $.threadpool.execute(task);
     }
 
     /**
@@ -102,7 +102,7 @@ public final class TaskManager {
         if (task == null) {
             throw new UtilityException("arg.null", "Runnable task");
         }
-        return instance.threadpool.submit(task);
+        return $.threadpool.submit(task);
     }
 
     /**
@@ -121,8 +121,8 @@ public final class TaskManager {
         if (task == null) {
             throw new UtilityException("arg.null", "Runnable task");
         }
-        ScheduledFuture<?> stask = instance.threadpool.schedule(task, delay, micro);
-        instance.tasks.put(task, stask);
+        ScheduledFuture<?> stask = $.threadpool.schedule(task, delay, micro);
+        $.tasks.put(task, stask);
         return stask;
     }
 
@@ -142,8 +142,8 @@ public final class TaskManager {
         if (task == null) {
             throw new UtilityException("arg.null", "Runnable task");
         }
-        ScheduledFuture<?> stask = instance.threadpool.schedule(task, delay, milli);
-        instance.tasks.put(task, stask);
+        ScheduledFuture<?> stask = $.threadpool.schedule(task, delay, milli);
+        $.tasks.put(task, stask);
         return stask;
     }
 
@@ -163,8 +163,8 @@ public final class TaskManager {
         if (task == null) {
             throw new UtilityException("arg.null", "Runnable task");
         }
-        ScheduledFuture<?> stask = instance.threadpool.schedule(task, delay, sec);
-        instance.tasks.put(task, stask);
+        ScheduledFuture<?> stask = $.threadpool.schedule(task, delay, sec);
+        $.tasks.put(task, stask);
         return stask;
     }
 
@@ -184,8 +184,8 @@ public final class TaskManager {
         if (task == null) {
             throw new UtilityException("arg.null", "Runnable task");
         }
-        ScheduledFuture<?> stask = instance.threadpool.schedule(task, delay, min);
-        instance.tasks.put(task, stask);
+        ScheduledFuture<?> stask = $.threadpool.schedule(task, delay, min);
+        $.tasks.put(task, stask);
         return stask;
     }
 
@@ -207,8 +207,8 @@ public final class TaskManager {
         if (task == null) {
             throw new UtilityException("arg.null", "Runnable task");
         }
-        ScheduledFuture<?> stask = instance.threadpool.scheduleAtFixedRate(task, initialdelay, delay, micro);
-        instance.tasks.put(task, stask);
+        ScheduledFuture<?> stask = $.threadpool.scheduleAtFixedRate(task, initialdelay, delay, micro);
+        $.tasks.put(task, stask);
         return stask;
     }
 
@@ -230,8 +230,8 @@ public final class TaskManager {
         if (task == null) {
             throw new UtilityException("arg.null", "Runnable task");
         }
-        ScheduledFuture<?> stask = instance.threadpool.scheduleAtFixedRate(task, initialdelay, delay, milli);
-        instance.tasks.put(task, stask);
+        ScheduledFuture<?> stask = $.threadpool.scheduleAtFixedRate(task, initialdelay, delay, milli);
+        $.tasks.put(task, stask);
         return stask;
     }
 
@@ -253,8 +253,8 @@ public final class TaskManager {
         if (task == null) {
             throw new UtilityException("arg.null", "Runnable task");
         }
-        ScheduledFuture<?> stask = instance.threadpool.scheduleAtFixedRate(task, initialdelay, delay, sec);
-        instance.tasks.put(task, stask);
+        ScheduledFuture<?> stask = $.threadpool.scheduleAtFixedRate(task, initialdelay, delay, sec);
+        $.tasks.put(task, stask);
         return stask;
     }
 
@@ -276,8 +276,8 @@ public final class TaskManager {
         if (task == null) {
             throw new UtilityException("arg.null", "Runnable task");
         }
-        ScheduledFuture<?> stask = instance.threadpool.scheduleAtFixedRate(task, initialdelay, delay, min);
-        instance.tasks.put(task, stask);
+        ScheduledFuture<?> stask = $.threadpool.scheduleAtFixedRate(task, initialdelay, delay, min);
+        $.tasks.put(task, stask);
         return stask;
     }
 
@@ -301,8 +301,8 @@ public final class TaskManager {
         if (task == null) {
             throw new UtilityException("arg.null", "Runnable task");
         }
-        ScheduledFuture<?> stask = instance.threadpool.scheduleAtFixedRate(task, initialdelay, delay, timeunit);
-        instance.tasks.put(task, stask);
+        ScheduledFuture<?> stask = $.threadpool.scheduleAtFixedRate(task, initialdelay, delay, timeunit);
+        $.tasks.put(task, stask);
         return stask;
     }
 
@@ -316,15 +316,15 @@ public final class TaskManager {
     public static final boolean removeTask(Runnable task) {
         synchronized (lock) {
             boolean check = false;
-            if (instance.tasks.containsKey(task)) {
-                check = instance.tasks.get(task).cancel(true);
-                instance.tasks.remove(task);
+            if ($.tasks.containsKey(task)) {
+                check = $.tasks.get(task).cancel(true);
+                $.tasks.remove(task);
             }
             if (!check) {
-                check = instance.threadpool.remove(task);
+                check = $.threadpool.remove(task);
             }
             if (check) {
-                instance.threadpool.purge();
+                $.threadpool.purge();
             }
             return check;
         }
@@ -334,6 +334,8 @@ public final class TaskManager {
      * Terminates the ThreadPool
      */
     public static final void terminateThreadPool() {
-        instance.threadpool.shutdownNow();
+        $.threadpool.shutdownNow();
+        $.threadpool = null;
+        $ = null;
     }
 }
