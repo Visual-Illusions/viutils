@@ -325,6 +325,9 @@ public final class FileUtils {
         catch (IOException e) {
             toThrow = new UtilityException("Exception occured while moving file from Jar...", e);
         }
+        catch (NullPointerException npe) {
+            toThrow = new UtilityException("The Jar did not contain the file to be moved...", npe);
+        }
         finally {
             try {
                 if (out != null) {
