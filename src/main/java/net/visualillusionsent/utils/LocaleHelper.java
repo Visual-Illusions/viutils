@@ -19,7 +19,6 @@ package net.visualillusionsent.utils;
 
 import java.net.URISyntaxException;
 import java.security.CodeSource;
-import java.util.logging.Logger;
 
 /**
  * Message Localization helper
@@ -74,7 +73,7 @@ public abstract class LocaleHelper {
             return defaultTranslate(key);
         }
         catch (Exception e) {
-            Logger.getGlobal().warning("[VIUtils] Exception thrown, check logs.");
+            //Logger.getGlobal().warning("[VIUtils] Exception thrown, check logs.");
             UtilsLogger.warning("", e);
         }
         return defaultTranslate(key);
@@ -95,7 +94,7 @@ public abstract class LocaleHelper {
             }
         }
         catch (Exception e) {
-            Logger.getGlobal().warning("[VIUtils] Exception thrown, check logs.");
+            //Logger.getGlobal().warning("[VIUtils] Exception thrown, check logs.");
             UtilsLogger.warning("", e);
         }
 
@@ -123,7 +122,7 @@ public abstract class LocaleHelper {
             return defaultTranslateFormat(key, form);
         }
         catch (Exception e) {
-            Logger.getGlobal().warning("[VIUtils] Exception thrown, check logs.");
+            //Logger.getGlobal().warning("[VIUtils] Exception thrown, check logs.");
             UtilsLogger.warning("", e);
         }
         return defaultTranslateFormat(key, form);
@@ -147,7 +146,7 @@ public abstract class LocaleHelper {
             }
         }
         catch (Exception e) {
-            Logger.getGlobal().warning("[VIUtils] Exception thrown, check logs.");
+            //Logger.getGlobal().warning("[VIUtils] Exception thrown, check logs.");
             UtilsLogger.warning("", e);
         }
         //May have forgot a translation and left a regular message
