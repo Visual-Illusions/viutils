@@ -17,7 +17,7 @@
  */
 package net.visualillusionsent.utils;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -41,7 +41,7 @@ public final class TaskManager {
     /**
      * The Map of Tasks
      */
-    private HashMap<Runnable, ScheduledFuture<?>> tasks;
+    private ConcurrentHashMap<Runnable, ScheduledFuture<?>> tasks;
 
     /**
      * TaskManager instance
@@ -71,7 +71,7 @@ public final class TaskManager {
         threadpool.allowCoreThreadTimeOut(true);
         threadpool.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
         threadpool.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
-        tasks = new HashMap<Runnable, ScheduledFuture<?>>();
+        tasks = new ConcurrentHashMap<Runnable, ScheduledFuture<?>>();
     }
 
     /**

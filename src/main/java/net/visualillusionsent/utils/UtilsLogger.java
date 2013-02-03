@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -49,17 +48,12 @@ public final class UtilsLogger {
         }
         try {
             UtilsLogFormat lf = new UtilsLogFormat();
-            ConsoleHandler chand = new ConsoleHandler();
             FileHandler fhand = new FileHandler("viutilslogs/utilslog%g.log", 52428800, 150, true);
-            chand.setLevel(Level.ALL);
             fhand.setLevel(Level.ALL);
             logger.setLevel(Level.ALL);
             logger.setUseParentHandlers(false);
-            chand.setFormatter(lf);
             fhand.setFormatter(lf);
             fhand.setEncoding("UTF-8");
-            chand.setEncoding("UTF-8");
-            logger.addHandler(chand);
             logger.addHandler(fhand);
         }
         catch (IOException e) {

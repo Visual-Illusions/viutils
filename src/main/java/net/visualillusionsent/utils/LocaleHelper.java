@@ -19,6 +19,7 @@ package net.visualillusionsent.utils;
 
 import java.net.URISyntaxException;
 import java.security.CodeSource;
+import java.util.logging.Logger;
 
 /**
  * Message Localization helper
@@ -48,6 +49,11 @@ public abstract class LocaleHelper {
     private static PropertiesFile utils_eng;
 
     /**
+     * Jar path container
+     */
+    private String jarPath;
+
+    /**
      * Overrides the System default code
      */
     protected String localeCodeOverride;
@@ -62,13 +68,14 @@ public abstract class LocaleHelper {
     public final String localeTranslate(String key) {
         try {
             checkLangFiles();
-            if (utils_sysLang.containsKey(key)) {
+            if (utils_sysLang != null && utils_sysLang.containsKey(key)) {
                 return utils_sysLang.getString(key);
             }
             return defaultTranslate(key);
         }
         catch (Exception e) {
-            //whoops
+            Logger.getGlobal().warning("[VIUtils] Exception thrown, check logs.");
+            UtilsLogger.warning("", e);
         }
         return defaultTranslate(key);
     }
@@ -88,7 +95,8 @@ public abstract class LocaleHelper {
             }
         }
         catch (Exception e) {
-            //whoops
+            Logger.getGlobal().warning("[VIUtils] Exception thrown, check logs.");
+            UtilsLogger.warning("", e);
         }
 
         //May have forgot a translation and left a regular message, or something went wrong...
@@ -109,13 +117,14 @@ public abstract class LocaleHelper {
 
         try {
             checkLangFiles();
-            if (utils_sysLang.containsKey(key)) {
+            if (utils_sysLang != null && utils_sysLang.containsKey(key)) {
                 return String.format(utils_sysLang.getString(key), (Object[]) form);
             }
             return defaultTranslateFormat(key, form);
         }
         catch (Exception e) {
-            //whoops
+            Logger.getGlobal().warning("[VIUtils] Exception thrown, check logs.");
+            UtilsLogger.warning("", e);
         }
         return defaultTranslateFormat(key, form);
     }
@@ -138,7 +147,8 @@ public abstract class LocaleHelper {
             }
         }
         catch (Exception e) {
-            //whoops
+            Logger.getGlobal().warning("[VIUtils] Exception thrown, check logs.");
+            UtilsLogger.warning("", e);
         }
         //May have forgot a translation and left a regular message
         return String.format(key, (Object[]) form);
@@ -151,7 +161,7 @@ public abstract class LocaleHelper {
         if (utils_eng == null) {
             utils_eng = new PropertiesFile(getJarPath(), "resources/lang/en_US.lang");
         }
-        if (localeCodeOverride != null && !localeCodeOverride.equals("en_US") && localeCodeOverride.matches("([a-z]{2, 3})_([A-Z]{2, 3})")) {
+        if (localeCodeOverride != null && !localeCodeOverride.equals("en_US") && localeCodeOverride.matches("([a-z]{2,3})_([A-Z]{2,3})")) {
             if (utils_sysLang == null && utils_lang.containsKey(localeCodeOverride)) {
                 utils_sysLang = new PropertiesFile(getJarPath(), "resources/lang/".concat(localeCodeOverride).concat(".lang"));
             }
@@ -171,7 +181,11 @@ public abstract class LocaleHelper {
      *             caught in the translation methods and ignored internally
      */
     private final String getJarPath() throws URISyntaxException {
+        if (jarPath != null) {
+            return jarPath;
+        }
         CodeSource codeSource = getClass().getProtectionDomain().getCodeSource();
-        return codeSource.getLocation().toURI().getPath();
+        jarPath = codeSource.getLocation().toURI().getPath();
+        return jarPath;
     }
 }
