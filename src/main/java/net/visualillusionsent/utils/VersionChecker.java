@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
 
 /**
@@ -71,9 +70,9 @@ public final class VersionChecker {
      * Checks if version is latest<br>
      * NOTE: Site queries are limited to once every 5 minutes.
      * 
-     * @return {@code true} if latest or on error; {@code false} otherwise
+     * @return {@code true} if latest; {@code false} if not; {@code null} on error
      */
-    public final boolean isLatest() {
+    public final Boolean isLatest() {
         BufferedReader in = null;
         OutputStreamWriter out = null;
         long currentTime = System.currentTimeMillis();
@@ -83,7 +82,7 @@ public final class VersionChecker {
 
         String inputLine = null;
         try {
-            URL url = new URI(checkurl).toURL();
+            URL url = new URL(checkurl);
             HttpURLConnection huc = (HttpURLConnection) url.openConnection();
             HttpURLConnection.setFollowRedirects(true);
             huc.setConnectTimeout(2000);
@@ -114,8 +113,7 @@ public final class VersionChecker {
             catch (IOException ioe) {}
         }
         if (inputLine == null || inputLine.startsWith("Error") || inputLine.equals("<br />")) {
-            //some sort of error on the web side, ignore it for now
-            return true;
+            return null; //ERROR
         }
         else {
             String[] input = inputLine.split(":");

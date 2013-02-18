@@ -27,9 +27,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 /**
  * Plugin Jar File Updater
@@ -42,7 +39,6 @@ import java.util.jar.JarFile;
  */
 public final class Updater {
     private String downloadurl, jarloc, jarname;
-    private final static int CLASS_LENGTH = 6;
     private final String user_agent;
 
     public Updater(String downloadurl, String jarloc, String jarname) {
@@ -80,120 +76,72 @@ public final class Updater {
             throw new UpdateException("Backup failed");
         }
 
-        if (loadAllClasses(jarloc)) {
-            OutputStream outputStream = null;
-            InputStream inputStream = null;
-            UpdateException uex = null;
-            try {
-                outputStream = new FileOutputStream(local);
-                URL url = new URI(downloadurl).toURL();
-
-                HttpURLConnection huc = (HttpURLConnection) url.openConnection();
-                HttpURLConnection.setFollowRedirects(true);
-                huc.setConnectTimeout(2000);
-                huc.setReadTimeout(2000);
-                huc.setRequestMethod("GET");
-                huc.setRequestProperty("User-Agent", user_agent);
-                huc.setDoOutput(true);
-                huc.connect();
-
-                inputStream = url.openConnection().getInputStream();
-
-                byte[] buffer = new byte[1024];
-                int read = 0;
-
-                while ((read = inputStream.read(buffer)) > 0) {
-                    outputStream.write(buffer, 0, read);
-                }
-
-                UtilsLogger.info("Successfully downloaded latest version of ".concat(jarname).concat("!"));
-                bak.delete();
-                return true;
-            }
-            catch (IOException ioe) {
-                UtilsLogger.warning("Failed to download new version. Restoring old version...", ioe);
-
-                // Restore
-                if (restorejar(jarloc)) {
-                    bak.delete();
-                }
-                uex = new UpdateException("Failed to download");
-            }
-            catch (URISyntaxException urise) {
-                // Restore
-                if (restorejar(jarloc)) {
-                    bak.delete();
-                }
-                UtilsLogger.warning("There was an error with the URI syntax... Restoring old version...", urise);
-                uex = new UpdateException("Failed to download");
-            }
-            finally {
-                if (outputStream != null) {
-                    try {
-                        outputStream.close();
-                    }
-                    catch (IOException e) {}
-                }
-
-                if (inputStream != null) {
-                    try {
-                        inputStream.close();
-                    }
-                    catch (IOException e) {}
-                }
-
-                if (uex != null) {
-                    throw uex;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * loads all the jar's files for updating
-     * 
-     * @param jarloc
-     *            The location of the jar file to be updated
-     * @return true if successfully loaded all classes
-     */
-    private final boolean loadAllClasses(String jarloc) throws UpdateException {
+        OutputStream outputStream = null;
+        InputStream inputStream = null;
+        UpdateException uex = null;
         try {
-            // Load the jar
-            JarFile jar = new JarFile(jarloc);
+            outputStream = new FileOutputStream(local);
+            URL url = new URI(downloadurl).toURL();
 
-            // Walk through all of the entries
-            Enumeration<JarEntry> enumeration = jar.entries();
+            HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+            HttpURLConnection.setFollowRedirects(true);
+            huc.setConnectTimeout(2000);
+            huc.setReadTimeout(2000);
+            huc.setRequestMethod("GET");
+            huc.setRequestProperty("User-Agent", user_agent);
+            huc.setDoOutput(true);
+            huc.connect();
 
-            while (enumeration.hasMoreElements()) {
-                JarEntry entry = enumeration.nextElement();
-                String name = entry.getName();
+            inputStream = url.openConnection().getInputStream();
 
-                // is it a class file?
-                if (name.endsWith(".class") && !name.contains("$")) {
-                    // convert to package
-                    String path = name.replaceAll("/", ".");
-                    path = path.substring(0, path.length() - CLASS_LENGTH);
+            byte[] buffer = new byte[1024];
+            int read = 0;
 
-                    // Load it
-                    Thread.currentThread().getContextClassLoader().loadClass(path);
-                }
+            while ((read = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, read);
             }
-            jar.close();
+
+            UtilsLogger.info("Successfully downloaded latest version of ".concat(jarname).concat("!"));
+            bak.delete();
             return true;
         }
         catch (IOException ioe) {
-            UtilsLogger.severe("An IOException has occurred! Update terminated!", ioe);
-            throw new UpdateException("IOException during jar load");
+            UtilsLogger.warning("Failed to download new version. Restoring old version...", ioe);
+
+            // Restore
+            if (restorejar(jarloc)) {
+                bak.delete();
+            }
+            uex = new UpdateException("Failed to download");
         }
-        catch (ClassNotFoundException cnfe) {
-            UtilsLogger.severe("An ClassNotFoundException has occurred! Update terminated!", cnfe);
-            throw new UpdateException("ClassNotFoundException during jar load");
+        catch (URISyntaxException urise) {
+            // Restore
+            if (restorejar(jarloc)) {
+                bak.delete();
+            }
+            UtilsLogger.warning("There was an error with the URI syntax... Restoring old version...", urise);
+            uex = new UpdateException("Failed to download");
         }
-        catch (Exception e) {
-            UtilsLogger.severe("An Unexpected Exception has occurred! Update terminated!", e);
-            throw new UpdateException("Unexpected Exception during jar load");
+        finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                }
+                catch (IOException e) {}
+            }
+
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                }
+                catch (IOException e) {}
+            }
+
+            if (uex != null) {
+                throw uex;
+            }
         }
+        return false;
     }
 
     private final File backupjar(String jarfile) {
