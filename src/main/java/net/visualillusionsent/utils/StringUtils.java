@@ -94,7 +94,7 @@ public final class StringUtils {
             sb.append(args[index]);
             sb.append(spacer);
         }
-        String preRet = sb.toString().trim();
+        String preRet = sb.toString();
         return preRet.substring(0, preRet.lastIndexOf(spacer)); //Remove last spacer
     }
 
