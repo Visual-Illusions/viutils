@@ -47,7 +47,7 @@ public final class StringUtils {
      *             or if spacer is equal to null
      */
     public static final String joinString(String[] args, String spacer, int startIndex) throws UtilityException {
-        return joinString(args, spacer, startIndex, args.length);
+        return joinString(args, spacer, startIndex, args.length - 1);
     }
 
     /**
@@ -76,7 +76,7 @@ public final class StringUtils {
         else if (args.length == 0) {
             throw new UtilityException("arg.empty", "String[] args");
         }
-        else if (startIndex >= args.length) {
+        else if (startIndex > args.length) {
             throw new UtilityException("startIndex greater than args.length");
         }
         else if (startIndex > endIndex) {
@@ -90,7 +90,7 @@ public final class StringUtils {
         }
 
         StringBuilder sb = new StringBuilder();
-        for (int index = startIndex; index < endIndex; index++) {
+        for (int index = startIndex; index <= endIndex; index++) {
             sb.append(args[index]);
             sb.append(spacer);
         }
