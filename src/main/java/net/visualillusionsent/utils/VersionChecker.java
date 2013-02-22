@@ -58,12 +58,12 @@ public final class VersionChecker {
      * @param checkurl
      *            A {@link String} representation of the url to verify version though (ie: http://visualillusionsent.net/testing/versionchecker.php)
      */
-    public VersionChecker(String programName, String version, String build, String checkurl, boolean isBeta, boolean isRC) {
+    public VersionChecker(String programName, String version, String build, String checkurl, boolean isBeta, boolean isRC, boolean checkUnstable) {
         this.programName = programName;
         this.currver = version;
         this.checkurl = checkurl;
         this.user_agent = "Java/" + SystemUtils.JAVA_VERSION + " (" + SystemUtils.SYSTEM_OS + "; " + programName + "/" + version + "; VersionChecker/1.0) VIUtils/1.0";
-        this.formated_Post = String.format("program=%s&version=%s&build=%s&isBeta=%b&isRC=%b", programName, version, build, isBeta, isRC);
+        this.formated_Post = String.format("program=%s&version=%s&build=%s&isBeta=%b&isRC=%b&checkUnstable=%b", programName, version, build, isBeta, isRC, checkUnstable);
     }
 
     /**
