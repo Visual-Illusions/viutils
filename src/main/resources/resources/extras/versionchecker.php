@@ -1,5 +1,5 @@
 <?php
-/* versionchecker.php v1.0
+/* versionchecker.php v1.1
 
   Copyright 2012-2013 Visual Illusions Entertainment.
   
@@ -15,107 +15,78 @@
   See the GNU Lesser General Public License for more details.
  
   You should have received a copy of the GNU Lesser General Public License along with VIUtils.
-  If not, see http://www.gnu.org/licenses/lgpl.html */
+  If not, see http://www.gnu.org/licenses/lgpl.html
+*/
 
-/* Edit the programinfo array to match your programs
-Example:
-$programinfo = array( "VIUtils" => array( "version" => "1.0","build" => "1","isBeta" => "true", "isRC" => "false")
-                      );*/
-$programinfo = array( //Program info array
-                    );
-  
-if(isset($_POST['program'])){ //Check if post contians program, if not, drop the whole thing
+function main($program){
+	/* Edit the programinfo array to match your programs
+	 Examples:
+	$stable = array( "VIUtils" => array( "VERSION" => "1.0","BUILD" => "1"),
+	                 "Other"   => array( "VERSION" => "1.0","BUILD" => "1")
+	);
+	$relcan = array( "VIUtils" => array( "VERSION" => "1.0","BUILD" => "1")
+	);
+	$beta = array( "VIUtils" => array( "VERSION" => "1.0","BUILD" => "1")
+	);
+	$beta = array( "VIUtils" => array( "VERSION" => "1.0","BUILD" => "1")
+	); 
+	*/
+	
+	$stable	    = array(
+	);
+	$relcan     = array(
+	);
+	$beta       = array(
+	);
+	$alpha      = array(
+	);
+	
+	$toret = '';
+	if (array_key_exists($program,$stable)){ //Look up program
+		$toret .= 'STABLE:';
+		$toret .= 'VERSION='.$stable[$program]['VERSION'].':';
+		$toret .= 'BUILD='.$stable[$program]['BUILD'];
+	}
+	
+	if (array_key_exists($program,$relcan)){
+		if(!empty($toret)){
+			$toret .= ',';
+		}
+		$toret .= 'RELEASE_CANIDATE:';
+		$toret .= 'VERSION='.$relcan[$program]['VERSION'].':';
+		$toret .= 'BUILD='.$relcan[$program]['BUILD'];
+	}
+	
+	if (array_key_exists($program,$beta)){
+		if(!empty($toret)){
+			$toret .= ',';
+		}
+		$toret .= 'BETA:';
+		$toret .= 'VERSION='.$beta[$program]['VERSION'].':';
+		$toret .= 'BUILD='.$beta[$program]['BUILD'];
+	}
+	
+	if (array_key_exists($program,$alpha)){
+		if(!empty($toret)){
+			$toret .= ',';
+		}
+		$toret .= 'ALPHA:';
+		$toret .= 'VERSION='.$alpha[$program]['VERSION'].':';
+		$toret .= 'BUILD='.$alpha[$program]['BUILD'];
+	}
+	
+	if(empty($toret)){
+		echo 'ERROR: 404';
+	}
+	else{
+		echo $toret;
+	}
+}
 
-    function died($error) { //prints an error message
-        echo "ERROR: ".$error;
-        die();
-    }
-    
-    function progEcho($prog){ //prints false:<latest version info>
-        global $programinfo;
-        echo 'false:'.$programinfo[$prog]['version'].'b'.$programinfo[$prog]['build'].' ';
-        if($programinfo[$prog]['isBeta'] == 'true'){
-            echo 'BETA';
-        }
-        elseif($programinfo[$prog]['isRC'] == 'true'){
-            echo 'RC';
-        }
-        die();
-    }
-    
-    function checkBetaRC($prog){
-        if($programinfo[$prog]['isBeta'] == 'true'){
-            if($isBeta == 'true'){ //is requesting program a beta build?
-                progEcho($prog); //current program status is upgrade over requesting program, send info
-            }
-            echo 'true'; // requesting program is upgrade or equal
-        }
-        else if($programinfo[$prog]['isRC'] == 'true'){
-            if($isBeta == 'true'){ //is requesting program a beta build?
-                progEcho($prog); //current program status is upgrade over requesting program, send info
-            }
-            else if($isRC == 'true'){
-                progEcho($prog); //current program status is upgrade over requesting program, send info
-            }
-            echo 'true'; // requesting program is upgrade or equal
-        }
-        else{
-            progEcho($prog); //current program status is upgrade over requesting program, send info
-        }
-        die();
-    }
-    
-
-    if(!isset($_POST['version'])){ //if version not set, error and die
-        died("Version not set");
-    }
-    elseif(!isset($_POST['build'])) { //if build not set, error and die
-        died("Build not set");    
-    }
-    elseif(!isset($_POST['isBeta'])){ //if isBeta not set, error and die
-        died("Beta not set");
-    }
-    elseif(!isset($_POST['isRC'])){ //if isRC not set, error and die
-        died("RC not set");
-    }
-
-    $program = $_POST['program']; //The program to look for
-    $version = $_POST['version']; //The version of the requesting program
-    $build = $_POST['build'];     //The build of the requesting program
-    $isBeta = $_POST['isBeta'];   //Wether the program is a beta or not
-    $isRC = $_POST['isRC'];       //Wether the program is a release candidate or not
-    $checkUnstable = false;       //Wether to include beta/rc in the checking
-
-    if(isset($_POST['checkunstable'])){
-        $checkUnstable = $_POST['checkunstable'];
-    }
-    
-    if (array_key_exists($program,$programinfo)){ //Look up program
-        if($programinfo[$program]['version'] > $version){ //Check version
-            if($checkUnstable){ //Are we checking beta/rc ?
-                checkBetaRC($program);
-            }
-            else if($programinfo[$prog]['isBeta'] == 'false' && $programinfo[$prog]['isRC'] == 'false'){
-                progEcho($prog);
-            }
-        }
-        else if($programinfo[$program]['build'] > $build){ //Check build
-            if($checkUnstable){
-               checkBetaRC($program);
-            }
-            else if($programinfo[$prog]['isBeta'] == 'false' && $programinfo[$prog]['isRC'] == 'false'){
-                progEcho($prog);
-            }
-        }
-        else{
-            echo 'true'; // requesting program is upgrade or equal
-        }
-    }
-    else{
-        died("Program Not Found"); //program posted was not in the array
-    }
+if(isset($_POST['program'])){
+	main($_POST['program']);
 }
 else{
-    echo "ERROR: No program set to check."; //program not posted
+	echo 'ERROR: 400';
 }
 ?>

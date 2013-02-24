@@ -31,15 +31,32 @@ import java.net.URL;
  * There is an included versionchecker.php in the /resources/extras/ folder inside the jar.<br>
  * 
  * @since 1.0
- * @version 1.0
+ * @version 1.1
  * @author Jason (darkdiplomat)
  */
 public final class VersionChecker {
-    private final String programName, checkurl, user_agent;
-    private final String formated_Post;
-    private String currver;
+    private final String programName, checkurl, user_agent, formated_Post;
+    private final boolean checkUnstable;
+    private final ProgramStatus status;
+    private String currver, error;
     private long lastCheck = 0L;
-    private boolean isLatest = false;
+    private boolean isLatest = true, canCheck = true;
+    private float version;
+    private long build;
+
+    /**
+     * Program Status helper enum
+     * <p>
+     * Used to tell VersionChecker
+     * 
+     * @author Jason (darkdiplomat)
+     */
+    public enum ProgramStatus {
+        ALPHA, //
+        BETA, //
+        RELEASE_CANADATE, //
+        STABLE;
+    }
 
     /**
      * Creates a new {@code VersionChecker}<br>
@@ -51,19 +68,26 @@ public final class VersionChecker {
      *            A {@link String} representation of the software version
      * @param build
      *            A {@link String} representation of the build number
-     * @param isBeta
-     *            A {@code boolean} value of whether the program is a beta build
-     * @param isRC
-     *            A {@code boolean} value of whether the program is a release candidate build
+     * @param status
+     *            The {@link ProgramStatus} of the given program.
      * @param checkurl
      *            A {@link String} representation of the url to verify version though (ie: http://visualillusionsent.net/testing/versionchecker.php)
      */
-    public VersionChecker(String programName, String version, String build, String checkurl, boolean isBeta, boolean isRC, boolean checkUnstable) {
+    public VersionChecker(String programName, String version, String build, String checkurl, ProgramStatus status, boolean checkUnstable) {
         this.programName = programName;
         this.currver = version;
         this.checkurl = checkurl;
-        this.user_agent = "Java/" + SystemUtils.JAVA_VERSION + " (" + SystemUtils.SYSTEM_OS + "; " + programName + "/" + version + "; VersionChecker/1.0) VIUtils/1.0";
-        this.formated_Post = String.format("program=%s&version=%s&build=%s&isBeta=%b&isRC=%b&checkUnstable=%b", programName, version, build, isBeta, isRC, checkUnstable);
+        this.user_agent = "Java/" + SystemUtils.JAVA_VERSION + " (" + SystemUtils.SYSTEM_OS + "; " + programName + "/" + version + "; VersionChecker/1.1) VIUtils/1.0";
+        this.formated_Post = String.format("program=%s", programName);
+        this.checkUnstable = checkUnstable;
+        this.status = status;
+        try {
+            this.version = Float.parseFloat(version);
+            this.build = Long.parseLong(build);
+        }
+        catch (NumberFormatException nfe) {
+            canCheck = false;
+        }
     }
 
     /**
@@ -73,14 +97,34 @@ public final class VersionChecker {
      * @return {@code true} if latest; {@code false} if not; {@code null} on error
      */
     public final Boolean isLatest() {
-        BufferedReader in = null;
-        OutputStreamWriter out = null;
         long currentTime = System.currentTimeMillis();
-        if ((lastCheck + 600000) > currentTime) { //If recently checked, reuse value rather than spam the site
+        if ((lastCheck + 600000) > currentTime || !canCheck) { //If recently checked, reuse value rather than spam the site
             return isLatest;
         }
 
-        String inputLine = null;
+        String inputLine = getInput(currentTime);
+        if (inputLine == null || inputLine.startsWith("ERROR") || inputLine.startsWith("Fatal")) {
+            parseError(inputLine);
+            return null; //ERROR
+        }
+        else {
+            parseError("GOOD");
+            parseInput(inputLine);
+        }
+        return isLatest;
+    }
+
+    /**
+     * Parse the input from the PHP Script
+     * 
+     * @param currentTime
+     * @return inputLine
+     *         PHP Script output line of versions/builds
+     */
+    private final String getInput(long currentTime) {
+        BufferedReader in = null;
+        OutputStreamWriter out = null;
+        String inputLine = "";
         try {
             URL url = new URL(checkurl);
             HttpURLConnection huc = (HttpURLConnection) url.openConnection();
@@ -97,7 +141,10 @@ public final class VersionChecker {
             out.flush();
             in = new BufferedReader(new InputStreamReader(huc.getInputStream()));
 
-            inputLine = in.readLine();
+            String temp;
+            while ((temp = in.readLine()) != null) {
+                inputLine += temp;
+            }
             lastCheck = currentTime;
         }
         catch (Exception ex) {}
@@ -112,17 +159,131 @@ public final class VersionChecker {
             }
             catch (IOException ioe) {}
         }
-        if (inputLine == null || inputLine.startsWith("Error") || inputLine.equals("<br />")) {
-            return null; //ERROR
+        if (inputLine.isEmpty()) {
+            inputLine = null;
         }
-        else {
-            String[] input = inputLine.split(":");
-            isLatest = Boolean.parseBoolean(input[0]);
-            if (input.length > 1) {
-                currver = input[1];
+        return inputLine;
+    }
+
+    /**
+     * Parses the input from the php script
+     * 
+     * @param input
+     *            the input line from the php script
+     */
+    private final void parseInput(String input) {
+        String[] statuses = input.split(",");
+        float sv = 0.0F; //Stable Version
+        float rcv = 0.0F; //ReleaseCandidate Version
+        float bv = 0.0F; // BETA version
+        float av = 0.0F; //ALPHA version
+        long sb = 0; //Stable Build
+        long rcb = 0; //ReleaseCandidate Build
+        long bb = 0; //BETA Build
+        long ab = 0; //ALPHA Build
+
+        for (String status : statuses) {
+            if (status.startsWith("STABLE")) {
+                String[] verbuild = status.split(":");
+                try {
+                    sv = Float.parseFloat(verbuild[1].split("=")[1]);
+                    sb = Long.parseLong(verbuild[2].split("=")[1]);
+                }
+                catch (NumberFormatException nfe) {}
+            }
+            else if (status.startsWith("RELEASE_CANIDATE")) {
+                String[] verbuild = status.split(":");
+                try {
+                    rcv = Float.parseFloat(verbuild[1].split("=")[1]);
+                    rcb = Long.parseLong(verbuild[2].split("=")[1]);
+                }
+                catch (NumberFormatException nfe) {}
+            }
+            else if (status.startsWith("BETA")) {
+                String[] verbuild = status.split(":");
+                try {
+                    bv = Float.parseFloat(verbuild[1].split("=")[1]);
+                    bb = Long.parseLong(verbuild[2].split("=")[1]);
+                }
+                catch (NumberFormatException nfe) {}
+            }
+            else if (status.startsWith("ALPHA")) {
+                String[] verbuild = status.split(":");
+                try {
+                    av = Float.parseFloat(verbuild[1].split("=")[1]);
+                    ab = Long.parseLong(verbuild[2].split("=")[1]);
+                }
+                catch (NumberFormatException nfe) {}
             }
         }
-        return isLatest;
+
+        float currentVersion = 0.0F;
+        long currentBuild = 0L;
+
+        Object[] currentVB = compareVersionBuild(version, sv, build, sb, status, ProgramStatus.STABLE);
+        if (checkUnstable) {
+            currentVB = compareVersionBuild((Float) currentVB[0], av, (Long) currentVB[1], ab, (ProgramStatus) currentVB[2], ProgramStatus.ALPHA);
+            currentVB = compareVersionBuild((Float) currentVB[0], bv, (Long) currentVB[1], bb, (ProgramStatus) currentVB[2], ProgramStatus.BETA);
+            currentVB = compareVersionBuild((Float) currentVB[0], rcv, (Long) currentVB[1], rcb, (ProgramStatus) currentVB[2], ProgramStatus.RELEASE_CANADATE);
+            currentVersion = (Float) currentVB[0];
+            currentBuild = (Long) currentVB[1];
+        }
+        else {
+            currentVersion = (Float) currentVB[0];
+            currentBuild = (Long) currentVB[1];
+        }
+        isLatest = currentVersion == version && currentBuild == build && status == (ProgramStatus) currentVB[2];
+
+        if (!isLatest) {
+            currver = currentVersion + "." + currentBuild + "" + ((ProgramStatus) currentVB[2] != ProgramStatus.STABLE ? " " + (ProgramStatus) currentVB[2] : "");
+        }
+        else {
+            currver = version + "." + build + (status != ProgramStatus.STABLE ? " " + status.toString() : "");
+        }
+    }
+
+    /**
+     * Compares the Version and Build
+     * 
+     * @param a
+     *            float value a
+     * @param b
+     *            float value b
+     * @return the larger of the 2 values
+     */
+    private final Object[] compareVersionBuild(float vA, float vB, long bA, long bB, ProgramStatus sA, ProgramStatus sB) {
+        if (vA == vB && bA < bB) {
+            return new Object[] { vB, bB, sB };
+        }
+        else if (vA < vB) {
+            return new Object[] { vB, bB, sB };
+        }
+
+        return new Object[] { vA, bA, sA };
+    }
+
+    /**
+     * Parses the error code from the php script
+     * 
+     * @param input
+     *            the input line from the php script
+     */
+    private final void parseError(String input) {
+        if (input == null) {
+            error = "External Script could not be reached!";
+        }
+        else if (input.equals("ERROR: 404")) {
+            error = "Program not found.";
+        }
+        else if (input.equals("ERROR: 400")) {
+            error = "External Script Error";
+        }
+        else if (input.equals("GOOD")) {
+            error = "No Errors Present";
+        }
+        else {
+            error = "Unknown error: Input- " + input;
+        }
     }
 
     /**
@@ -147,5 +308,14 @@ public final class VersionChecker {
         else {
             return "Current Version of: '".concat(programName).concat("' is installed");
         }
+    }
+
+    /**
+     * Gets the Error Message if one is present
+     * 
+     * @return the error message
+     */
+    public final String getErrorMessage() {
+        return error;
     }
 }
