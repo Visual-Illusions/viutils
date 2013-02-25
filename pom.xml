@@ -40,7 +40,7 @@
   <scm>
     <connection>scm:git:git@github.com/Visual-Illusions/viutils.git</connection>
     <developerConnection>scm:git:git@github.com/Visual-Illusions/viutils.git</developerConnection>
-    <url>git@github.com/Visual-Illusions/viutils.git</url>
+    <url>https://github.com/Visual-Illusions/viutils/</url>
   </scm>
   <issueManagement>
     <url>https://github.com/Visual-Illusions/viutils/issues</url>
@@ -52,9 +52,9 @@
   </ciManagement>
   <distributionManagement>
     <repository>
-      <id>sonatype-nexus-staging</id>
-      <name>Nexus Staging Repository</name>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      <id>vi-repo</id>
+      <name>Visual Illusions Repository</name>
+      <url>ftp://repo.visualillusionsent.net/</url>
     </repository>
   </distributionManagement>
   <properties>
@@ -69,4 +69,13 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ftp</artifactId>
+        <version>1.0-alpha-6</version>
+      </extension>
+    </extensions>
+  </build>
 </project>
