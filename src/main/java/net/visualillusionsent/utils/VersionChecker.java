@@ -45,20 +45,6 @@ public final class VersionChecker {
     private long build;
 
     /**
-     * Program Status helper enum
-     * <p>
-     * Used to tell VersionChecker
-     * 
-     * @author Jason (darkdiplomat)
-     */
-    public enum ProgramStatus {
-        ALPHA, //
-        BETA, //
-        RELEASE_CANADATE, //
-        STABLE;
-    }
-
-    /**
      * Creates a new {@code VersionChecker}<br>
      * In your access log you will see something like: Java/{version} ({OS.Version}; {JarName}/{Version}; VersionChecker/{Version}) VIUtils/{Version}<br>
      * 
@@ -86,6 +72,9 @@ public final class VersionChecker {
             this.build = Long.parseLong(build);
         }
         catch (NumberFormatException nfe) {
+            canCheck = false;
+        }
+        if (status == ProgramStatus.UNKNOWN) {
             canCheck = false;
         }
     }
