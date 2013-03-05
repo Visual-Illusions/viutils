@@ -27,14 +27,14 @@ package net.visualillusionsent.utils;
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
-public enum ProgramStatus {
+public enum ProgramStatus{
     UNKNOWN, //
     ALPHA, //
     BETA, //
-    RELEASE_CANADATE, //
+    RELEASE_CANDIDATE, //
     STABLE;
 
-    public String toString() {
+    public String toString(){
         return super.toString().replace("_", " ");
     }
 }

@@ -3,11 +3,11 @@
 
   <groupId>net.visualillusionsent</groupId>
   <artifactId>viutils</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <packaging>jar</packaging>
   
-  <name>Visual Illusions Java Utilities Library</name>
-  <description>VIUtils contains many Utility functions and methods for use in Java Programs</description>
+  <name>VIUtils</name>
+  <description>Visual Illusions Entertainment Java Utilities Library</description>
   <url>http://visualillusionsent.net</url>
   <inceptionYear>2012</inceptionYear>
   <organization>
@@ -70,6 +70,26 @@
     </dependency>
   </dependencies>
   <build>
+  	<plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3.1</version>
+        <configuration>
+          <archive>
+            <addMavenDescriptor>false</addMavenDescriptor>
+            <manifest>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <Sealed>true</Sealed>
+              <Build-By>${user.name}</Build-By>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
     <extensions>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
