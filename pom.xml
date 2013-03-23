@@ -54,7 +54,7 @@
     <repository>
       <id>vi-repo</id>
       <name>Visual Illusions Repository</name>
-      <url>ftp://repo.visualillusionsent.net/</url>
+      <url>ftp://visualillusionsent.net/repo/</url>
     </repository>
   </distributionManagement>
   <properties>

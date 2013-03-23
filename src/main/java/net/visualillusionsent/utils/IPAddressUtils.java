@@ -17,6 +17,8 @@
  */
 package net.visualillusionsent.utils;
 
+import java.util.regex.Pattern;
+
 /**
  * Provides static methods to help with IP Address manipulations and checking
  * 
@@ -24,21 +26,21 @@ package net.visualillusionsent.utils;
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
-public final class IPAddressUtils {
-    /**
-     * Internet Protocal Version 4 Syntax checking regex
-     */
-    private static final String IPv4_REGEX = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}";
+public final class IPAddressUtils{
 
     /**
-     * Internet Protocal Version 6 Syntax checking regex
+     * Internet Protocol Version 4 Syntax checking pattern
      */
-    private static final String IPv6_REGEX = "\\A(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\\z";
+    private static final Pattern IPv4_REGEX = Pattern.compile("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+    /**
+     * Internet Protocol Version 6 Syntax checking pattern
+     */
+    private static final Pattern IPv6_REGEX = Pattern.compile("\\A(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\\z");
 
     /**
      * This class should never be constructed
      */
-    private IPAddressUtils() {}
+    private IPAddressUtils(){}
 
     /**
      * Checks a IP Address string for proper IPv4 syntax
@@ -50,11 +52,11 @@ public final class IPAddressUtils {
      * <br>
      *             if ip is null
      */
-    public static final boolean isIPv4Address(String ip) throws UtilityException {
-        if (ip == null) {
+    public static final boolean isIPv4Address(String ip) throws UtilityException{
+        if(ip == null){
             throw new UtilityException("arg.null", "String ip");
         }
-        return ip.matches(IPv4_REGEX);
+        return IPv4_REGEX.matcher(ip).matches();
     }
 
     /**
@@ -67,11 +69,11 @@ public final class IPAddressUtils {
      * <br>
      *             if ip is null
      */
-    public static final boolean isIPv6Address(String ip) throws UtilityException {
-        if (ip == null) {
+    public static final boolean isIPv6Address(String ip) throws UtilityException{
+        if(ip == null){
             throw new UtilityException("arg.null", "String ip");
         }
-        return ip.matches(IPv6_REGEX);
+        return IPv6_REGEX.matcher(ip).matches();
     }
 
     /**
@@ -82,10 +84,10 @@ public final class IPAddressUtils {
      *            the long value representing the IP address.
      * @return An {@code byte[]} of size 4.
      */
-    public static byte[] longToIPv4(long address) {
+    public static byte[] longToIPv4(long address){
         byte[] ip = new byte[4];
-        for (int index = 0; index < 4; index++) {
-            ip[index] = (byte) (address % 256);
+        for(int index = 0; index < 4; index++){
+            ip[index] = (byte)(address % 256);
             address = address / 256;
         }
         return ip;
@@ -102,13 +104,13 @@ public final class IPAddressUtils {
      * <br>
      *             if the byte array is not of length 4
      */
-    public static long ipv4ToLong(byte[] address) throws UtilityException {
-        if (address.length != 4) {
+    public static long ipv4ToLong(byte[] address) throws UtilityException{
+        if(address.length != 4){
             throw new UtilityException("byte array must be of length 4");
         }
         long ipNum = 0;
         long multiplier = 1;
-        for (byte bytes : address) {
+        for(byte bytes : address){
             int byteVal = (bytes + 256) % 256;
             ipNum += byteVal * multiplier;
             multiplier *= 256;
@@ -126,12 +128,12 @@ public final class IPAddressUtils {
      * <br>
      *             if the byte array is not of length 4
      */
-    public static String ipv4BytestoString(byte[] address) throws UtilityException {
-        if (address.length != 4) {
+    public static String ipv4BytestoString(byte[] address) throws UtilityException{
+        if(address.length != 4){
             throw new UtilityException("byte array must be of length 4");
         }
         StringBuilder build = new StringBuilder();
-        for (byte bytes : address) {
+        for(byte bytes : address){
             build.append(bytes);
             build.append(".");
         }

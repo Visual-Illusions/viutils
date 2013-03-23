@@ -44,11 +44,12 @@ import java.util.jar.JarFile;
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
-public final class PropertiesFile {
-    private File propsFile;
-    private String filepath;
-    private JarFile jar;
-    private LinkedHashMap<String, String> props = new LinkedHashMap<String, String>();
+public final class PropertiesFile{
+
+    private File                            propsFile;
+    private String                          filepath;
+    private JarFile                         jar;
+    private LinkedHashMap<String, String>   props    = new LinkedHashMap<String, String>();
     private LinkedHashMap<String, String[]> comments = new LinkedHashMap<String, String[]>();
 
     /**
@@ -60,26 +61,27 @@ public final class PropertiesFile {
      * <br>
      *             if there was an error with either reading or writing the properties file
      */
-    public PropertiesFile(String filepath) throws UtilityException {
-        if (filepath == null) {
+    public PropertiesFile(String filepath) throws UtilityException{
+        if(filepath == null){
             throw new UtilityException("arg.null", "String filepath");
         }
-        else if (filepath.trim().isEmpty()) {
+        else if(filepath.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String filepath");
         }
         this.filepath = filepath;
         propsFile = new File(filepath);
-        if (propsFile.exists()) {
-            try {
+        if(propsFile.exists()){
+            try{
                 load(new FileInputStream(propsFile));
             }
-            catch (FileNotFoundException e) {
+            catch(FileNotFoundException e){
                 throw new UtilityException("file.err.ioe", filepath);
             }
         }
-        else {
-            if (!propsFile.mkdirs()) {
-                throw new UtilityException("File to make directory path for FilePath: ".concat(filepath));
+        else{
+            File temp = new File(filepath.substring(0, filepath.lastIndexOf(File.separator)));
+            if(!temp.mkdirs()){
+                throw new UtilityException("Failed to make directory path for FilePath: ".concat(filepath));
             }
             save();
         }
@@ -99,36 +101,34 @@ public final class PropertiesFile {
      *             or if the Jar file is not found or unable to be read from<br>
      *             or if the Jar file does not contain the entry
      */
-    public PropertiesFile(String jarpath, String entry) throws UtilityException {
-        if (jarpath == null) {
+    public PropertiesFile(String jarpath, String entry) throws UtilityException{
+        if(jarpath == null){
             throw new UtilityException("arg.null", "String jarpath");
         }
-        else if (jarpath.trim().isEmpty()) {
+        else if(jarpath.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String jarpath");
         }
-        else if (entry == null) {
+        else if(entry == null){
             throw new UtilityException("arg.null", "String entry");
         }
-        else if (entry.trim().isEmpty()) {
+        else if(entry.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String entry");
         }
-
-        try {
+        try{
             jar = new JarFile(jarpath);
         }
-        catch (IOException ioe) {
+        catch(IOException ioe){
             throw new UtilityException("Unable to get JarFile");
         }
-
         JarEntry ent = jar.getJarEntry(entry);
-        if (ent == null) {
+        if(ent == null){
             throw new UtilityException("entry.missing", entry);
         }
         filepath = entry;
-        try {
+        try{
             load(jar.getInputStream(ent));
         }
-        catch (IOException e) {
+        catch(IOException e){
             throw new UtilityException("file.err.ioe", filepath);
         }
     }
@@ -140,37 +140,37 @@ public final class PropertiesFile {
      * <br>
      *             if there was an error with reading the properties file
      */
-    private final void load(InputStream instream) throws UtilityException {
+    private final void load(InputStream instream) throws UtilityException{
         UtilityException uex = null;
         BufferedReader in = null;
-        try {
+        try{
             in = new BufferedReader(new InputStreamReader(instream, "UTF-8"));
             String inLine;
             ArrayList<String> inComments = new ArrayList<String>();
-            while ((inLine = in.readLine()) != null) {
-                if (inLine.startsWith(";") || inLine.startsWith("#")) {
+            while((inLine = in.readLine()) != null){
+                if(inLine.startsWith(";") || inLine.startsWith("#")){
                     inComments.add(inLine);
                 }
-                else {
+                else{
                     String[] propsLine = null;
-                    try {
+                    try{
                         propsLine = inLine.split("=");
                         props.put(propsLine[0].trim(), propsLine[1].trim());
                     }
-                    catch (ArrayIndexOutOfBoundsException aioobe) {
+                    catch(ArrayIndexOutOfBoundsException aioobe){
                         //Empty value?
-                        if (inLine.contains("=")) {
+                        if(inLine.contains("=")){
                             props.put(propsLine[0], "");
                         }
                         //Incomplete property, drop reference
-                        else {
+                        else{
                             inComments.clear();
                             continue;
                         }
                     }
-                    if (!inComments.isEmpty()) {
+                    if(!inComments.isEmpty()){
                         String[] commented = new String[inComments.size()];
-                        for (int index = 0; index < inComments.size(); index++) {
+                        for(int index = 0; index < inComments.size(); index++){
                             commented[index] = inComments.get(index);
                         }
                         comments.put(propsLine[0], commented);
@@ -179,20 +179,20 @@ public final class PropertiesFile {
                 }
             }
         }
-        catch (IOException ioe) {
+        catch(IOException ioe){
             UtilsLogger.severe(String.format("An IOException occurred in File: '%s'", filepath), ioe);
             uex = new UtilityException("file.err.ioe", filepath);
         }
-        finally {
-            if (in != null) {
-                try {
+        finally{
+            if(in != null){
+                try{
                     in.close();
                 }
-                catch (IOException e) {
+                catch(IOException e){
                     //do nothing
                 }
             }
-            if (uex != null) {
+            if(uex != null){
                 throw uex;
             }
         }
@@ -207,26 +207,26 @@ public final class PropertiesFile {
      *             or if the Jar file is not found or unable to be read from<br>
      *             or if the Jar file does not contain the entry
      */
-    public final void reload() throws UtilityException {
+    public final void reload() throws UtilityException{
         props.clear();
         comments.clear();
-        if (jar != null) {
+        if(jar != null){
             JarEntry ent = jar.getJarEntry(filepath);
-            if (ent == null) {
+            if(ent == null){
                 throw new UtilityException("entry.missing", filepath);
             }
-            try {
+            try{
                 load(jar.getInputStream(ent));
             }
-            catch (IOException e) {
+            catch(IOException e){
                 throw new UtilityException("file.err.ioe", filepath);
             }
         }
-        else {
-            try {
+        else{
+            try{
                 load(new FileInputStream(propsFile));
             }
-            catch (FileNotFoundException e) {
+            catch(FileNotFoundException e){
                 throw new UtilityException("file.err.ioe", filepath);
             }
         }
@@ -241,21 +241,20 @@ public final class PropertiesFile {
      *             if there was an error with writing the properties file<br>
      *             or if save is called for a PropertiesFile inside of a Jar
      */
-    public final void save() throws UtilityException {
-        if (jar != null) {
+    public final void save() throws UtilityException{
+        if(jar != null){
             throw new UtilityException("Saving is not supported with PropertiesFiles inside of Jar files");
         }
-
         BufferedWriter out = null;
-        try {
-            if (!propsFile.delete()) {
+        try{
+            if(!propsFile.delete()){
                 throw new UtilityException("file.err.ioe", filepath);
             }
             propsFile = new File(filepath);
             out = new BufferedWriter(new FileWriter(propsFile, true));
-            for (String prop : props.keySet()) {
-                if (comments.containsKey(prop)) {
-                    for (String comment : comments.get(prop)) {
+            for(String prop : props.keySet()){
+                if(comments.containsKey(prop)){
+                    for(String comment : comments.get(prop)){
                         out.write(comment);
                         out.newLine();
                     }
@@ -264,16 +263,16 @@ public final class PropertiesFile {
                 out.newLine();
             }
         }
-        catch (IOException ioe) {
+        catch(IOException ioe){
             UtilsLogger.severe(String.format("An IOException occurred in File: '%s'", filepath), ioe);
             throw new UtilityException("file.err.ioe", filepath);
         }
-        finally {
-            if (out != null) {
-                try {
+        finally{
+            if(out != null){
+                try{
                     out.close();
                 }
-                catch (IOException e) {}
+                catch(IOException e){}
             }
         }
     }
@@ -288,11 +287,11 @@ public final class PropertiesFile {
      * <br>
      *             if specified key is null or empty
      */
-    public boolean containsKey(String key) throws UtilityException {
-        if (key == null) {
+    public boolean containsKey(String key) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.trim().isEmpty()) {
+        else if(key.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
         return props.containsKey(key);
@@ -307,16 +306,16 @@ public final class PropertiesFile {
      * <br>
      *             if specified key is null or empty
      */
-    public void removeKey(String key) throws UtilityException {
-        if (key == null) {
+    public void removeKey(String key) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.trim().isEmpty()) {
+        else if(key.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
-        else if (props.containsKey(key)) {
+        else if(props.containsKey(key)){
             props.remove(key);
-            if (comments.containsKey(key)) {
+            if(comments.containsKey(key)){
                 comments.remove(key);
             }
         }
@@ -333,14 +332,14 @@ public final class PropertiesFile {
      *             if specified key is null or empty <br>
      *             or if property was not found
      */
-    public String getString(String key) throws UtilityException {
-        if (key == null) {
+    public String getString(String key) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.isEmpty()) {
+        else if(key.isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
-        else if (containsKey(key)) {
+        else if(containsKey(key)){
             return props.get(key);
         }
         throw new UtilityException("key.missing", key);
@@ -358,8 +357,8 @@ public final class PropertiesFile {
      *             if specified key is null or empty<br>
      *             or if value is null
      */
-    public void setString(String key, String value) throws UtilityException {
-        setString(key, value, (String[]) null);
+    public void setString(String key, String value) throws UtilityException{
+        setString(key, value, (String[])null);
     }
 
     /**
@@ -376,14 +375,14 @@ public final class PropertiesFile {
      *             if specified key is null or empty<br>
      *             or if value is null
      */
-    public void setString(String key, String value, String... comment) throws UtilityException {
-        if (key == null) {
+    public void setString(String key, String value, String... comment) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.trim().isEmpty()) {
+        else if(key.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
-        else if (value == null) {
+        else if(value == null){
             throw new UtilityException("arg.null", "String value");
         }
         props.put(key, value);
@@ -402,7 +401,7 @@ public final class PropertiesFile {
      *             if specified key is null or empty <br>
      *             or if property was not found
      */
-    public String[] getStringArray(String key) throws UtilityException {
+    public String[] getStringArray(String key) throws UtilityException{
         return getStringArray(key, ",");
     }
 
@@ -419,8 +418,8 @@ public final class PropertiesFile {
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
-    public void setStringArray(String key, String[] value) throws UtilityException {
-        setStringArray(key, ",", value, (String[]) null);
+    public void setStringArray(String key, String[] value) throws UtilityException{
+        setStringArray(key, ",", value, (String[])null);
     }
 
     /**
@@ -438,7 +437,7 @@ public final class PropertiesFile {
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
-    public void setStringArray(String key, String[] value, String... comment) throws UtilityException {
+    public void setStringArray(String key, String[] value, String... comment) throws UtilityException{
         setStringArray(key, ",", value, comment);
     }
 
@@ -457,11 +456,11 @@ public final class PropertiesFile {
      *             or if specified splitter is null or empty<br>
      *             or if property was not found
      */
-    public String[] getStringArray(String key, String splitBy) throws UtilityException {
-        if (splitBy == null) {
+    public String[] getStringArray(String key, String splitBy) throws UtilityException{
+        if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
         }
-        else if (splitBy.isEmpty()) {
+        else if(splitBy.isEmpty()){
             throw new UtilityException("arg.empty", "String splitBy");
         }
         return StringUtils.trimElements(getString(key).split(splitBy));
@@ -483,8 +482,8 @@ public final class PropertiesFile {
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
      */
-    public void setStringArray(String key, String spacer, String[] value) throws UtilityException {
-        setStringArray(key, spacer, value, (String[]) null);
+    public void setStringArray(String key, String spacer, String[] value) throws UtilityException{
+        setStringArray(key, spacer, value, (String[])null);
     }
 
     /**
@@ -505,23 +504,23 @@ public final class PropertiesFile {
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
      */
-    public void setStringArray(String key, String spacer, String[] value, String... comment) throws UtilityException {
-        if (key == null) {
+    public void setStringArray(String key, String spacer, String[] value, String... comment) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.trim().isEmpty()) {
+        else if(key.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
-        else if (spacer == null) {
+        else if(spacer == null){
             throw new UtilityException("arg.null", "String spacer");
         }
-        else if (spacer.isEmpty()) {
+        else if(spacer.isEmpty()){
             throw new UtilityException("arg.empty", "String spacer");
         }
-        else if (value == null) {
+        else if(value == null){
             throw new UtilityException("arg.null", "String[] value");
         }
-        else if (value.length == 0) {
+        else if(value.length == 0){
             throw new UtilityException("arg.empty", "String[] value");
         }
         props.put(key, StringUtils.joinString(value, spacer, 0));
@@ -540,11 +539,11 @@ public final class PropertiesFile {
      *             or if the property is not a number<br>
      *             or if property is not found
      */
-    public byte getByte(String key) throws UtilityException {
-        try {
+    public byte getByte(String key) throws UtilityException{
+        try{
             return Byte.parseByte(getString(key));
         }
-        catch (NumberFormatException nfe) {
+        catch(NumberFormatException nfe){
             throw new UtilityException("prop.nan", key);
         }
     }
@@ -560,8 +559,8 @@ public final class PropertiesFile {
      * <br>
      *             if specified key is null or empty
      */
-    public void setByte(String key, byte value) throws UtilityException {
-        setByte(key, value, (String[]) null);
+    public void setByte(String key, byte value) throws UtilityException{
+        setByte(key, value, (String[])null);
     }
 
     /**
@@ -577,11 +576,11 @@ public final class PropertiesFile {
      * <br>
      *             if specified key is null or empty
      */
-    public void setByte(String key, byte value, String... comment) throws UtilityException {
-        if (key == null) {
+    public void setByte(String key, byte value, String... comment) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.trim().isEmpty()) {
+        else if(key.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
         props.put(key, String.valueOf(value));
@@ -600,7 +599,7 @@ public final class PropertiesFile {
      *             if specified key is null or empty <br>
      *             or if property was not found
      */
-    public byte[] getByteArray(String key) throws UtilityException {
+    public byte[] getByteArray(String key) throws UtilityException{
         return getByteArray(key, ",");
     }
 
@@ -617,8 +616,8 @@ public final class PropertiesFile {
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
-    public void setByteArray(String key, byte[] value) throws UtilityException {
-        setByteArray(key, ",", value, (String[]) null);
+    public void setByteArray(String key, byte[] value) throws UtilityException{
+        setByteArray(key, ",", value, (String[])null);
     }
 
     /**
@@ -636,7 +635,7 @@ public final class PropertiesFile {
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
-    public void setByteArray(String key, byte[] value, String... comment) throws UtilityException {
+    public void setByteArray(String key, byte[] value, String... comment) throws UtilityException{
         setByteArray(key, ",", value, comment);
     }
 
@@ -655,11 +654,11 @@ public final class PropertiesFile {
      *             or if specified splitter is null or empty<br>
      *             or if property was not found
      */
-    public byte[] getByteArray(String key, String splitBy) throws UtilityException {
-        if (splitBy == null) {
+    public byte[] getByteArray(String key, String splitBy) throws UtilityException{
+        if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
         }
-        else if (splitBy.isEmpty()) {
+        else if(splitBy.isEmpty()){
             throw new UtilityException("arg.empty", "String splitBy");
         }
         return StringUtils.stringToByteArray(getString(key), splitBy);
@@ -681,8 +680,8 @@ public final class PropertiesFile {
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
      */
-    public void setByteArray(String key, String spacer, byte[] value) throws UtilityException {
-        setByteArray(key, spacer, value, (String[]) null);
+    public void setByteArray(String key, String spacer, byte[] value) throws UtilityException{
+        setByteArray(key, spacer, value, (String[])null);
     }
 
     /**
@@ -703,23 +702,23 @@ public final class PropertiesFile {
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
      */
-    public void setByteArray(String key, String spacer, byte[] value, String... comment) throws UtilityException {
-        if (key == null) {
+    public void setByteArray(String key, String spacer, byte[] value, String... comment) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.trim().isEmpty()) {
+        else if(key.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
-        else if (spacer == null) {
+        else if(spacer == null){
             throw new UtilityException("arg.null", "String spacer");
         }
-        else if (spacer.isEmpty()) {
+        else if(spacer.isEmpty()){
             throw new UtilityException("arg.empty", "String spacer");
         }
-        else if (value == null) {
+        else if(value == null){
             throw new UtilityException("arg.null", "byte[] value");
         }
-        else if (value.length < 1) {
+        else if(value.length < 1){
             throw new UtilityException("arg.empty", "byte[] value");
         }
         props.put(key, StringUtils.byteArrayToString(value, spacer));
@@ -738,11 +737,11 @@ public final class PropertiesFile {
      *             or if the property is not a number<br>
      *             or if property is not found
      */
-    public short getShort(String key) throws UtilityException {
-        try {
+    public short getShort(String key) throws UtilityException{
+        try{
             return Short.parseShort(getString(key));
         }
-        catch (NumberFormatException nfe) {
+        catch(NumberFormatException nfe){
             throw new UtilityException("prop.nan", key);
         }
     }
@@ -758,8 +757,8 @@ public final class PropertiesFile {
      * <br>
      *             if specified key is null or empty
      */
-    public void setShort(String key, short value) throws UtilityException {
-        setShort(key, value, (String[]) null);
+    public void setShort(String key, short value) throws UtilityException{
+        setShort(key, value, (String[])null);
     }
 
     /**
@@ -775,11 +774,11 @@ public final class PropertiesFile {
      * <br>
      *             if specified key is null or empty
      */
-    public void setShort(String key, short value, String... comment) throws UtilityException {
-        if (key == null) {
+    public void setShort(String key, short value, String... comment) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.trim().isEmpty()) {
+        else if(key.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
         props.put(key, String.valueOf(value));
@@ -798,7 +797,7 @@ public final class PropertiesFile {
      *             if specified key is null or empty <br>
      *             or if property was not found
      */
-    public short[] getShortArray(String key) throws UtilityException {
+    public short[] getShortArray(String key) throws UtilityException{
         return getShortArray(key, ",");
     }
 
@@ -814,8 +813,8 @@ public final class PropertiesFile {
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
-    public void setShortArray(String key, short[] value) throws UtilityException {
-        setShortArray(key, ",", value, (String[]) null);
+    public void setShortArray(String key, short[] value) throws UtilityException{
+        setShortArray(key, ",", value, (String[])null);
     }
 
     /**
@@ -832,7 +831,7 @@ public final class PropertiesFile {
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
-    public void setShortArray(String key, short[] value, String... comment) throws UtilityException {
+    public void setShortArray(String key, short[] value, String... comment) throws UtilityException{
         setShortArray(key, ",", value, comment);
     }
 
@@ -851,11 +850,11 @@ public final class PropertiesFile {
      *             or if specified splitter is null or empty<br>
      *             or if property was not found
      */
-    public short[] getShortArray(String key, String splitBy) throws UtilityException {
-        if (splitBy == null) {
+    public short[] getShortArray(String key, String splitBy) throws UtilityException{
+        if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
         }
-        else if (splitBy.isEmpty()) {
+        else if(splitBy.isEmpty()){
             throw new UtilityException("arg.empty", "String splitBy");
         }
         return StringUtils.stringToShortArray(getString(key), splitBy);
@@ -876,8 +875,8 @@ public final class PropertiesFile {
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
      */
-    public void setShortArray(String key, String spacer, short[] value) throws UtilityException {
-        setShortArray(key, spacer, value, (String[]) null);
+    public void setShortArray(String key, String spacer, short[] value) throws UtilityException{
+        setShortArray(key, spacer, value, (String[])null);
     }
 
     /**
@@ -897,23 +896,23 @@ public final class PropertiesFile {
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
      */
-    public void setShortArray(String key, String spacer, short[] value, String... comment) throws UtilityException {
-        if (key == null) {
+    public void setShortArray(String key, String spacer, short[] value, String... comment) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.trim().isEmpty()) {
+        else if(key.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
-        else if (spacer == null) {
+        else if(spacer == null){
             throw new UtilityException("arg.null", "String spacer");
         }
-        else if (spacer.isEmpty()) {
+        else if(spacer.isEmpty()){
             throw new UtilityException("arg.empty", "String spacer");
         }
-        else if (value == null) {
+        else if(value == null){
             throw new UtilityException("arg.null", "short[] value");
         }
-        else if (value.length < 1) {
+        else if(value.length < 1){
             throw new UtilityException("arg.empty", "short[] value");
         }
         props.put(key, StringUtils.shortArrayToString(value, spacer));
@@ -932,11 +931,11 @@ public final class PropertiesFile {
      *             or if the property is not a number<br>
      *             or if property is not found
      */
-    public int getInt(String key) throws UtilityException {
-        try {
+    public int getInt(String key) throws UtilityException{
+        try{
             return Integer.parseInt(getString(key));
         }
-        catch (NumberFormatException nfe) {
+        catch(NumberFormatException nfe){
             throw new UtilityException("prop.nan", key);
         }
     }
@@ -952,8 +951,8 @@ public final class PropertiesFile {
      * <br>
      *             if specified key is null or empty
      */
-    public void setInt(String key, int value) throws UtilityException {
-        setInt(key, value, (String[]) null);
+    public void setInt(String key, int value) throws UtilityException{
+        setInt(key, value, (String[])null);
     }
 
     /**
@@ -969,11 +968,11 @@ public final class PropertiesFile {
      * <br>
      *             if specified key is null or empty
      */
-    public void setInt(String key, int value, String... comment) throws UtilityException {
-        if (key == null) {
+    public void setInt(String key, int value, String... comment) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.trim().isEmpty()) {
+        else if(key.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
         props.put(key, String.valueOf(value));
@@ -992,7 +991,7 @@ public final class PropertiesFile {
      *             if specified key is null or empty <br>
      *             or if property was not found
      */
-    public int[] getIntArray(String key) throws UtilityException {
+    public int[] getIntArray(String key) throws UtilityException{
         return getIntArray(key, ",");
     }
 
@@ -1008,8 +1007,8 @@ public final class PropertiesFile {
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
-    public void setIntArray(String key, int[] value) throws UtilityException {
-        setIntArray(key, ",", value, (String[]) null);
+    public void setIntArray(String key, int[] value) throws UtilityException{
+        setIntArray(key, ",", value, (String[])null);
     }
 
     /**
@@ -1026,7 +1025,7 @@ public final class PropertiesFile {
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
-    public void setIntArray(String key, int[] value, String... comment) throws UtilityException {
+    public void setIntArray(String key, int[] value, String... comment) throws UtilityException{
         setIntArray(key, ",", value, comment);
     }
 
@@ -1045,11 +1044,11 @@ public final class PropertiesFile {
      *             or if specified splitter is null or empty<br>
      *             or if property was not found
      */
-    public int[] getIntArray(String key, String splitBy) throws UtilityException {
-        if (splitBy == null) {
+    public int[] getIntArray(String key, String splitBy) throws UtilityException{
+        if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
         }
-        else if (splitBy.isEmpty()) {
+        else if(splitBy.isEmpty()){
             throw new UtilityException("arg.empty", "String splitBy");
         }
         return StringUtils.stringToIntArray(getString(key), splitBy);
@@ -1070,8 +1069,8 @@ public final class PropertiesFile {
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
      */
-    public void setIntArray(String key, String spacer, int[] value) throws UtilityException {
-        setIntArray(key, spacer, value, (String[]) null);
+    public void setIntArray(String key, String spacer, int[] value) throws UtilityException{
+        setIntArray(key, spacer, value, (String[])null);
     }
 
     /**
@@ -1091,23 +1090,23 @@ public final class PropertiesFile {
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
      */
-    public void setIntArray(String key, String spacer, int[] value, String... comment) throws UtilityException {
-        if (key == null) {
+    public void setIntArray(String key, String spacer, int[] value, String... comment) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.trim().isEmpty()) {
+        else if(key.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
-        else if (spacer == null) {
+        else if(spacer == null){
             throw new UtilityException("arg.null", "String spacer");
         }
-        else if (spacer.isEmpty()) {
+        else if(spacer.isEmpty()){
             throw new UtilityException("arg.empty", "String spacer");
         }
-        else if (value == null) {
+        else if(value == null){
             throw new UtilityException("arg.null", "int[] value");
         }
-        else if (value.length == 0) {
+        else if(value.length == 0){
             throw new UtilityException("arg.empty", "int[] value");
         }
         props.put(key, StringUtils.intArrayToString(value, spacer));
@@ -1126,11 +1125,11 @@ public final class PropertiesFile {
      *             or if the property is not a number<br>
      *             or if property is not found
      */
-    public long getLong(String key) throws UtilityException {
-        try {
+    public long getLong(String key) throws UtilityException{
+        try{
             return Long.parseLong(getString(key));
         }
-        catch (NumberFormatException nfe) {
+        catch(NumberFormatException nfe){
             throw new UtilityException("prop.nan", key);
         }
     }
@@ -1146,8 +1145,8 @@ public final class PropertiesFile {
      * <br>
      *             if specified key is null or empty
      */
-    public void setLong(String key, long value) throws UtilityException {
-        setLong(key, value, (String[]) null);
+    public void setLong(String key, long value) throws UtilityException{
+        setLong(key, value, (String[])null);
     }
 
     /**
@@ -1163,11 +1162,11 @@ public final class PropertiesFile {
      * <br>
      *             if specified key is null or empty
      */
-    public void setLong(String key, long value, String... comment) throws UtilityException {
-        if (key == null) {
+    public void setLong(String key, long value, String... comment) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.trim().isEmpty()) {
+        else if(key.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
         props.put(key, String.valueOf(value));
@@ -1186,7 +1185,7 @@ public final class PropertiesFile {
      *             if specified key is null or empty <br>
      *             or if property was not found
      */
-    public long[] getLongArray(String key) throws UtilityException {
+    public long[] getLongArray(String key) throws UtilityException{
         return getLongArray(key, ",");
     }
 
@@ -1202,8 +1201,8 @@ public final class PropertiesFile {
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
-    public void setLongArray(String key, long[] value) throws UtilityException {
-        setLongArray(key, ",", value, (String[]) null);
+    public void setLongArray(String key, long[] value) throws UtilityException{
+        setLongArray(key, ",", value, (String[])null);
     }
 
     /**
@@ -1220,7 +1219,7 @@ public final class PropertiesFile {
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
-    public void setLongArray(String key, long[] value, String... comment) throws UtilityException {
+    public void setLongArray(String key, long[] value, String... comment) throws UtilityException{
         setLongArray(key, ",", value, comment);
     }
 
@@ -1239,11 +1238,11 @@ public final class PropertiesFile {
      *             or if specified splitter is null or empty<br>
      *             or if property was not found
      */
-    public long[] getLongArray(String key, String splitBy) throws UtilityException {
-        if (splitBy == null) {
+    public long[] getLongArray(String key, String splitBy) throws UtilityException{
+        if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
         }
-        else if (splitBy.isEmpty()) {
+        else if(splitBy.isEmpty()){
             throw new UtilityException("arg.empty", "String splitBy");
         }
         return StringUtils.stringToLongArray(getString(key), splitBy);
@@ -1264,8 +1263,8 @@ public final class PropertiesFile {
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
      */
-    public void setLongArray(String key, String spacer, long[] value) throws UtilityException {
-        setLongArray(key, spacer, value, (String[]) null);
+    public void setLongArray(String key, String spacer, long[] value) throws UtilityException{
+        setLongArray(key, spacer, value, (String[])null);
     }
 
     /**
@@ -1285,23 +1284,23 @@ public final class PropertiesFile {
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
      */
-    public void setLongArray(String key, String spacer, long[] value, String... comment) throws UtilityException {
-        if (key == null) {
+    public void setLongArray(String key, String spacer, long[] value, String... comment) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.trim().isEmpty()) {
+        else if(key.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
-        else if (spacer == null) {
+        else if(spacer == null){
             throw new UtilityException("arg.null", "String spacer");
         }
-        else if (spacer.isEmpty()) {
+        else if(spacer.isEmpty()){
             throw new UtilityException("arg.empty", "String spacer");
         }
-        else if (value == null) {
+        else if(value == null){
             throw new UtilityException("arg.null", "long[] value");
         }
-        else if (value.length == 0) {
+        else if(value.length == 0){
             throw new UtilityException("arg.empty", "long[] value");
         }
         props.put(key, StringUtils.longArrayToString(value, spacer));
@@ -1320,11 +1319,11 @@ public final class PropertiesFile {
      *             or if the property is not a number<br>
      *             or if property is not found
      */
-    public float getFloat(String key) throws UtilityException {
-        try {
+    public float getFloat(String key) throws UtilityException{
+        try{
             return Float.parseFloat(getString(key));
         }
-        catch (NumberFormatException nfe) {
+        catch(NumberFormatException nfe){
             throw new UtilityException("prop.nan", key);
         }
     }
@@ -1340,8 +1339,8 @@ public final class PropertiesFile {
      * <br>
      *             if specified key is null or empty
      */
-    public void setFloat(String key, float value) throws UtilityException {
-        setFloat(key, value, (String[]) null);
+    public void setFloat(String key, float value) throws UtilityException{
+        setFloat(key, value, (String[])null);
     }
 
     /**
@@ -1357,11 +1356,11 @@ public final class PropertiesFile {
      * <br>
      *             if specified key is null or empty
      */
-    public void setFloat(String key, float value, String... comment) throws UtilityException {
-        if (key == null) {
+    public void setFloat(String key, float value, String... comment) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.trim().isEmpty()) {
+        else if(key.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
         props.put(key, String.valueOf(value));
@@ -1380,7 +1379,7 @@ public final class PropertiesFile {
      *             if specified key is null or empty <br>
      *             or if property was not found
      */
-    public float[] getFloatArray(String key) throws UtilityException {
+    public float[] getFloatArray(String key) throws UtilityException{
         return getFloatArray(key, ",");
     }
 
@@ -1396,8 +1395,8 @@ public final class PropertiesFile {
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
-    public void setFloatArray(String key, float[] value) throws UtilityException {
-        setFloatArray(key, ",", value, (String[]) null);
+    public void setFloatArray(String key, float[] value) throws UtilityException{
+        setFloatArray(key, ",", value, (String[])null);
     }
 
     /**
@@ -1414,7 +1413,7 @@ public final class PropertiesFile {
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
-    public void setFloatArray(String key, float[] value, String... comment) throws UtilityException {
+    public void setFloatArray(String key, float[] value, String... comment) throws UtilityException{
         setFloatArray(key, ",", value, comment);
     }
 
@@ -1433,11 +1432,11 @@ public final class PropertiesFile {
      *             or if specified splitter is null or empty<br>
      *             or if property was not found
      */
-    public float[] getFloatArray(String key, String splitBy) throws UtilityException {
-        if (splitBy == null) {
+    public float[] getFloatArray(String key, String splitBy) throws UtilityException{
+        if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
         }
-        else if (splitBy.isEmpty()) {
+        else if(splitBy.isEmpty()){
             throw new UtilityException("arg.empty", "String splitBy");
         }
         return StringUtils.stringToFloatArray(getString(key), splitBy);
@@ -1458,8 +1457,8 @@ public final class PropertiesFile {
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
      */
-    public void setFloatArray(String key, String spacer, float[] value) throws UtilityException {
-        setFloatArray(key, spacer, value, (String[]) null);
+    public void setFloatArray(String key, String spacer, float[] value) throws UtilityException{
+        setFloatArray(key, spacer, value, (String[])null);
     }
 
     /**
@@ -1479,23 +1478,23 @@ public final class PropertiesFile {
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
      */
-    public void setFloatArray(String key, String spacer, float[] value, String... comment) throws UtilityException {
-        if (key == null) {
+    public void setFloatArray(String key, String spacer, float[] value, String... comment) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.trim().isEmpty()) {
+        else if(key.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
-        else if (spacer == null) {
+        else if(spacer == null){
             throw new UtilityException("arg.null", "String spacer");
         }
-        else if (spacer.isEmpty()) {
+        else if(spacer.isEmpty()){
             throw new UtilityException("arg.empty", "String spacer");
         }
-        else if (value == null) {
+        else if(value == null){
             throw new UtilityException("arg.null", "float[] value");
         }
-        else if (value.length == 0) {
+        else if(value.length == 0){
             throw new UtilityException("arg.empty", "float[] value");
         }
         props.put(key, StringUtils.floatArrayToString(value, spacer));
@@ -1514,11 +1513,11 @@ public final class PropertiesFile {
      *             or if the property is not a number<br>
      *             or if property is not found
      */
-    public double getDouble(String key) throws UtilityException {
-        try {
+    public double getDouble(String key) throws UtilityException{
+        try{
             return Double.parseDouble(getString(key));
         }
-        catch (NumberFormatException nfe) {
+        catch(NumberFormatException nfe){
             throw new UtilityException("prop.nan");
         }
     }
@@ -1534,8 +1533,8 @@ public final class PropertiesFile {
      * <br>
      *             if specified key is null or empty
      */
-    public void setDouble(String key, double value) throws UtilityException {
-        setDouble(key, value, (String[]) null);
+    public void setDouble(String key, double value) throws UtilityException{
+        setDouble(key, value, (String[])null);
     }
 
     /**
@@ -1551,11 +1550,11 @@ public final class PropertiesFile {
      * <br>
      *             if specified key is null or empty
      */
-    public void setDouble(String key, double value, String... comment) throws UtilityException {
-        if (key == null) {
+    public void setDouble(String key, double value, String... comment) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.trim().isEmpty()) {
+        else if(key.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
         props.put(key, String.valueOf(value));
@@ -1574,7 +1573,7 @@ public final class PropertiesFile {
      *             if specified key is null or empty <br>
      *             or if property was not found
      */
-    public double[] getDoubleArray(String key) throws UtilityException {
+    public double[] getDoubleArray(String key) throws UtilityException{
         return getDoubleArray(key, ",");
     }
 
@@ -1590,8 +1589,8 @@ public final class PropertiesFile {
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
-    public void setDoubleArray(String key, double[] value) throws UtilityException {
-        setDoubleArray(key, ",", value, (String[]) null);
+    public void setDoubleArray(String key, double[] value) throws UtilityException{
+        setDoubleArray(key, ",", value, (String[])null);
     }
 
     /**
@@ -1608,7 +1607,7 @@ public final class PropertiesFile {
      *             if specified key is null or empty<br>
      *             or if value is null or empty
      */
-    public void setDoubleArray(String key, double[] value, String... comment) throws UtilityException {
+    public void setDoubleArray(String key, double[] value, String... comment) throws UtilityException{
         setDoubleArray(key, ",", value, comment);
     }
 
@@ -1627,11 +1626,11 @@ public final class PropertiesFile {
      *             or if specified splitter is null or empty<br>
      *             or if property was not found
      */
-    public double[] getDoubleArray(String key, String splitBy) throws UtilityException {
-        if (splitBy == null) {
+    public double[] getDoubleArray(String key, String splitBy) throws UtilityException{
+        if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
         }
-        else if (splitBy.isEmpty()) {
+        else if(splitBy.isEmpty()){
             throw new UtilityException("arg.empty", "String splitBy");
         }
         return StringUtils.stringToDoubleArray(getString(key), splitBy);
@@ -1652,8 +1651,8 @@ public final class PropertiesFile {
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
      */
-    public void setDoubleArray(String key, String spacer, double[] value) throws UtilityException {
-        setDoubleArray(key, spacer, value, (String[]) null);
+    public void setDoubleArray(String key, String spacer, double[] value) throws UtilityException{
+        setDoubleArray(key, spacer, value, (String[])null);
     }
 
     /**
@@ -1673,23 +1672,23 @@ public final class PropertiesFile {
      *             or if specified spacer is null or empty<br>
      *             or if value is null or empty
      */
-    public void setDoubleArray(String key, String spacer, double[] value, String... comment) throws UtilityException {
-        if (key == null) {
+    public void setDoubleArray(String key, String spacer, double[] value, String... comment) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.trim().isEmpty()) {
+        else if(key.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
-        else if (spacer == null) {
+        else if(spacer == null){
             throw new UtilityException("arg.null", "String spacer");
         }
-        else if (spacer.isEmpty()) {
+        else if(spacer.isEmpty()){
             throw new UtilityException("arg.empty", "String spacer");
         }
-        else if (value == null) {
+        else if(value == null){
             throw new UtilityException("arg.null", "double[] value");
         }
-        else if (value.length == 0) {
+        else if(value.length == 0){
             throw new UtilityException("arg.empty", "double[] value");
         }
         props.put(key, StringUtils.doubleArrayToString(value, spacer));
@@ -1708,7 +1707,7 @@ public final class PropertiesFile {
      *             or if property is not found
      * @see #parseBoolean(String)
      */
-    public boolean getBoolean(String key) throws UtilityException {
+    public boolean getBoolean(String key) throws UtilityException{
         return parseBoolean(getString(key));
     }
 
@@ -1723,8 +1722,8 @@ public final class PropertiesFile {
      * <br>
      *             if specified key is null or empty
      */
-    public void setBoolean(String key, boolean value) throws UtilityException {
-        setBoolean(key, value, (String[]) null);
+    public void setBoolean(String key, boolean value) throws UtilityException{
+        setBoolean(key, value, (String[])null);
     }
 
     /**
@@ -1740,11 +1739,11 @@ public final class PropertiesFile {
      * <br>
      *             if specified key is null or empty
      */
-    public void setBoolean(String key, boolean value, String... comment) throws UtilityException {
-        if (key == null) {
+    public void setBoolean(String key, boolean value, String... comment) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.trim().isEmpty()) {
+        else if(key.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
         props.put(key, String.valueOf(value));
@@ -1762,11 +1761,11 @@ public final class PropertiesFile {
      *             if specified key is null or empty<br>
      *             or if property is not found
      */
-    public char getCharacter(String key) throws UtilityException {
-        if (key == null) {
+    public char getCharacter(String key) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.trim().isEmpty()) {
+        else if(key.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
         return getString(key).trim().charAt(0);
@@ -1783,8 +1782,8 @@ public final class PropertiesFile {
      * <br>
      *             if specified key is null or empty
      */
-    public void setCharacter(String key, char ch) throws UtilityException {
-        setCharacter(key, ch, (String[]) null);
+    public void setCharacter(String key, char ch) throws UtilityException{
+        setCharacter(key, ch, (String[])null);
     }
 
     /**
@@ -1800,11 +1799,11 @@ public final class PropertiesFile {
      * <br>
      *             if specified key is null or empty
      */
-    public void setCharacter(String key, char ch, String... comment) throws UtilityException {
-        if (key == null) {
+    public void setCharacter(String key, char ch, String... comment) throws UtilityException{
+        if(key == null){
             throw new UtilityException("arg.null", "String key");
         }
-        else if (key.trim().isEmpty()) {
+        else if(key.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String key");
         }
         props.put(key, String.valueOf(ch));
@@ -1816,7 +1815,7 @@ public final class PropertiesFile {
      * 
      * @return unmodifiable properties map
      */
-    public Map<String, String> getPropertiesMap() {
+    public Map<String, String> getPropertiesMap(){
         return Collections.unmodifiableMap(props);
     }
 
@@ -1828,13 +1827,13 @@ public final class PropertiesFile {
      * @param comment
      *            the comment(s) to be added
      */
-    public void addComment(String key, String... comment) {
-        if (comment != null && comment.length > 0) {
-            for (int i = 0; i < comment.length; i++) {
-                if (comment[i] == null) {
+    public void addComment(String key, String... comment){
+        if(comment != null && comment.length > 0){
+            for(int i = 0; i < comment.length; i++){
+                if(comment[i] == null){
                     comment[i] = "";
                 }
-                if (!comment[i].startsWith(";") && !comment[i].startsWith("#")) {
+                if(!comment[i].startsWith(";") && !comment[i].startsWith("#")){
                     comment[i] = ";".concat(comment[i]);
                 }
             }
@@ -1849,8 +1848,8 @@ public final class PropertiesFile {
      *            the property key
      * @return comments if found, {@code null} if no comments found
      */
-    public String[] getComments(String key) {
-        if (comments.containsKey(key)) {
+    public String[] getComments(String key){
+        if(comments.containsKey(key)){
             return comments.get(key);
         }
         return null;
@@ -1864,11 +1863,11 @@ public final class PropertiesFile {
      * @param comment
      *            the comment to be removed
      */
-    public void removeComment(String key, String comment) {
-        if (comments.containsKey(key)) {
+    public void removeComment(String key, String comment){
+        if(comments.containsKey(key)){
             List<String> comms = Arrays.asList(comments.get(key));
             comms.remove(comment);
-            comments.put(key, comms.toArray(new String[] {}));
+            comments.put(key, comms.toArray(new String[]{}));
         }
     }
 
@@ -1878,8 +1877,8 @@ public final class PropertiesFile {
      * @param key
      *            the property key to remove comments for
      */
-    public void removeAllCommentsFromKey(String key) {
-        if (comments.containsKey(key)) {
+    public void removeAllCommentsFromKey(String key){
+        if(comments.containsKey(key)){
             comments.remove(key);
         }
     }
@@ -1887,7 +1886,7 @@ public final class PropertiesFile {
     /**
      * Removes all the comments from all the properties in the file
      */
-    public void removeAllCommentsFromFile() {
+    public void removeAllCommentsFromFile(){
         comments.clear();
     }
 
@@ -1900,18 +1899,18 @@ public final class PropertiesFile {
      * @throws UtilityException
      *             if value does not parse as boolean
      */
-    private final boolean parseBoolean(String property) throws UtilityException {
-        if (property.matches("(?i:on|true|yes|1|allow)")) {
+    private final boolean parseBoolean(String property) throws UtilityException{
+        if(property.matches("(?i:on|true|yes|1|allow)")){
             return true;
         }
-        else if (property.matches("(?i:off|false|no|0|deny)")) {
+        else if(property.matches("(?i:off|false|no|0|deny)")){
             return false;
         }
-        else {
-            if (property.matches("(?i:".concat(UtilsLocaleHelper.localeTranslation("on")).concat("|").concat(UtilsLocaleHelper.localeTranslation("true")).concat("|").concat(UtilsLocaleHelper.localeTranslation("yes")).concat("|").concat(UtilsLocaleHelper.localeTranslation("allow")).concat(")"))) {
+        else{
+            if(property.matches("(?i:".concat(UtilsLocaleHelper.localeTranslation("on")).concat("|").concat(UtilsLocaleHelper.localeTranslation("true")).concat("|").concat(UtilsLocaleHelper.localeTranslation("yes")).concat("|").concat(UtilsLocaleHelper.localeTranslation("allow")).concat(")"))){
                 return true;
             }
-            else if (property.matches("(?i:".concat(UtilsLocaleHelper.localeTranslation("off")).concat("|").concat(UtilsLocaleHelper.localeTranslation("false")).concat("|").concat(UtilsLocaleHelper.localeTranslation("no")).concat("|").concat(UtilsLocaleHelper.localeTranslation("deny")).concat(")"))) {
+            else if(property.matches("(?i:".concat(UtilsLocaleHelper.localeTranslation("off")).concat("|").concat(UtilsLocaleHelper.localeTranslation("false")).concat("|").concat(UtilsLocaleHelper.localeTranslation("no")).concat("|").concat(UtilsLocaleHelper.localeTranslation("deny")).concat(")"))){
                 return false;
             }
             throw new UtilityException("Property not a boolean");
@@ -1924,18 +1923,18 @@ public final class PropertiesFile {
      * @return {@code true} if equal; {@code false} otherwise
      * @see Object#equals(Object)
      */
-    public final boolean equals(Object obj) {
-        if (!(obj instanceof PropertiesFile)) {
+    public final boolean equals(Object obj){
+        if(!(obj instanceof PropertiesFile)){
             return false;
         }
-        PropertiesFile that = (PropertiesFile) obj;
-        if (!this.filepath.equals(that.filepath)) {
+        PropertiesFile that = (PropertiesFile)obj;
+        if(!this.filepath.equals(that.filepath)){
             return false;
         }
-        if (this.propsFile != null && this.propsFile != that.propsFile) {
+        if(this.propsFile != null && this.propsFile != that.propsFile){
             return false;
         }
-        if (this.jar != null && this.jar != that.jar) {
+        if(this.jar != null && this.jar != that.jar){
             return false;
         }
         return true;
@@ -1948,7 +1947,7 @@ public final class PropertiesFile {
      * @see Object#toString()
      */
     @Override
-    public final String toString() {
+    public final String toString(){
         return String.format("PropertiesFile[FilePath=%s]", propsFile != null ? propsFile.getAbsolutePath() : jar.getName());
     }
 
@@ -1959,7 +1958,7 @@ public final class PropertiesFile {
      * @see Object#hashCode()
      */
     @Override
-    public final int hashCode() {
+    public final int hashCode(){
         int hash = 9;
         hash = 45 * hash + filepath.hashCode();
         hash = 54 * hash + (propsFile != null ? propsFile.hashCode() : 0);
