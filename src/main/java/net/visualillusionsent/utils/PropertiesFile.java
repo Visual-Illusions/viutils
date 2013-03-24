@@ -346,6 +346,35 @@ public final class PropertiesFile{
     }
 
     /**
+     * Gets the property associated to the key as a {@link String} or returns the default specified<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param def
+     *            the default value to use if key is not found
+     * @return the property associated with the key if found
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty <br>
+     */
+    public String getString(String key, String def) throws UtilityException{
+        if(key == null){
+            throw new UtilityException("arg.null", "String key");
+        }
+        else if(key.isEmpty()){
+            throw new UtilityException("arg.empty", "String key");
+        }
+        else if(containsKey(key)){
+            return props.get(key);
+        }
+        else{
+            setString(key, def);
+            return def;
+        }
+    }
+
+    /**
      * Sets a property to be saved to the PropertiesFile
      * 
      * @param key
@@ -391,7 +420,7 @@ public final class PropertiesFile{
 
     /**
      * Gets the property associated to the key as a {@link String} Array<br>
-     * Seperates at commas ',' and trims extra whitespaces from the new elements
+     * Separates at commas ',' and trims extra whitespace from the new elements
      * 
      * @param key
      *            the key to get the property for
@@ -406,8 +435,32 @@ public final class PropertiesFile{
     }
 
     /**
+     * Gets the property associated to the key as a {@link String} Array or returns the default specified<br>
+     * Separates at commas ',' and trims extra whitespace from the new elements<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param def
+     *            the default value to use if key is not found
+     * @return the property associated with the key if found
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty <br>
+     */
+    public String[] getStringArray(String key, String[] def) throws UtilityException{
+        if(containsKey(key)){
+            return getStringArray(key, ",");
+        }
+        else{
+            setStringArray(key, def);
+            return def;
+        }
+    }
+
+    /**
      * Sets a property to be saved to the PropertiesFile<br>
-     * Seperates elements with a comma ','
+     * Separates elements with a comma ','
      * 
      * @param key
      *            the key for the property
@@ -424,7 +477,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile with comments added<br>
-     * Seperates elements with a comma ','
+     * Separates elements with a comma ','
      * 
      * @param key
      *            the key for the property
@@ -443,7 +496,7 @@ public final class PropertiesFile{
 
     /**
      * Gets the property associated to the key as a {@link String} Array<br>
-     * Seperates at specified character(s) and trims extra whitespaces from the new elements
+     * Separates at specified character(s) and trims extra whitespace from the new elements
      * 
      * @param key
      *            the key to get the property for
@@ -467,8 +520,41 @@ public final class PropertiesFile{
     }
 
     /**
+     * Gets the property associated to the key as a {@link String} Array or returns the default specified<br>
+     * Separates at specified character(s) and trims extra whitespace from the new elements<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param splitBy
+     *            the character(s) to split the property value with
+     * @param def
+     *            the default value to use if key is not found
+     * @return the property associated with the key if found
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty <br>
+     *             or if specified splitter is null or empty<br>
+     */
+    public String[] getStringArray(String key, String splitBy, String[] def) throws UtilityException{
+        if(splitBy == null){
+            throw new UtilityException("arg.null", "String splitBy");
+        }
+        else if(splitBy.isEmpty()){
+            throw new UtilityException("arg.empty", "String splitBy");
+        }
+        if(containsKey(key)){
+            return StringUtils.trimElements(getString(key).split(splitBy));
+        }
+        else{
+            setStringArray(key, splitBy, def);
+            return def;
+        }
+    }
+
+    /**
      * Sets a property to be saved to the PropertiesFile<br>
-     * Seperates elements with specified spacer
+     * Separates elements with specified spacer
      * 
      * @param key
      *            the key for the property
@@ -488,7 +574,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile with comments added<br>
-     * Seperates elements with specified spacer
+     * Separates elements with specified spacer
      * 
      * @param key
      *            the key for the property
@@ -549,6 +635,35 @@ public final class PropertiesFile{
     }
 
     /**
+     * Gets a byte associated with specified key or returns the default specified<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param def
+     *            the default value to use if key is not found
+     * @return byte associated with the property
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty<br>
+     *             or if the property is not a number<br>
+     */
+    public byte getByte(String key, byte def) throws UtilityException{
+        if(containsKey(key)){
+            try{
+                return Byte.parseByte(getString(key));
+            }
+            catch(NumberFormatException nfe){
+                throw new UtilityException("prop.nan", key);
+            }
+        }
+        else{
+            setByte(key, def);
+            return def;
+        }
+    }
+
+    /**
      * Sets a byte as a property to be saved to the PropertiesFile
      * 
      * @param key
@@ -589,7 +704,7 @@ public final class PropertiesFile{
 
     /**
      * Gets the property associated to the key as a byte Array<br>
-     * Seperates at commas ',' and trims extra whitespaces from the new elements
+     * Separates at commas ',' and trims extra whitespace from the new elements
      * 
      * @param key
      *            the key to get the property for
@@ -604,8 +719,32 @@ public final class PropertiesFile{
     }
 
     /**
+     * Gets the property associated to the key as a byte Array or returns the default specified<br>
+     * Separates at commas ',' and trims extra whitespace from the new elements<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param def
+     *            the default value to use if key is not found
+     * @return the property associated with the key if found
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty
+     */
+    public byte[] getByteArray(String key, byte[] def) throws UtilityException{
+        if(containsKey(key)){
+            return getByteArray(key, ",");
+        }
+        else{
+            setByteArray(key, def);
+            return def;
+        }
+    }
+
+    /**
      * Sets a property to be saved to the PropertiesFile<br>
-     * Seperates elements with a comma ','
+     * Separates elements with a comma ','
      * 
      * @param key
      *            the key for the property
@@ -622,7 +761,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile with comments added<br>
-     * Seperates elements with a comma ','
+     * Separates elements with a comma ','
      * 
      * @param key
      *            the key for the property
@@ -641,7 +780,7 @@ public final class PropertiesFile{
 
     /**
      * Gets the property associated to the key as a byte array<br>
-     * Seperates at specified character(s) and trims extra whitespaces from the new elements
+     * Separates at specified character(s) and trims extra whitespace from the new elements
      * 
      * @param key
      *            the key to get the property for
@@ -665,8 +804,41 @@ public final class PropertiesFile{
     }
 
     /**
+     * Gets the property associated to the key as a byte array or returns the default specified<br>
+     * Separates at specified character(s) and trims extra whitespace from the new elements<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param splitBy
+     *            the character(s) to split the property value with
+     * @param def
+     *            the default value to use if key is not found
+     * @return the property associated with the key if found
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty <br>
+     *             or if specified splitter is null or empty
+     */
+    public byte[] getByteArray(String key, String splitBy, byte[] def) throws UtilityException{
+        if(splitBy == null){
+            throw new UtilityException("arg.null", "String splitBy");
+        }
+        else if(splitBy.isEmpty()){
+            throw new UtilityException("arg.empty", "String splitBy");
+        }
+        if(containsKey(key)){
+            return StringUtils.stringToByteArray(getString(key), splitBy);
+        }
+        else{
+            setByteArray(key, splitBy, def);
+            return def;
+        }
+    }
+
+    /**
      * Sets a property to be saved to the PropertiesFile<br>
-     * Seperates elements with specified spacer
+     * Separates elements with specified spacer
      * 
      * @param key
      *            the key for the property
@@ -686,7 +858,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile with comments added<br>
-     * Seperates elements with specified spacer
+     * Separates elements with specified spacer
      * 
      * @param key
      *            the key for the property
@@ -730,7 +902,7 @@ public final class PropertiesFile{
      * 
      * @param key
      *            the key to get the property for
-     * @return byte associated with the property
+     * @return short associated with the property
      * @throws UtilityException
      * <br>
      *             if specified key is null or empty<br>
@@ -743,6 +915,36 @@ public final class PropertiesFile{
         }
         catch(NumberFormatException nfe){
             throw new UtilityException("prop.nan", key);
+        }
+    }
+
+    /**
+     * Gets a short associated with specified key or returns the default specified<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param def
+     *            the default value to use if key is not found
+     * @return short associated with the property
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty<br>
+     *             or if the property is not a number<br>
+     *             or if property is not found
+     */
+    public short getShort(String key, short def) throws UtilityException{
+        if(containsKey(key)){
+            try{
+                return Short.parseShort(getString(key));
+            }
+            catch(NumberFormatException nfe){
+                throw new UtilityException("prop.nan", key);
+            }
+        }
+        else{
+            setShort(key, def);
+            return def;
         }
     }
 
@@ -787,7 +989,7 @@ public final class PropertiesFile{
 
     /**
      * Gets the property associated to the key as a short Array<br>
-     * Seperates at commas ',' and trims extra whitespaces from the new elements
+     * Separates at commas ',' and trims extra whitespace from the new elements
      * 
      * @param key
      *            the key to get the property for
@@ -799,6 +1001,30 @@ public final class PropertiesFile{
      */
     public short[] getShortArray(String key) throws UtilityException{
         return getShortArray(key, ",");
+    }
+
+    /**
+     * Gets the property associated to the key as a short Array or returns the default specified<br>
+     * Separates at commas ',' and trims extra whitespace from the new elements<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param def
+     *            the default value to use if key is not found
+     * @return the property associated with the key if found
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty <br>
+     */
+    public short[] getShortArray(String key, short[] def) throws UtilityException{
+        if(containsKey(key)){
+            return getShortArray(key, ",");
+        }
+        else{
+            setShortArray(key, def);
+            return def;
+        }
     }
 
     /**
@@ -837,7 +1063,7 @@ public final class PropertiesFile{
 
     /**
      * Gets the property associated to the key as a short array<br>
-     * Seperates at specified character(s) and trims extra whitespaces from the new elements
+     * Separates at specified character(s) and trims extra whitespace from the new elements
      * 
      * @param key
      *            the key to get the property for
@@ -858,6 +1084,39 @@ public final class PropertiesFile{
             throw new UtilityException("arg.empty", "String splitBy");
         }
         return StringUtils.stringToShortArray(getString(key), splitBy);
+    }
+
+    /**
+     * Gets the property associated to the key as a short array or returns the default specified<br>
+     * Separates at commas ',' and trims extra whitespace from the new elements<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param splitBy
+     *            the character(s) to split the property value with
+     * @param def
+     *            the default value to use if key is not found
+     * @return the property associated with the key if found
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty <br>
+     *             or if specified splitter is null or empty
+     */
+    public short[] getShortArray(String key, String splitBy, short[] def) throws UtilityException{
+        if(splitBy == null){
+            throw new UtilityException("arg.null", "String splitBy");
+        }
+        else if(splitBy.isEmpty()){
+            throw new UtilityException("arg.empty", "String splitBy");
+        }
+        if(containsKey(key)){
+            return StringUtils.stringToShortArray(getString(key), splitBy);
+        }
+        else{
+            setShortArray(key, splitBy, def);
+            return def;
+        }
     }
 
     /**
@@ -920,11 +1179,11 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets an int associated with specified key
+     * Gets an integer associated with specified key
      * 
      * @param key
      *            the key to get the property for
-     * @return int associated with the property
+     * @return integer associated with the property
      * @throws UtilityException
      * <br>
      *             if specified key is null or empty<br>
@@ -941,12 +1200,41 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets an int as a property to be saved to the PropertiesFile
+     * Gets an integer associated with specified key or returns the default specified<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param def
+     *            the default value to use if key is not found
+     * @return integer associated with the property
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty<br>
+     *             or if the property is not a number
+     */
+    public int getInt(String key, int def) throws UtilityException{
+        if(containsKey(key)){
+            try{
+                return Integer.parseInt(getString(key));
+            }
+            catch(NumberFormatException nfe){
+                throw new UtilityException("prop.nan", key);
+            }
+        }
+        else{
+            setInt(key, def);
+            return def;
+        }
+    }
+
+    /**
+     * Sets an integer as a property to be saved to the PropertiesFile
      * 
      * @param key
      *            the key for the property
      * @param value
-     *            the int value to be stored
+     *            the integer value to be stored
      * @throws UtilityException
      * <br>
      *             if specified key is null or empty
@@ -956,12 +1244,12 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets an int as a property to be saved to the PropertiesFile
+     * Sets an integer as a property to be saved to the PropertiesFile
      * 
      * @param key
      *            the key for the property
      * @param value
-     *            the int value to be stored
+     *            the integer value to be stored
      * @param comment
      *            the comments to add
      * @throws UtilityException
@@ -980,8 +1268,8 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a int Array<br>
-     * Seperates at commas ',' and trims extra whitespaces from the new elements
+     * Gets the property associated to the key as a integer Array<br>
+     * Separates at commas ',' and trims extra whitespace from the new elements
      * 
      * @param key
      *            the key to get the property for
@@ -993,6 +1281,30 @@ public final class PropertiesFile{
      */
     public int[] getIntArray(String key) throws UtilityException{
         return getIntArray(key, ",");
+    }
+
+    /**
+     * Gets the property associated to the key as a integer Array or returns the default specified<br>
+     * Separates at commas ',' and trims extra whitespace from the new elements<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param def
+     *            the default value to use if key is not found
+     * @return the property associated with the key if found
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty
+     */
+    public int[] getIntArray(String key, int[] def) throws UtilityException{
+        if(containsKey(key)){
+            return getIntArray(key, ",");
+        }
+        else{
+            setIntArray(key, def);
+            return def;
+        }
     }
 
     /**
@@ -1030,8 +1342,8 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a int array<br>
-     * Seperates at specified character(s) and trims extra whitespaces from the new elements
+     * Gets the property associated to the key as a integer array<br>
+     * Separates at specified character(s) and trims extra whitespace from the new elements
      * 
      * @param key
      *            the key to get the property for
@@ -1052,6 +1364,39 @@ public final class PropertiesFile{
             throw new UtilityException("arg.empty", "String splitBy");
         }
         return StringUtils.stringToIntArray(getString(key), splitBy);
+    }
+
+    /**
+     * Gets the property associated to the key as a integer array or returns the default specified<br>
+     * Separates at specified character(s) and trims extra whitespace from the new elements<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param splitBy
+     *            the character(s) to split the property value with
+     * @param def
+     *            the default value to use if key is not found
+     * @return the property associated with the key if found
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty <br>
+     *             or if specified splitter is null or empty
+     */
+    public int[] getIntArray(String key, String splitBy, int[] def) throws UtilityException{
+        if(splitBy == null){
+            throw new UtilityException("arg.null", "String splitBy");
+        }
+        else if(splitBy.isEmpty()){
+            throw new UtilityException("arg.empty", "String splitBy");
+        }
+        if(containsKey(key)){
+            return StringUtils.stringToIntArray(getString(key), splitBy);
+        }
+        else{
+            setIntArray(key, splitBy, def);
+            return def;
+        }
     }
 
     /**
@@ -1135,6 +1480,35 @@ public final class PropertiesFile{
     }
 
     /**
+     * Gets a long associated with specified key or returns the default specified<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param def
+     *            the default value to use if key is not found
+     * @return long associated with the property
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty<br>
+     *             or if the property is not a number
+     */
+    public long getLong(String key, long def) throws UtilityException{
+        if(containsKey(key)){
+            try{
+                return Long.parseLong(getString(key));
+            }
+            catch(NumberFormatException nfe){
+                throw new UtilityException("prop.nan", key);
+            }
+        }
+        else{
+            setLong(key, def);
+            return def;
+        }
+    }
+
+    /**
      * Sets a long as a property to be saved to the PropertiesFile
      * 
      * @param key
@@ -1175,7 +1549,7 @@ public final class PropertiesFile{
 
     /**
      * Gets the property associated to the key as a long Array<br>
-     * Seperates at commas ',' and trims extra whitespaces from the new elements
+     * Separates at commas ',' and trims extra whitespace from the new elements
      * 
      * @param key
      *            the key to get the property for
@@ -1187,6 +1561,31 @@ public final class PropertiesFile{
      */
     public long[] getLongArray(String key) throws UtilityException{
         return getLongArray(key, ",");
+    }
+
+    /**
+     * Gets the property associated to the key as a long Array or returns the default specified<br>
+     * Separates at commas ',' and trims extra whitespace from the new elements<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param def
+     *            the default value to use if key is not found
+     * @return the property associated with the key if found
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty <br>
+     *             or if property was not found
+     */
+    public long[] getLongArray(String key, long[] def) throws UtilityException{
+        if(containsKey(key)){
+            return getLongArray(key, ",");
+        }
+        else{
+            setLongArray(key, def);
+            return def;
+        }
     }
 
     /**
@@ -1225,7 +1624,7 @@ public final class PropertiesFile{
 
     /**
      * Gets the property associated to the key as a long array<br>
-     * Seperates at specified character(s) and trims extra whitespaces from the new elements
+     * Separates at specified character(s) and trims extra whitespace from the new elements
      * 
      * @param key
      *            the key to get the property for
@@ -1246,6 +1645,40 @@ public final class PropertiesFile{
             throw new UtilityException("arg.empty", "String splitBy");
         }
         return StringUtils.stringToLongArray(getString(key), splitBy);
+    }
+
+    /**
+     * Gets the property associated to the key as a long array or returns the default specified<br>
+     * Separates at specified character(s) and trims extra whitespace from the new elements<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param splitBy
+     *            the character(s) to split the property value with
+     * @param def
+     *            the default value to use if key is not found
+     * @return the property associated with the key if found
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty <br>
+     *             or if specified splitter is null or empty<br>
+     *             or if property was not found
+     */
+    public long[] getLongArray(String key, String splitBy, long[] def) throws UtilityException{
+        if(splitBy == null){
+            throw new UtilityException("arg.null", "String splitBy");
+        }
+        else if(splitBy.isEmpty()){
+            throw new UtilityException("arg.empty", "String splitBy");
+        }
+        if(containsKey(key)){
+            return StringUtils.stringToLongArray(getString(key), splitBy);
+        }
+        else{
+            setLongArray(key, splitBy, def);
+            return def;
+        }
     }
 
     /**
@@ -1329,6 +1762,35 @@ public final class PropertiesFile{
     }
 
     /**
+     * Gets a float associated with specified key or returns the default specified<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param def
+     *            the default value to use if key is not found
+     * @return float associated with the property
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty<br>
+     *             or if the property is not a number
+     */
+    public float getFloat(String key, float def) throws UtilityException{
+        if(containsKey(key)){
+            try{
+                return Float.parseFloat(getString(key));
+            }
+            catch(NumberFormatException nfe){
+                throw new UtilityException("prop.nan", key);
+            }
+        }
+        else{
+            setFloat(key, def);
+            return def;
+        }
+    }
+
+    /**
      * Sets a float as a property to be saved to the PropertiesFile
      * 
      * @param key
@@ -1369,7 +1831,7 @@ public final class PropertiesFile{
 
     /**
      * Gets the property associated to the key as a float Array<br>
-     * Seperates at commas ',' and trims extra whitespaces from the new elements
+     * Separates at commas ',' and trims extra whitespace from the new elements
      * 
      * @param key
      *            the key to get the property for
@@ -1381,6 +1843,30 @@ public final class PropertiesFile{
      */
     public float[] getFloatArray(String key) throws UtilityException{
         return getFloatArray(key, ",");
+    }
+
+    /**
+     * Gets the property associated to the key as a float Array or returns the default specified<br>
+     * Separates at commas ',' and trims extra whitespace from the new elements<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param def
+     *            the default value to use if key is not found
+     * @return the property associated with the key if found
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty <br>
+     */
+    public float[] getFloatArray(String key, float[] def) throws UtilityException{
+        if(containsKey(key)){
+            return getFloatArray(key, ",");
+        }
+        else{
+            setFloatArray(key, def);
+            return def;
+        }
     }
 
     /**
@@ -1419,7 +1905,7 @@ public final class PropertiesFile{
 
     /**
      * Gets the property associated to the key as a float array<br>
-     * Seperates at specified character(s) and trims extra whitespaces from the new elements
+     * Separates at specified character(s) and trims extra whitespace from the new elements
      * 
      * @param key
      *            the key to get the property for
@@ -1440,6 +1926,40 @@ public final class PropertiesFile{
             throw new UtilityException("arg.empty", "String splitBy");
         }
         return StringUtils.stringToFloatArray(getString(key), splitBy);
+    }
+
+    /**
+     * Gets the property associated to the key as a float array or returns the default specified<br>
+     * Separates at specified character(s) and trims extra whitespace from the new elements<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param splitBy
+     *            the character(s) to split the property value with
+     * @param def
+     *            the default value to use if key is not found
+     * @return the property associated with the key if found
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty <br>
+     *             or if specified splitter is null or empty<br>
+     *             or if property was not found
+     */
+    public float[] getFloatArray(String key, String splitBy, float[] def) throws UtilityException{
+        if(splitBy == null){
+            throw new UtilityException("arg.null", "String splitBy");
+        }
+        else if(splitBy.isEmpty()){
+            throw new UtilityException("arg.empty", "String splitBy");
+        }
+        if(containsKey(key)){
+            return StringUtils.stringToFloatArray(getString(key), splitBy);
+        }
+        else{
+            setFloatArray(key, splitBy, def);
+            return def;
+        }
     }
 
     /**
@@ -1523,6 +2043,35 @@ public final class PropertiesFile{
     }
 
     /**
+     * Gets a double associated with specified key or returns the default specified<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param def
+     *            the default value to use if key is not found
+     * @return double associated with the property
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty<br>
+     *             or if the property is not a number
+     */
+    public double getDouble(String key, double def) throws UtilityException{
+        if(containsKey(key)){
+            try{
+                return Double.parseDouble(getString(key));
+            }
+            catch(NumberFormatException nfe){
+                throw new UtilityException("prop.nan", key);
+            }
+        }
+        else{
+            setDouble(key, def);
+            return def;
+        }
+    }
+
+    /**
      * Sets a double as a property to be saved to the PropertiesFile
      * 
      * @param key
@@ -1563,7 +2112,7 @@ public final class PropertiesFile{
 
     /**
      * Gets the property associated to the key as a double Array<br>
-     * Seperates at commas ',' and trims extra whitespaces from the new elements
+     * Separates at commas ',' and trims extra whitespace from the new elements
      * 
      * @param key
      *            the key to get the property for
@@ -1575,6 +2124,30 @@ public final class PropertiesFile{
      */
     public double[] getDoubleArray(String key) throws UtilityException{
         return getDoubleArray(key, ",");
+    }
+
+    /**
+     * Gets the property associated to the key as a double Array or returns the default specified<br>
+     * Separates at commas ',' and trims extra whitespace from the new elements<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param def
+     *            the default value to use if key is not found
+     * @return the property associated with the key if found
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty <br>
+     */
+    public double[] getDoubleArray(String key, double[] def) throws UtilityException{
+        if(containsKey(key)){
+            return getDoubleArray(key, ",");
+        }
+        else{
+            setDoubleArray(key, def);
+            return def;
+        }
     }
 
     /**
@@ -1613,7 +2186,7 @@ public final class PropertiesFile{
 
     /**
      * Gets the property associated to the key as a float array<br>
-     * Seperates at specified character(s) and trims extra whitespaces from the new elements
+     * Separates at specified character(s) and trims extra whitespace from the new elements
      * 
      * @param key
      *            the key to get the property for
@@ -1634,6 +2207,39 @@ public final class PropertiesFile{
             throw new UtilityException("arg.empty", "String splitBy");
         }
         return StringUtils.stringToDoubleArray(getString(key), splitBy);
+    }
+
+    /**
+     * Gets the property associated to the key as a double array or returns the default specified<br>
+     * Separates at specified character(s) and trims extra whitespace from the new elements<br>
+     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param splitBy
+     *            the character(s) to split the property value with
+     * @param def
+     *            the default value to use if key is not found
+     * @return the property associated with the key if found
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty <br>
+     *             or if specified splitter is null or empty
+     */
+    public double[] getDoubleArray(String key, String splitBy, double[] def) throws UtilityException{
+        if(splitBy == null){
+            throw new UtilityException("arg.null", "String splitBy");
+        }
+        else if(splitBy.isEmpty()){
+            throw new UtilityException("arg.empty", "String splitBy");
+        }
+        if(containsKey(key)){
+            return StringUtils.stringToDoubleArray(getString(key), splitBy);
+        }
+        else{
+            setDoubleArray(key, splitBy, def);
+            return def;
+        }
     }
 
     /**
@@ -1712,6 +2318,30 @@ public final class PropertiesFile{
     }
 
     /**
+     * Gets a boolean associated with specified key
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param def
+     *            the default value to use if key is not found
+     * @return boolean associated with the property
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty<br>
+     *             or if property is not found
+     * @see #parseBoolean(String)
+     */
+    public boolean getBoolean(String key, boolean def) throws UtilityException{
+        if(containsKey(key)){
+            return parseBoolean(getString(key));
+        }
+        else{
+            setBoolean(key, def);
+            return def;
+        }
+    }
+
+    /**
      * Sets a boolean as a property to be saved to the PropertiesFile
      * 
      * @param key
@@ -1762,13 +2392,29 @@ public final class PropertiesFile{
      *             or if property is not found
      */
     public char getCharacter(String key) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
         return getString(key).trim().charAt(0);
+    }
+
+    /**
+     * Gets a character associated with specified key
+     * 
+     * @param key
+     *            the key to get the property for
+     * @param def
+     *            the default value to use if key is not found
+     * @return character associated with the property
+     * @throws UtilityException
+     * <br>
+     *             if specified key is null or empty<br>
+     */
+    public char getCharacter(String key, char def) throws UtilityException{
+        if(containsKey(key)){
+            return getString(key).trim().charAt(0);
+        }
+        else{
+            setCharacter(key, def);
+            return def;
+        }
     }
 
     /**
@@ -1948,7 +2594,7 @@ public final class PropertiesFile{
      */
     @Override
     public final String toString(){
-        return String.format("PropertiesFile[FilePath=%s]", propsFile != null ? propsFile.getAbsolutePath() : jar.getName());
+        return String.format("PropertiesFile[FilePath=%s]", propsFile != null ? propsFile.getAbsolutePath() : jar.getName() + ":" + filepath);
     }
 
     /**
