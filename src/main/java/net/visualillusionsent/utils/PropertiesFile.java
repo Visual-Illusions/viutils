@@ -80,10 +80,11 @@ public final class PropertiesFile{
         }
         else{
             File temp = new File(filepath.substring(0, filepath.lastIndexOf(File.separator)));
-            if(!temp.mkdirs()){
-                throw new UtilityException("Failed to make directory path for FilePath: ".concat(filepath));
+            if(!temp.exists()){
+                if(!temp.mkdirs()){
+                    throw new UtilityException("Failed to make directory path for FilePath: ".concat(filepath));
+                }
             }
-            save();
         }
     }
 
@@ -247,8 +248,10 @@ public final class PropertiesFile{
         }
         BufferedWriter out = null;
         try{
-            if(!propsFile.delete()){
-                throw new UtilityException("file.err.ioe", filepath);
+            if(propsFile.exists()){
+                if(!propsFile.delete()){
+                    throw new UtilityException("file.err.ioe", filepath);
+                }
             }
             propsFile = new File(filepath);
             out = new BufferedWriter(new FileWriter(propsFile, true));
