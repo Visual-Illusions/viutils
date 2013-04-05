@@ -24,17 +24,17 @@ package net.visualillusionsent.utils;
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
-final class UtilsLocaleHelper extends LocaleHelper {
-    private static UtilsLocaleHelper instance;
+final class UtilsLocaleHelper extends LocaleHelper{
 
-    static {
+    private static UtilsLocaleHelper instance;
+    static{
         instance = new UtilsLocaleHelper();
     }
 
     /**
      * This class should not be constructed
      */
-    private UtilsLocaleHelper() {}
+    private UtilsLocaleHelper(){}
 
     /**
      * Static method call back to {@link LocaleHelper#localeTranslate(String)}
@@ -44,7 +44,7 @@ final class UtilsLocaleHelper extends LocaleHelper {
      * @return translated message
      * @see LocaleHelper#localeTranslate(String)
      */
-    public static String localeTranslation(String key) {
+    public static String localeTranslation(String key){
         return instance.localeTranslate(key);
     }
 
@@ -56,37 +56,7 @@ final class UtilsLocaleHelper extends LocaleHelper {
      * @return default English message
      * @see LocaleHelper#localeTranslate(String)
      */
-    public static String defaultTranslation(String key) {
+    public static String defaultTranslation(String key){
         return instance.defaultTranslate(key);
-    }
-
-    /**
-     * Static method call back to {@link LocaleHelper#localeTranslateFormat(String, String...)}
-     * 
-     * @param key
-     *            the key to the translated message
-     * @param form
-     *            the String to format the message String with
-     * @return translated message
-     * @see LocaleHelper#localeTranslateFormat(String, String...)
-     * @see String#format(String, Object...)
-     */
-    public static String localeTranslationFormat(String key, String... form) {
-        return instance.localeTranslateFormat(key, form);
-    }
-
-    /**
-     * Static method call back to {@link LocaleHelper#defaultTranslateFormat(String, String...)}
-     * 
-     * @param key
-     *            the key to the translated message
-     * @param form
-     *            the String to format the message String with
-     * @return translated message
-     * @see LocaleHelper#defaultTranslateFormat(String, String...)
-     * @see String#format(String, Object...)
-     */
-    public static String defaultTranslationFormat(String key, String... form) {
-        return instance.defaultTranslateFormat(key, form);
     }
 }

@@ -19,6 +19,8 @@ package net.visualillusionsent.utils;
 
 import java.net.URISyntaxException;
 import java.security.CodeSource;
+import java.text.MessageFormat;
+import java.util.logging.Logger;
 
 /**
  * Message Localization helper
@@ -31,31 +33,28 @@ import java.security.CodeSource;
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
-public abstract class LocaleHelper {
+public abstract class LocaleHelper{
+
     /**
      * The language.txt file for knowing which languages are supported
      */
     private static PropertiesFile utils_lang;
-
     /**
      * The .lang file that has the proper translations
      */
     private static PropertiesFile utils_sysLang;
-
     /**
      * The default English message file
      */
     private static PropertiesFile utils_eng;
-
     /**
      * Jar path container
      */
-    private String jarPath;
-
+    private String                jarPath;
     /**
      * Overrides the System default code
      */
-    protected String localeCodeOverride;
+    protected String              localeCodeOverride;
 
     /**
      * Gets the translated message for the given key
@@ -64,17 +63,17 @@ public abstract class LocaleHelper {
      *            the key to the translated message
      * @return translated message
      */
-    public final String localeTranslate(String key) {
-        try {
+    public final String localeTranslate(String key){
+        try{
             checkLangFiles();
-            if (utils_sysLang != null && utils_sysLang.containsKey(key)) {
+            if(utils_sysLang != null && utils_sysLang.containsKey(key)){
                 return utils_sysLang.getString(key);
             }
             return defaultTranslate(key);
         }
-        catch (Exception e) {
-            //Logger.getGlobal().warning("[VIUtils] Exception thrown, check logs.");
-            UtilsLogger.warning("", e);
+        catch(Exception e){
+            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check logs.");
+            UtilsLogger.warning("Translate Error: ", e);
         }
         return defaultTranslate(key);
     }
@@ -86,20 +85,46 @@ public abstract class LocaleHelper {
      *            the key to the translated message
      * @return translated message
      */
-    public final String defaultTranslate(String key) {
-        try {
+    public final String defaultTranslate(String key){
+        try{
             checkLangFiles();
-            if (utils_eng.containsKey(key)) {
+            if(utils_eng.containsKey(key)){
                 return utils_eng.getString(key);
             }
         }
-        catch (Exception e) {
-            //Logger.getGlobal().warning("[VIUtils] Exception thrown, check logs.");
-            UtilsLogger.warning("", e);
+        catch(Exception e){
+            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check logs.");
+            UtilsLogger.warning("Translate Error: ", e);
         }
-
         //May have forgot a translation and left a regular message, or something went wrong...
         return key;
+    }
+
+    /**
+     * Gets the translated message for the given key and then formated to include the form string
+     * 
+     * @deprecated Use {@link #defaultTranslateMessage(String, Object...)} instead
+     * @param key
+     *            the key to the translated message
+     * @param form
+     *            the String to format the message String with
+     * @return translated message
+     * @see String#format(String, Object...)
+     */
+    @Deprecated
+    public final String localeTranslateFormat(String key, String... form){
+        try{
+            checkLangFiles();
+            if(utils_sysLang != null && utils_sysLang.containsKey(key)){
+                return String.format(utils_sysLang.getString(key), (Object[])form);
+            }
+            return defaultTranslateFormat(key, form);
+        }
+        catch(Exception e){
+            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check logs.");
+            UtilsLogger.warning("Translate Error: ", e);
+        }
+        return defaultTranslateFormat(key, form);
     }
 
     /**
@@ -108,24 +133,23 @@ public abstract class LocaleHelper {
      * @param key
      *            the key to the translated message
      * @param form
-     *            the String to format the message String with
+     *            the arguments to pass the {@link MessageFormatter}
      * @return translated message
-     * @see String#format(String, Object...)
+     * @see MessageFormat#format(String, Object...)
      */
-    public final String localeTranslateFormat(String key, String... form) {
-
-        try {
+    public final String localeTranslateMessage(String key, Object... form){
+        try{
             checkLangFiles();
-            if (utils_sysLang != null && utils_sysLang.containsKey(key)) {
-                return String.format(utils_sysLang.getString(key), (Object[]) form);
+            if(utils_sysLang != null && utils_sysLang.containsKey(key)){
+                return MessageFormat.format(utils_sysLang.getString(key), form);
             }
-            return defaultTranslateFormat(key, form);
+            return defaultTranslateMessage(key, form);
         }
-        catch (Exception e) {
-            //Logger.getGlobal().warning("[VIUtils] Exception thrown, check logs.");
-            UtilsLogger.warning("", e);
+        catch(Exception e){
+            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check logs.");
+            UtilsLogger.warning("Translate Error", e);
         }
-        return defaultTranslateFormat(key, form);
+        return defaultTranslateMessage(key, form);
     }
 
     /**
@@ -138,35 +162,61 @@ public abstract class LocaleHelper {
      * @return translated message
      * @see String#format(String, Object...)
      */
-    public final String defaultTranslateFormat(String key, String... form) {
-        try {
+    @Deprecated
+    public final String defaultTranslateFormat(String key, String... form){
+        try{
             checkLangFiles();
-            if (utils_eng.containsKey(key)) {
-                return String.format(utils_eng.getString(key), (Object[]) form);
+            if(utils_eng.containsKey(key)){
+                return String.format(utils_eng.getString(key), (Object[])form);
             }
         }
-        catch (Exception e) {
-            //Logger.getGlobal().warning("[VIUtils] Exception thrown, check logs.");
-            UtilsLogger.warning("", e);
+        catch(Exception e){
+            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check logs.");
+            UtilsLogger.warning("Translate Error: ", e);
         }
         //May have forgot a translation and left a regular message
-        return String.format(key, (Object[]) form);
+        return String.format(key, (Object[])form);
     }
 
-    private final void checkLangFiles() throws UtilityException, URISyntaxException {
-        if (utils_lang == null) {
+    /**
+     * Gets the default English message for the given key and then formated to include the form string
+     * 
+     * @param key
+     *            the key to the translated message
+     * @param form
+     *            the arguments to pass the {@link MessageFormatter}
+     * @return translated message
+     * @see MessageFormat#format(String, Object...)
+     */
+    public final String defaultTranslateMessage(String key, Object... form){
+        try{
+            checkLangFiles();
+            if(utils_eng.containsKey(key)){
+                return MessageFormat.format(utils_eng.getString(key), form);
+            }
+        }
+        catch(Exception e){
+            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check logs.");
+            UtilsLogger.warning("Translate Error: ", e);
+        }
+        //May have forgot a translation and left a regular message
+        return MessageFormat.format(key, form);
+    }
+
+    private final void checkLangFiles() throws UtilityException, URISyntaxException{
+        if(utils_lang == null){
             utils_lang = new PropertiesFile(getJarPath(), "resources/lang/languages.txt");
         }
-        if (utils_eng == null) {
+        if(utils_eng == null){
             utils_eng = new PropertiesFile(getJarPath(), "resources/lang/en_US.lang");
         }
-        if (localeCodeOverride != null && !localeCodeOverride.equals("en_US") && localeCodeOverride.matches("([a-z]{2,3})_([A-Z]{2,3})")) {
-            if (utils_sysLang == null && utils_lang.containsKey(localeCodeOverride)) {
+        if(localeCodeOverride != null && !localeCodeOverride.equals("en_US") && localeCodeOverride.matches("([a-z]{2,3})_([A-Z]{2,3})")){
+            if(utils_sysLang == null && utils_lang.containsKey(localeCodeOverride)){
                 utils_sysLang = new PropertiesFile(getJarPath(), "resources/lang/".concat(localeCodeOverride).concat(".lang"));
             }
         }
-        else if (SystemUtils.SYSTEM_LOCALE != null && !SystemUtils.SYSTEM_LOCALE.equals("en_US")) {
-            if (utils_sysLang == null && utils_lang.containsKey(SystemUtils.SYSTEM_LOCALE)) {
+        else if(SystemUtils.SYSTEM_LOCALE != null && !SystemUtils.SYSTEM_LOCALE.equals("en_US")){
+            if(utils_sysLang == null && utils_lang.containsKey(SystemUtils.SYSTEM_LOCALE)){
                 utils_sysLang = new PropertiesFile(getJarPath(), "resources/lang/".concat(utils_sysLang.getString(SystemUtils.SYSTEM_LOCALE)).concat(".lang"));
             }
         }
@@ -179,8 +229,8 @@ public abstract class LocaleHelper {
      * @throws URISyntaxException
      *             caught in the translation methods and ignored internally
      */
-    private final String getJarPath() throws URISyntaxException {
-        if (jarPath != null) {
+    private final String getJarPath() throws URISyntaxException{
+        if(jarPath != null){
             return jarPath;
         }
         CodeSource codeSource = getClass().getProtectionDomain().getCodeSource();
