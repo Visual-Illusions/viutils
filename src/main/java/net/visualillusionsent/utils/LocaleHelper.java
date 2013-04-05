@@ -210,12 +210,12 @@ public abstract class LocaleHelper{
         if(utils_eng == null){
             utils_eng = new PropertiesFile(getJarPath(), "resources/lang/en_US.lang");
         }
-        if(localeCodeOverride != null && !localeCodeOverride.equals("en_US") && localeCodeOverride.matches("([a-z]{2,3})_([A-Z]{2,3})")){
+        if(localeCodeOverride != null && localeCodeOverride.matches("([a-z]{2,3})_([A-Z]{2,3})")){
             if(utils_sysLang == null && utils_lang.containsKey(localeCodeOverride)){
-                utils_sysLang = new PropertiesFile(getJarPath(), "resources/lang/".concat(localeCodeOverride).concat(".lang"));
+                utils_sysLang = new PropertiesFile(getJarPath(), "resources/lang/".concat(utils_lang.getString(localeCodeOverride)).concat(".lang"));
             }
         }
-        else if(SystemUtils.SYSTEM_LOCALE != null && !SystemUtils.SYSTEM_LOCALE.equals("en_US")){
+        else if(SystemUtils.SYSTEM_LOCALE != null){
             if(utils_sysLang == null && utils_lang.containsKey(SystemUtils.SYSTEM_LOCALE)){
                 utils_sysLang = new PropertiesFile(getJarPath(), "resources/lang/".concat(utils_sysLang.getString(SystemUtils.SYSTEM_LOCALE)).concat(".lang"));
             }
