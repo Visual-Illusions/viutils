@@ -38,23 +38,23 @@ public abstract class LocaleHelper{
     /**
      * The language.txt file for knowing which languages are supported
      */
-    private static PropertiesFile utils_lang;
+    private PropertiesFile utils_lang;
     /**
      * The .lang file that has the proper translations
      */
-    private static PropertiesFile utils_sysLang;
+    private PropertiesFile utils_sysLang;
     /**
      * The default English message file
      */
-    private static PropertiesFile utils_eng;
+    private PropertiesFile utils_eng;
     /**
      * Jar path container
      */
-    private String                jarPath;
+    protected String       jarPath;
     /**
      * Overrides the System default code
      */
-    protected String              localeCodeOverride;
+    protected String       localeCodeOverride;
 
     /**
      * Gets the translated message for the given key
@@ -233,7 +233,7 @@ public abstract class LocaleHelper{
         if(jarPath != null){
             return jarPath;
         }
-        CodeSource codeSource = getClass().getProtectionDomain().getCodeSource();
+        CodeSource codeSource = this.getClass().getProtectionDomain().getCodeSource();
         jarPath = codeSource.getLocation().toURI().getPath();
         return jarPath;
     }
