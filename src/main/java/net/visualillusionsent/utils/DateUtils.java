@@ -33,25 +33,26 @@ import java.util.TimeZone;
  */
 public final class DateUtils{
 
+    private static final float classVersion = 1.0F;
     /**
      * Date Format as dd-MMM-yyyy
      */
-    private static DateFormat date_form     = new SimpleDateFormat("dd-MMM-yyyy");
+    private static final DateFormat date_form = new SimpleDateFormat("dd-MMM-yyyy");
     /**
      * Date Format as HH:mm:ss
      */
-    private static DateFormat time_form     = new SimpleDateFormat("HH:mm:ss");
+    private static final DateFormat time_form = new SimpleDateFormat("HH:mm:ss");
     /**
      * Date Format as dd-MMM-yyyy HH:mm:ss
      */
-    private static DateFormat datetime_form = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+    private static final DateFormat datetime_form = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
     /**
      * Date Format as HH:mm:ss dd-MMM-yyyy
      */
-    private static DateFormat timedate_form = new SimpleDateFormat("HH:mm:ss dd-MMM-yyyy");
+    private static final DateFormat timedate_form = new SimpleDateFormat("HH:mm:ss dd-MMM-yyyy");
 
     /**
-     * This class should never be constructed
+     * This class should never be externally constructed
      */
     private DateUtils(){}
 
@@ -272,5 +273,14 @@ public final class DateUtils{
         }
         calendar.setTimeInMillis(time);
         return calendar;
+    }
+
+    /**
+     * Gets this class's version number
+     * 
+     * @return the class version
+     */
+    public final static float getClassVersion(){
+        return classVersion;
     }
 }

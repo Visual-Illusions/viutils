@@ -34,7 +34,26 @@ public enum ProgramStatus{
     RELEASE_CANDIDATE, //
     STABLE;
 
+    private static final float classVersion = 1.0F;
+
+    /**
+     * {@inheritDoc}
+     */
     public String toString(){
-        return super.toString().replace("_", " ");
+        if(this == RELEASE_CANDIDATE){
+            return name().replace("_", " ");
+        }
+        else{
+            return name();
+        }
+    }
+
+    /**
+     * Gets this class's version number
+     * 
+     * @return the class version
+     */
+    public static final float getClassVersion(){
+        return classVersion;
     }
 }

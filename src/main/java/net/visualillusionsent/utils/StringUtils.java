@@ -24,12 +24,14 @@ package net.visualillusionsent.utils;
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
-public final class StringUtils {
+public final class StringUtils{
+
+    private static final float classVersion = 1.0F;
 
     /**
      * This class should never be constructed
      */
-    private StringUtils() {}
+    private StringUtils(){}
 
     /**
      * Joins a {@link String} array into a single String
@@ -46,7 +48,7 @@ public final class StringUtils {
      *             if startIndex is greater than or equal to args.length<br>
      *             or if spacer is equal to null
      */
-    public static final String joinString(String[] args, String spacer, int startIndex) throws UtilityException {
+    public static final String joinString(String[] args, String spacer, int startIndex) throws UtilityException{
         return joinString(args, spacer, startIndex, args.length - 1);
     }
 
@@ -69,28 +71,27 @@ public final class StringUtils {
      *             or if endIndex is greater than or equal to args.length<br>
      *             or if spacer is equal to null
      */
-    public static final String joinString(String[] args, String spacer, int startIndex, int endIndex) throws UtilityException {
-        if (args == null) {
+    public static final String joinString(String[] args, String spacer, int startIndex, int endIndex) throws UtilityException{
+        if(args == null){
             throw new UtilityException("arg.null", "String[] args");
         }
-        else if (args.length == 0) {
+        else if(args.length == 0){
             throw new UtilityException("arg.empty", "String[] args");
         }
-        else if (startIndex > args.length) {
+        else if(startIndex > args.length){
             throw new UtilityException("startIndex greater than args.length");
         }
-        else if (startIndex > endIndex) {
+        else if(startIndex > endIndex){
             throw new UtilityException("startIndex greater than endIndex");
         }
-        else if (endIndex > args.length) {
+        else if(endIndex > args.length){
             throw new UtilityException("endIndex greater than or equal to args.length");
         }
-        else if (spacer == null) {
+        else if(spacer == null){
             throw new UtilityException("arg.null", "String spacer");
         }
-
         StringBuilder sb = new StringBuilder();
-        for (int index = startIndex; index <= endIndex; index++) {
+        for(int index = startIndex; index <= endIndex; index++){
             sb.append(args[index]);
             sb.append(spacer);
         }
@@ -109,7 +110,7 @@ public final class StringUtils {
      * @return the padded string
      * @throws UtilityException
      */
-    public static final String padRight(String toPad, int padAmount) throws UtilityException {
+    public static final String padRight(String toPad, int padAmount) throws UtilityException{
         return padCharRight(toPad, padAmount, ' ');
     }
 
@@ -126,15 +127,15 @@ public final class StringUtils {
      * @return the padded string
      * @throws UtilityException
      */
-    public static final String padCharRight(String toPad, int padAmount, char padChar) throws UtilityException {
-        if (toPad == null) {
+    public static final String padCharRight(String toPad, int padAmount, char padChar) throws UtilityException{
+        if(toPad == null){
             throw new UtilityException("arg.null", "String toPad");
         }
-        else if (toPad.isEmpty()) {
+        else if(toPad.isEmpty()){
             throw new UtilityException("arg.empty", "String toPad");
         }
         StringBuffer padded = new StringBuffer(toPad);
-        while ((padded.length() - toPad.length()) < padAmount) {
+        while((padded.length() - toPad.length()) < padAmount){
             padded.append(padChar);
         }
         return padded.toString();
@@ -151,7 +152,7 @@ public final class StringUtils {
      * @return the padded string
      * @throws UtilityException
      */
-    public static final String padLeft(String toPad, int padAmount) throws UtilityException {
+    public static final String padLeft(String toPad, int padAmount) throws UtilityException{
         return padCharLeft(toPad, padAmount, ' ');
     }
 
@@ -168,15 +169,15 @@ public final class StringUtils {
      * @return the padded string
      * @throws UtilityException
      */
-    public static final String padCharLeft(String toPad, int padAmount, char padChar) throws UtilityException {
-        if (toPad == null) {
+    public static final String padCharLeft(String toPad, int padAmount, char padChar) throws UtilityException{
+        if(toPad == null){
             throw new UtilityException("arg.null", "String toPad");
         }
-        else if (toPad.isEmpty()) {
+        else if(toPad.isEmpty()){
             throw new UtilityException("arg.empty", "String toPad");
         }
         StringBuffer padded = new StringBuffer(toPad);
-        while ((padded.length() - toPad.length()) < padAmount) {
+        while((padded.length() - toPad.length()) < padAmount){
             padded.insert(0, padChar);
         }
         return padded.toString();
@@ -190,15 +191,15 @@ public final class StringUtils {
      * @return whitespace cleaned {@link String} array
      * @throws UtilityException
      */
-    public static String[] trimElements(String[] toTrim) throws UtilityException {
-        if (toTrim == null) {
+    public static String[] trimElements(String[] toTrim) throws UtilityException{
+        if(toTrim == null){
             throw new UtilityException("arg.null", "String[] toTrim");
         }
-        else if (toTrim.length == 0) {
+        else if(toTrim.length == 0){
             throw new UtilityException("arg.empty", "String[] toTrim");
         }
         String[] toRet = toTrim.clone();
-        for (int index = 0; index < toRet.length; index++) {
+        for(int index = 0; index < toRet.length; index++){
             toRet[index] = toTrim[index].trim();
         }
         return toRet;
@@ -212,7 +213,7 @@ public final class StringUtils {
      * @return byte array of the string
      * @throws UtilityException
      */
-    public static byte[] stringToByteArray(String str) throws UtilityException {
+    public static byte[] stringToByteArray(String str) throws UtilityException{
         return stringToByteArray(str, ",");
     }
 
@@ -229,17 +230,17 @@ public final class StringUtils {
      *             or if splitBy is null or empty<br>
      *             or if an element is not a number
      */
-    public static byte[] stringToByteArray(String str, String splitBy) throws UtilityException {
-        if (str == null) {
+    public static byte[] stringToByteArray(String str, String splitBy) throws UtilityException{
+        if(str == null){
             throw new UtilityException("arg.null", "String str");
         }
-        else if (str.isEmpty()) {
+        else if(str.isEmpty()){
             throw new UtilityException("arg.empty", "String str");
         }
-        else if (splitBy == null) {
+        else if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
         }
-        else if (splitBy.isEmpty()) {
+        else if(splitBy.isEmpty()){
             throw new UtilityException("splitby.empty", "String splitBy");
         }
         return stringArrayToByteArray(str.split(splitBy));
@@ -253,19 +254,19 @@ public final class StringUtils {
      * @return byte array
      * @throws UtilityException
      */
-    public static byte[] stringArrayToByteArray(String[] strarr) throws UtilityException {
-        if (strarr == null) {
+    public static byte[] stringArrayToByteArray(String[] strarr) throws UtilityException{
+        if(strarr == null){
             throw new UtilityException("arg.null", "String strarr");
         }
-        else if (strarr.length < 1) {
+        else if(strarr.length < 1){
             throw new UtilityException("arg.empty", "String strarr");
         }
         byte[] toRet = new byte[strarr.length];
-        for (int index = 0; index < strarr.length; index++) {
-            try {
+        for(int index = 0; index < strarr.length; index++){
+            try{
                 toRet[index] = Byte.parseByte(strarr[index].trim());
             }
-            catch (NumberFormatException nfe) {
+            catch(NumberFormatException nfe){
                 throw new UtilityException("str.nan", strarr[index]);
             }
         }
@@ -281,7 +282,7 @@ public final class StringUtils {
      * @throws UtilityException
      *             if bytes is null or empty
      */
-    public static String byteArrayToString(byte[] bytes) throws UtilityException {
+    public static String byteArrayToString(byte[] bytes) throws UtilityException{
         return byteArrayToString(bytes, ",");
     }
 
@@ -297,14 +298,14 @@ public final class StringUtils {
      *             if bytes is null or empty<br>
      *             or if spacer is null
      */
-    public static String byteArrayToString(byte[] bytes, String spacer) throws UtilityException {
-        if (bytes == null) {
+    public static String byteArrayToString(byte[] bytes, String spacer) throws UtilityException{
+        if(bytes == null){
             throw new UtilityException("arg.null", "byte[] bytes");
         }
-        else if (bytes.length == 0) {
+        else if(bytes.length == 0){
             throw new UtilityException("arg.empty", "byte[] bytes");
         }
-        else if (spacer == null) {
+        else if(spacer == null){
             throw new UtilityException("arg.null", "String spacer");
         }
         return joinString(byteArrayToStringArray(bytes), spacer, 0);
@@ -318,15 +319,15 @@ public final class StringUtils {
      * @return string array
      * @throws UtilityException
      */
-    public static String[] byteArrayToStringArray(byte[] bytes) throws UtilityException {
-        if (bytes == null) {
+    public static String[] byteArrayToStringArray(byte[] bytes) throws UtilityException{
+        if(bytes == null){
             throw new UtilityException("arg.null", "byte[] bytes");
         }
-        else if (bytes.length == 0) {
+        else if(bytes.length == 0){
             throw new UtilityException("arg.empty", "byte[] bytes");
         }
         String[] arr = new String[bytes.length];
-        for (int index = 0; index < bytes.length; index++) {
+        for(int index = 0; index < bytes.length; index++){
             arr[index] = String.valueOf(bytes[index]);
         }
         return arr;
@@ -342,7 +343,7 @@ public final class StringUtils {
      *             if str is null or empty<br>
      *             or if an element is not a number
      */
-    public static short[] stringToShortArray(String str) throws UtilityException {
+    public static short[] stringToShortArray(String str) throws UtilityException{
         return stringToShortArray(str, ",");
     }
 
@@ -359,17 +360,17 @@ public final class StringUtils {
      *             or if splitBy is null or empty<br>
      *             or if an element is not a number
      */
-    public static short[] stringToShortArray(String str, String splitBy) throws UtilityException {
-        if (str == null) {
+    public static short[] stringToShortArray(String str, String splitBy) throws UtilityException{
+        if(str == null){
             throw new UtilityException("arg.null", "String str");
         }
-        else if (str.isEmpty()) {
+        else if(str.isEmpty()){
             throw new UtilityException("arg.empty", "String str");
         }
-        else if (splitBy == null) {
+        else if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
         }
-        else if (splitBy.isEmpty()) {
+        else if(splitBy.isEmpty()){
             throw new UtilityException("splitby.empty", "String splitBy");
         }
         return stringArrayToShortArray(str.split(splitBy));
@@ -383,19 +384,19 @@ public final class StringUtils {
      * @return short array
      * @throws UtilityException
      */
-    public static short[] stringArrayToShortArray(String[] strarr) throws UtilityException {
-        if (strarr == null) {
+    public static short[] stringArrayToShortArray(String[] strarr) throws UtilityException{
+        if(strarr == null){
             throw new UtilityException("arg.null", "String strarr");
         }
-        else if (strarr.length < 1) {
+        else if(strarr.length < 1){
             throw new UtilityException("arg.empty", "String strarr");
         }
         short[] toRet = new short[strarr.length];
-        for (int index = 0; index < strarr.length; index++) {
-            try {
+        for(int index = 0; index < strarr.length; index++){
+            try{
                 toRet[index] = Short.parseShort(strarr[index].trim());
             }
-            catch (NumberFormatException nfe) {
+            catch(NumberFormatException nfe){
                 throw new UtilityException("str.nan", strarr[index]);
             }
         }
@@ -410,7 +411,7 @@ public final class StringUtils {
      * @return the joined short array as a String
      * @throws UtilityException
      */
-    public static String shortArrayToString(short[] shorts) throws UtilityException {
+    public static String shortArrayToString(short[] shorts) throws UtilityException{
         return shortArrayToString(shorts, ",");
     }
 
@@ -426,14 +427,14 @@ public final class StringUtils {
      *             if shorts is null or empty<br>
      *             or if spacer is null
      */
-    public static String shortArrayToString(short[] shorts, String spacer) throws UtilityException {
-        if (shorts == null) {
+    public static String shortArrayToString(short[] shorts, String spacer) throws UtilityException{
+        if(shorts == null){
             throw new UtilityException("arg.null", "short[] shorts");
         }
-        else if (shorts.length == 0) {
+        else if(shorts.length == 0){
             throw new UtilityException("arg.empty", "short[] shorts");
         }
-        if (spacer == null) {
+        if(spacer == null){
             throw new UtilityException("arg.null", "String spacer");
         }
         return joinString(shortArrayToStringArray(shorts), spacer, 0);
@@ -447,15 +448,15 @@ public final class StringUtils {
      * @return string array
      * @throws UtilityException
      */
-    public static String[] shortArrayToStringArray(short[] shorts) throws UtilityException {
-        if (shorts == null) {
+    public static String[] shortArrayToStringArray(short[] shorts) throws UtilityException{
+        if(shorts == null){
             throw new UtilityException("arg.null", "short[] shorts");
         }
-        else if (shorts.length == 0) {
+        else if(shorts.length == 0){
             throw new UtilityException("arg.empty", "short[] shorts");
         }
         String[] arr = new String[shorts.length];
-        for (int index = 0; index < shorts.length; index++) {
+        for(int index = 0; index < shorts.length; index++){
             arr[index] = String.valueOf(shorts[index]);
         }
         return arr;
@@ -469,7 +470,7 @@ public final class StringUtils {
      * @return int array of the string
      * @throws UtilityException
      */
-    public static int[] stringToIntArray(String str) throws UtilityException {
+    public static int[] stringToIntArray(String str) throws UtilityException{
         return stringToIntArray(str, ",");
     }
 
@@ -486,17 +487,17 @@ public final class StringUtils {
      *             or if splitBy is null or empty<br>
      *             or if an element is not a number
      */
-    public static int[] stringToIntArray(String str, String splitBy) throws UtilityException {
-        if (str == null) {
+    public static int[] stringToIntArray(String str, String splitBy) throws UtilityException{
+        if(str == null){
             throw new UtilityException("arg.null", "String str");
         }
-        else if (str.isEmpty()) {
+        else if(str.isEmpty()){
             throw new UtilityException("arg.empty", "String str");
         }
-        else if (splitBy == null) {
+        else if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
         }
-        else if (splitBy.isEmpty()) {
+        else if(splitBy.isEmpty()){
             throw new UtilityException("arg.empty", "String splitBy");
         }
         return stringArrayToIntArray(str.split(splitBy));
@@ -510,19 +511,19 @@ public final class StringUtils {
      * @return int array
      * @throws UtilityException
      */
-    public static int[] stringArrayToIntArray(String[] strarr) throws UtilityException {
-        if (strarr == null) {
+    public static int[] stringArrayToIntArray(String[] strarr) throws UtilityException{
+        if(strarr == null){
             throw new UtilityException("arg.null", "String strarr");
         }
-        else if (strarr.length < 1) {
+        else if(strarr.length < 1){
             throw new UtilityException("arg.empty", "String strarr");
         }
         int[] toRet = new int[strarr.length];
-        for (int index = 0; index < strarr.length; index++) {
-            try {
+        for(int index = 0; index < strarr.length; index++){
+            try{
                 toRet[index] = Short.parseShort(strarr[index].trim());
             }
-            catch (NumberFormatException nfe) {
+            catch(NumberFormatException nfe){
                 throw new UtilityException("str.nan", strarr[index]);
             }
         }
@@ -538,7 +539,7 @@ public final class StringUtils {
      * @throws UtilityException
      *             if ints is null or empty
      */
-    public static String intArrayToString(int[] ints) throws UtilityException {
+    public static String intArrayToString(int[] ints) throws UtilityException{
         return intArrayToString(ints, ",");
     }
 
@@ -554,14 +555,14 @@ public final class StringUtils {
      *             if ints is null or empty<br>
      *             or if spacer is null
      */
-    public static String intArrayToString(int[] ints, String spacer) throws UtilityException {
-        if (ints == null) {
+    public static String intArrayToString(int[] ints, String spacer) throws UtilityException{
+        if(ints == null){
             throw new UtilityException("arg.null", "int[] ints");
         }
-        else if (ints.length == 0) {
+        else if(ints.length == 0){
             throw new UtilityException("arg.empty", "int[] ints");
         }
-        if (spacer == null) {
+        if(spacer == null){
             throw new UtilityException("arg.null", "String spacer");
         }
         return joinString(intArrayToStringArray(ints), spacer, 0);
@@ -575,15 +576,15 @@ public final class StringUtils {
      * @return string array
      * @throws UtilityException
      */
-    public static String[] intArrayToStringArray(int[] ints) throws UtilityException {
-        if (ints == null) {
+    public static String[] intArrayToStringArray(int[] ints) throws UtilityException{
+        if(ints == null){
             throw new UtilityException("arg.null", "int[] ints");
         }
-        else if (ints.length == 0) {
+        else if(ints.length == 0){
             throw new UtilityException("arg.empty", "int[] ints");
         }
         String[] arr = new String[ints.length];
-        for (int index = 0; index < ints.length; index++) {
+        for(int index = 0; index < ints.length; index++){
             arr[index] = String.valueOf(ints[index]);
         }
         return arr;
@@ -597,7 +598,7 @@ public final class StringUtils {
      * @return long array of the string
      * @throws UtilityException
      */
-    public static long[] stringToLongArray(String str) throws UtilityException {
+    public static long[] stringToLongArray(String str) throws UtilityException{
         return stringToLongArray(str, ",");
     }
 
@@ -614,17 +615,17 @@ public final class StringUtils {
      *             or if splitBy is null or empty<br>
      *             or if an element is not a number
      */
-    public static long[] stringToLongArray(String str, String splitBy) throws UtilityException {
-        if (str == null) {
+    public static long[] stringToLongArray(String str, String splitBy) throws UtilityException{
+        if(str == null){
             throw new UtilityException("arg.null", "String str");
         }
-        else if (str.isEmpty()) {
+        else if(str.isEmpty()){
             throw new UtilityException("arg.empty", "String str");
         }
-        else if (splitBy == null) {
+        else if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
         }
-        else if (splitBy.isEmpty()) {
+        else if(splitBy.isEmpty()){
             throw new UtilityException("arg.empty", "String splitBy");
         }
         return stringArrayToLongArray(str.split(splitBy));
@@ -638,19 +639,19 @@ public final class StringUtils {
      * @return long array
      * @throws UtilityException
      */
-    public static long[] stringArrayToLongArray(String[] strarr) throws UtilityException {
-        if (strarr == null) {
+    public static long[] stringArrayToLongArray(String[] strarr) throws UtilityException{
+        if(strarr == null){
             throw new UtilityException("arg.null", "String strarr");
         }
-        else if (strarr.length < 1) {
+        else if(strarr.length < 1){
             throw new UtilityException("arg.empty", "String strarr");
         }
         long[] toRet = new long[strarr.length];
-        for (int index = 0; index < strarr.length; index++) {
-            try {
+        for(int index = 0; index < strarr.length; index++){
+            try{
                 toRet[index] = Short.parseShort(strarr[index].trim());
             }
-            catch (NumberFormatException nfe) {
+            catch(NumberFormatException nfe){
                 throw new UtilityException("str.nan", strarr[index]);
             }
         }
@@ -666,7 +667,7 @@ public final class StringUtils {
      * @throws UtilityException
      *             if longs is null or empty<br>
      */
-    public static String longArrayToString(long[] longs) throws UtilityException {
+    public static String longArrayToString(long[] longs) throws UtilityException{
         return longArrayToString(longs, ",");
     }
 
@@ -682,14 +683,14 @@ public final class StringUtils {
      *             if longs is null or empty<br>
      *             or if spacer is null
      */
-    public static String longArrayToString(long[] longs, String spacer) throws UtilityException {
-        if (longs == null) {
+    public static String longArrayToString(long[] longs, String spacer) throws UtilityException{
+        if(longs == null){
             throw new UtilityException("arg.null", "long[] longs");
         }
-        else if (longs.length == 0) {
+        else if(longs.length == 0){
             throw new UtilityException("arg.empty", "long[] longs");
         }
-        if (spacer == null) {
+        if(spacer == null){
             throw new UtilityException("arg.null", "String spacer");
         }
         return joinString(longArrayToStringArray(longs), spacer, 0);
@@ -703,15 +704,15 @@ public final class StringUtils {
      * @return string array
      * @throws UtilityException
      */
-    public static String[] longArrayToStringArray(long[] longs) throws UtilityException {
-        if (longs == null) {
+    public static String[] longArrayToStringArray(long[] longs) throws UtilityException{
+        if(longs == null){
             throw new UtilityException("arg.null", "long[] longs");
         }
-        else if (longs.length == 0) {
+        else if(longs.length == 0){
             throw new UtilityException("arg.empty", "long[] longs");
         }
         String[] arr = new String[longs.length];
-        for (int index = 0; index < longs.length; index++) {
+        for(int index = 0; index < longs.length; index++){
             arr[index] = String.valueOf(longs[index]);
         }
         return arr;
@@ -725,7 +726,7 @@ public final class StringUtils {
      * @return float array of the string
      * @throws UtilityException
      */
-    public static float[] stringToFloatArray(String str) throws UtilityException {
+    public static float[] stringToFloatArray(String str) throws UtilityException{
         return stringToFloatArray(str, ",");
     }
 
@@ -742,17 +743,17 @@ public final class StringUtils {
      *             or if splitBy is null or empty<br>
      *             or if an element is not a number
      */
-    public static float[] stringToFloatArray(String str, String splitBy) throws UtilityException {
-        if (str == null) {
+    public static float[] stringToFloatArray(String str, String splitBy) throws UtilityException{
+        if(str == null){
             throw new UtilityException("arg.null", "String str");
         }
-        else if (str.isEmpty()) {
+        else if(str.isEmpty()){
             throw new UtilityException("arg.empty", "String str");
         }
-        else if (splitBy == null) {
+        else if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
         }
-        else if (splitBy.isEmpty()) {
+        else if(splitBy.isEmpty()){
             throw new UtilityException("arg.empty", "String splitBy");
         }
         return stringArrayToFloatArray(str.split(splitBy));
@@ -766,19 +767,19 @@ public final class StringUtils {
      * @return float array
      * @throws UtilityException
      */
-    public static float[] stringArrayToFloatArray(String[] strarr) throws UtilityException {
-        if (strarr == null) {
+    public static float[] stringArrayToFloatArray(String[] strarr) throws UtilityException{
+        if(strarr == null){
             throw new UtilityException("arg.null", "String strarr");
         }
-        else if (strarr.length < 1) {
+        else if(strarr.length < 1){
             throw new UtilityException("arg.empty", "String strarr");
         }
         float[] toRet = new float[strarr.length];
-        for (int index = 0; index < strarr.length; index++) {
-            try {
+        for(int index = 0; index < strarr.length; index++){
+            try{
                 toRet[index] = Short.parseShort(strarr[index].trim());
             }
-            catch (NumberFormatException nfe) {
+            catch(NumberFormatException nfe){
                 throw new UtilityException("str.nan", strarr[index]);
             }
         }
@@ -794,7 +795,7 @@ public final class StringUtils {
      * @throws UtilityException
      *             if floats is null or empty<br>
      */
-    public static String floatArrayToString(float[] floats) throws UtilityException {
+    public static String floatArrayToString(float[] floats) throws UtilityException{
         return floatArrayToString(floats, ",");
     }
 
@@ -810,14 +811,14 @@ public final class StringUtils {
      *             if floats is null or empty<br>
      *             or if spacer is null
      */
-    public static String floatArrayToString(float[] floats, String spacer) throws UtilityException {
-        if (floats == null) {
+    public static String floatArrayToString(float[] floats, String spacer) throws UtilityException{
+        if(floats == null){
             throw new UtilityException("arg.null", "float[] floats");
         }
-        else if (floats.length == 0) {
+        else if(floats.length == 0){
             throw new UtilityException("arg.empty", "float[] floats");
         }
-        if (spacer == null) {
+        if(spacer == null){
             throw new UtilityException("arg.null", "String spacer");
         }
         return joinString(floatArrayToStringArray(floats), spacer, 0);
@@ -831,15 +832,15 @@ public final class StringUtils {
      * @return string array
      * @throws UtilityException
      */
-    public static String[] floatArrayToStringArray(float[] floats) throws UtilityException {
-        if (floats == null) {
+    public static String[] floatArrayToStringArray(float[] floats) throws UtilityException{
+        if(floats == null){
             throw new UtilityException("arg.null", "float[] floats");
         }
-        else if (floats.length == 0) {
+        else if(floats.length == 0){
             throw new UtilityException("arg.empty", "float[] floats");
         }
         String[] arr = new String[floats.length];
-        for (int index = 0; index < floats.length; index++) {
+        for(int index = 0; index < floats.length; index++){
             arr[index] = String.valueOf(floats[index]);
         }
         return arr;
@@ -855,7 +856,7 @@ public final class StringUtils {
      *             if str is null or empty<br>
      *             or if an element is not a number
      */
-    public static double[] stringToDoubleArray(String str) throws UtilityException {
+    public static double[] stringToDoubleArray(String str) throws UtilityException{
         return stringToDoubleArray(str, ",");
     }
 
@@ -872,17 +873,17 @@ public final class StringUtils {
      *             or if splitBy is null or empty<br>
      *             or if an element is not a number
      */
-    public static double[] stringToDoubleArray(String str, String splitBy) throws UtilityException {
-        if (str == null) {
+    public static double[] stringToDoubleArray(String str, String splitBy) throws UtilityException{
+        if(str == null){
             throw new UtilityException("arg.null", "String str");
         }
-        else if (str.isEmpty()) {
+        else if(str.isEmpty()){
             throw new UtilityException("arg.empty", "String str");
         }
-        else if (splitBy == null) {
+        else if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
         }
-        else if (splitBy.isEmpty()) {
+        else if(splitBy.isEmpty()){
             throw new UtilityException("arg.empty", "String splitBy");
         }
         return stringArrayToDoubleArray(str.split(splitBy));
@@ -896,19 +897,19 @@ public final class StringUtils {
      * @return float array
      * @throws UtilityException
      */
-    public static double[] stringArrayToDoubleArray(String[] strarr) throws UtilityException {
-        if (strarr == null) {
+    public static double[] stringArrayToDoubleArray(String[] strarr) throws UtilityException{
+        if(strarr == null){
             throw new UtilityException("arg.null", "String strarr");
         }
-        else if (strarr.length < 1) {
+        else if(strarr.length < 1){
             throw new UtilityException("arg.empty", "String strarr");
         }
         double[] toRet = new double[strarr.length];
-        for (int index = 0; index < strarr.length; index++) {
-            try {
+        for(int index = 0; index < strarr.length; index++){
+            try{
                 toRet[index] = Short.parseShort(strarr[index].trim());
             }
-            catch (NumberFormatException nfe) {
+            catch(NumberFormatException nfe){
                 throw new UtilityException("str.nan", strarr[index]);
             }
         }
@@ -925,7 +926,7 @@ public final class StringUtils {
      *             if doubles is null or empty<br>
      *             or if spacer is null
      */
-    public static String doubleArrayToString(double[] doubles) throws UtilityException {
+    public static String doubleArrayToString(double[] doubles) throws UtilityException{
         return doubleArrayToString(doubles, ",");
     }
 
@@ -941,14 +942,14 @@ public final class StringUtils {
      *             if doubles is null or empty<br>
      *             or if spacer is null
      */
-    public static String doubleArrayToString(double[] doubles, String spacer) throws UtilityException {
-        if (doubles == null) {
+    public static String doubleArrayToString(double[] doubles, String spacer) throws UtilityException{
+        if(doubles == null){
             throw new UtilityException("arg.null", "double[] doubles");
         }
-        else if (doubles.length == 0) {
+        else if(doubles.length == 0){
             throw new UtilityException("arg.empty", "double[] doubles");
         }
-        if (spacer == null) {
+        if(spacer == null){
             throw new UtilityException("arg.null", "String spacer");
         }
         return joinString(doubleArrayToStringArray(doubles), spacer, 0);
@@ -962,17 +963,26 @@ public final class StringUtils {
      * @return string array
      * @throws UtilityException
      */
-    public static String[] doubleArrayToStringArray(double[] doubles) throws UtilityException {
-        if (doubles == null) {
+    public static String[] doubleArrayToStringArray(double[] doubles) throws UtilityException{
+        if(doubles == null){
             throw new UtilityException("arg.null", "double[] doubles");
         }
-        else if (doubles.length == 0) {
+        else if(doubles.length == 0){
             throw new UtilityException("arg.empty", "double[] doubles");
         }
         String[] arr = new String[doubles.length];
-        for (int index = 0; index < doubles.length; index++) {
+        for(int index = 0; index < doubles.length; index++){
             arr[index] = String.valueOf(doubles[index]);
         }
         return arr;
+    }
+
+    /**
+     * Gets this class's version number
+     * 
+     * @return the class version
+     */
+    public static final float getClassVersion(){
+        return classVersion;
     }
 }

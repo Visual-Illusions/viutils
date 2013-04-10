@@ -36,14 +36,15 @@ import java.net.URL;
  */
 public final class VersionChecker{
 
-    private final String        programName, checkurl, user_agent, formated_Post;
-    private final boolean       checkUnstable;
+    private static float classVersion = 1.1F;
+    private final String programName, checkurl, user_agent, formated_Post;
+    private final boolean checkUnstable;
     private final ProgramStatus status;
-    private String              currver, error;
-    private long                lastCheck = 0L;
-    private boolean             isLatest  = true, canCheck = true;
-    private float               version;
-    private long                build;
+    private String currver, error;
+    private long lastCheck = 0L;
+    private boolean isLatest = true, canCheck = true;
+    private float version;
+    private long build;
 
     /**
      * Creates a new {@code VersionChecker}<br>
@@ -59,13 +60,42 @@ public final class VersionChecker{
      *            The {@link ProgramStatus} of the given program.
      * @param checkurl
      *            A {@link String} representation of the url to verify version though (ie: http://visualillusionsent.net/testing/versionchecker.php)
+     * @throws UtilityException
+     *             if an argument is null or a string argument is empty
      */
     public VersionChecker(String programName, String version, String build, String checkurl, ProgramStatus status, boolean checkUnstable){
+        if(programName == null){
+            throw new UtilityException("arg.null", "String programName");
+        }
+        else if(programName.trim().isEmpty()){
+            throw new UtilityException("arg.empty", "String programName");
+        }
+        else if(version == null){
+            throw new UtilityException("arg.null", "String version");
+        }
+        else if(version.trim().isEmpty()){
+            throw new UtilityException("arg.empty", "String version");
+        }
+        else if(build == null){
+            throw new UtilityException("arg.null", "String build");
+        }
+        else if(build.trim().isEmpty()){
+            throw new UtilityException("arg.empty", "String build");
+        }
+        else if(checkurl == null){
+            throw new UtilityException("arg.null", "String checkurl");
+        }
+        else if(checkurl.trim().isEmpty()){
+            throw new UtilityException("arg.empty", "String checkurl");
+        }
+        else if(status == null){
+            throw new UtilityException("arg.null", "ProgramStatus status");
+        }
         this.programName = programName;
         this.currver = version;
         this.checkurl = checkurl;
-        this.user_agent = "Java/" + SystemUtils.JAVA_VERSION + " (" + SystemUtils.SYSTEM_OS + "; " + programName + "/" + version + "; VersionChecker/1.1) VIUtils/1.0";
-        this.formated_Post = String.format("program=%s", programName);
+        this.user_agent = "Java/" + SystemUtils.JAVA_VERSION + " (" + SystemUtils.SYSTEM_OS + "; " + programName + "/" + version + "; VersionChecker/" + classVersion + ") VIUtils/" + VIUtils.VIUTILS_VERSION;
+        this.formated_Post = "program=".concat(programName);
         this.checkUnstable = checkUnstable;
         this.status = status;
         try{
@@ -300,5 +330,14 @@ public final class VersionChecker{
      */
     public final String getErrorMessage(){
         return error;
+    }
+
+    /**
+     * Gets this class's version number
+     * 
+     * @return the class version
+     */
+    public final static float getClassVersion(){
+        return classVersion;
     }
 }

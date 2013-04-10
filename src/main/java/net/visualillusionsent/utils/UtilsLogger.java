@@ -39,6 +39,7 @@ import java.util.logging.SimpleFormatter;
  */
 public final class UtilsLogger{
 
+    private static final float classVersion = 1.0F;
     private static Logger logger;
     static{
         logger = Logger.getLogger("VIUtils");
@@ -95,7 +96,7 @@ public final class UtilsLogger{
     private final static class UtilsLogFormat extends SimpleFormatter{
 
         private SimpleDateFormat dateform = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        private String           linesep  = System.getProperty("line.separator");
+        private String linesep = System.getProperty("line.separator");
 
         public final String format(LogRecord rec){
             StringBuilder message = new StringBuilder();
@@ -110,5 +111,14 @@ public final class UtilsLogger{
             }
             return message.toString();
         }
+    }
+
+    /**
+     * Gets this classes version number
+     * 
+     * @return the class version
+     */
+    public final static float getClassVersion(){
+        return classVersion;
     }
 }

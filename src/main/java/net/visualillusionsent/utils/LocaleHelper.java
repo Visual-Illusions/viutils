@@ -22,6 +22,8 @@ import java.security.CodeSource;
 import java.text.MessageFormat;
 import java.util.logging.Logger;
 
+import com.sun.org.apache.xerces.internal.util.MessageFormatter;
+
 /**
  * Message Localization helper
  * <p>
@@ -30,11 +32,12 @@ import java.util.logging.Logger;
  * You should also include a en_US.lang file with default English messages for your implementation.
  * 
  * @since 1.0
- * @version 1.0
+ * @version 1.1
  * @author Jason (darkdiplomat)
  */
 public abstract class LocaleHelper{
 
+    private static final float classVersion = 1.1F;
     /**
      * The language.txt file for knowing which languages are supported
      */
@@ -50,11 +53,11 @@ public abstract class LocaleHelper{
     /**
      * Jar path container
      */
-    protected String       jarPath;
+    protected String jarPath;
     /**
      * Overrides the System default code
      */
-    protected String       localeCodeOverride;
+    protected String localeCodeOverride;
 
     /**
      * Gets the translated message for the given key
@@ -103,7 +106,7 @@ public abstract class LocaleHelper{
     /**
      * Gets the translated message for the given key and then formated to include the form string
      * 
-     * @deprecated Use {@link #defaultTranslateMessage(String, Object...)} instead
+     * @deprecated Use {@link #localeTranslateMessage(String, Object...)} instead
      * @param key
      *            the key to the translated message
      * @param form
@@ -155,6 +158,7 @@ public abstract class LocaleHelper{
     /**
      * Gets the default English message for the given key and then formated to include the form string
      * 
+     * @deprecated Use {@link #defaultTranslateMessage(String, Object...)} instead
      * @param key
      *            the key to the translated message
      * @param form
@@ -236,5 +240,14 @@ public abstract class LocaleHelper{
         CodeSource codeSource = this.getClass().getProtectionDomain().getCodeSource();
         jarPath = codeSource.getLocation().toURI().getPath();
         return jarPath;
+    }
+
+    /**
+     * Gets this class's version number
+     * 
+     * @return the class version
+     */
+    public static final float getClassVersion(){
+        return classVersion;
     }
 }

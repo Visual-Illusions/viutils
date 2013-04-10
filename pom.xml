@@ -3,7 +3,7 @@
 
   <groupId>net.visualillusionsent</groupId>
   <artifactId>viutils</artifactId>
-  <version>1.0.3</version>
+  <version>1.0.4-SNAPSHOT</version>
   <packaging>jar</packaging>
   
   <name>VIUtils</name>
@@ -56,6 +56,11 @@
       <name>Visual Illusions Repository</name>
       <url>ftp://visualillusionsent.net/repo/</url>
     </repository>
+    <snapshotRepository>
+      <id>vi-snapshot-repo</id>
+      <name>Visual Illusions Repository</name>
+      <url>ftp://visualillusionsent.net/repo/snapshots/</url>
+    </snapshotRepository>
   </distributionManagement>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

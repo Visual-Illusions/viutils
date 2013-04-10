@@ -41,15 +41,16 @@ import java.util.jar.JarFile;
  * Provides methods to help with creating and accessing a Properties File
  * 
  * @since 1.0
- * @version 1.0
+ * @version 1.1
  * @author Jason (darkdiplomat)
  */
 public final class PropertiesFile{
 
-    private File                            propsFile;
-    private String                          filepath;
-    private JarFile                         jar;
-    private LinkedHashMap<String, String>   props    = new LinkedHashMap<String, String>();
+    private static final float classVersion = 1.1F;
+    private File propsFile;
+    private String filepath;
+    private JarFile jar;
+    private LinkedHashMap<String, String> props = new LinkedHashMap<String, String>();
     private LinkedHashMap<String, String[]> comments = new LinkedHashMap<String, String[]>();
 
     /**
@@ -2613,5 +2614,14 @@ public final class PropertiesFile{
         hash = 54 * hash + (propsFile != null ? propsFile.hashCode() : 0);
         hash = 45 * hash + (jar != null ? jar.hashCode() : 0);
         return hash;
+    }
+
+    /**
+     * Gets this class's version number
+     * 
+     * @return the class version
+     */
+    public static final float getClassVersion(){
+        return classVersion;
     }
 }

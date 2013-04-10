@@ -39,8 +39,15 @@ import java.util.jar.JarFile;
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
-public final class FileUtils {
-    private static int BUFFER = 512;
+public final class FileUtils{
+
+    private static final float classVersion = 1.0F;
+    private static final int BUFFER = 512;
+
+    /**
+     * This class should never be externally constructed
+     */
+    private FileUtils(){}
 
     /**
      * Removes a line from a {@link File}
@@ -54,11 +61,11 @@ public final class FileUtils {
      *             if filepath is null or empty
      * @see #removeLines(File, String...)
      */
-    public static final void removeLine(String filepath, String line) throws UtilityException {
-        if (filepath == null) {
+    public static final void removeLine(String filepath, String line) throws UtilityException{
+        if(filepath == null){
             throw new UtilityException("arg.null", "String filepath");
         }
-        else if (filepath.trim().isEmpty()) {
+        else if(filepath.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String filepath");
         }
         removeLines(new File(filepath), line);
@@ -76,11 +83,11 @@ public final class FileUtils {
      *             if filepath is null or empty
      * @see #removeLines(File, String...)
      */
-    public static final void removeLines(String filepath, String... lines) throws UtilityException {
-        if (filepath == null) {
+    public static final void removeLines(String filepath, String... lines) throws UtilityException{
+        if(filepath == null){
             throw new UtilityException("arg.null", "String filepath");
         }
-        else if (filepath.trim().isEmpty()) {
+        else if(filepath.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String filepath");
         }
         removeLines(new File(filepath), lines);
@@ -96,7 +103,7 @@ public final class FileUtils {
      * @throws UtilityException
      * @see #removeLines(File, String...)
      */
-    public static final void removeLine(File file, String line) throws UtilityException {
+    public static final void removeLine(File file, String line) throws UtilityException{
         removeLines(file, line);
     }
 
@@ -115,60 +122,54 @@ public final class FileUtils {
      *             if lines are null or an empty array<br>
      *             if some other IOException occurrs
      */
-    public static final void removeLines(File file, String... lines) throws UtilityException {
-        if (file == null) {
+    public static final void removeLines(File file, String... lines) throws UtilityException{
+        if(file == null){
             throw new UtilityException("arg.null", "File file");
         }
-        else if (lines == null) {
+        else if(lines == null){
             throw new UtilityException("arg.null", "String... lines");
         }
-        else if (lines.length < 1) {
+        else if(lines.length < 1){
             throw new UtilityException("arg.empty", "String... lines");
         }
-        else if (!file.isFile()) {
+        else if(!file.isFile()){
             throw new UtilityException("file.err.exist", file.getName());
         }
-        else if (!file.canRead()) {
+        else if(!file.canRead()){
             throw new UtilityException("file.err.read", file.getName());
         }
-        else if (!file.canWrite()) {
+        else if(!file.canWrite()){
             throw new UtilityException("file.err.write", file.getName());
         }
-
         UtilityException ue = null;
         BufferedReader breader = null;
         PrintWriter pwriter = null;
-
-        try {
+        try{
             List<String> listlines = Arrays.asList(lines);
             List<String> outLines = new ArrayList<String>();
-
             breader = new BufferedReader(new FileReader(file));
-
             String inLine = null;
-            while ((inLine = breader.readLine()) != null) {
-                if (!listlines.contains(inLine)) {
+            while((inLine = breader.readLine()) != null){
+                if(!listlines.contains(inLine)){
                     outLines.add(inLine);
                 }
             }
-
             pwriter = new PrintWriter(new FileWriter(file, false));
-            for (String outLine : outLines) {
+            for(String outLine : outLines){
                 pwriter.println(outLine);
                 pwriter.flush();
             }
-
         }
-        catch (IOException ex) {
+        catch(IOException ex){
             ue = new UtilityException("file.ioe", file.getName());
         }
-        finally {
+        finally{
             pwriter.close();
-            try {
+            try{
                 breader.close();
             }
-            catch (IOException e) {}
-            if (ue != null) {
+            catch(IOException e){}
+            if(ue != null){
                 throw ue;
             }
         }
@@ -187,20 +188,20 @@ public final class FileUtils {
      *             if clone is null or empty<br>
      * @see #cloneFile(File, File)
      */
-    public static final void cloneFile(String toClone, String clone) throws UtilityException {
-        if (toClone == null) {
+    public static final void cloneFile(String toClone, String clone) throws UtilityException{
+        if(toClone == null){
             throw new UtilityException("arg.null", "String toClone");
         }
-        else if (toClone.trim().isEmpty()) {
+        else if(toClone.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String toClone");
         }
-        else if (clone == null) {
+        else if(clone == null){
             throw new UtilityException("arg.null", "String clone");
         }
-        else if (clone.trim().isEmpty()) {
+        else if(clone.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String clone");
         }
-        else if (toClone.equals(clone)) {
+        else if(toClone.equals(clone)){
             throw new UtilityException("toClone equals clone");
         }
         cloneFile(new File(toClone), clone);
@@ -219,14 +220,14 @@ public final class FileUtils {
      *             if clone is null or empty
      * @see #cloneFile(File, File)
      */
-    public static final void cloneFile(File toClone, String clone) throws UtilityException {
-        if (toClone == null) {
+    public static final void cloneFile(File toClone, String clone) throws UtilityException{
+        if(toClone == null){
             throw new UtilityException("arg.null", "File toClone");
         }
-        else if (clone == null) {
+        else if(clone == null){
             throw new UtilityException("arg.null", "String clone");
         }
-        else if (clone.trim().isEmpty()) {
+        else if(clone.trim().isEmpty()){
             throw new UtilityException("arg.empty", "String clone");
         }
         cloneFile(toClone, new File(clone));
@@ -245,50 +246,47 @@ public final class FileUtils {
      *             if clone is null, path matches toClone, or is a directory<br>
      *             if some other IOException occurrs
      */
-    public static final void cloneFile(File toClone, File clone) throws UtilityException {
-        if (toClone == null) {
+    public static final void cloneFile(File toClone, File clone) throws UtilityException{
+        if(toClone == null){
             throw new UtilityException("arg.null", "File file");
         }
-        else if (clone == null) {
+        else if(clone == null){
             throw new UtilityException("arg.null", "File clone");
         }
-        else if (clone.isDirectory()) {
+        else if(clone.isDirectory()){
             throw new UtilityException("file.err.dir", clone.getName());
         }
-        else if (toClone.getPath().equals(clone.getPath())) {
+        else if(toClone.getPath().equals(clone.getPath())){
             throw new UtilityException("file.err.path", toClone.getName(), clone.getName());
         }
-        else if (!toClone.isFile()) {
+        else if(!toClone.isFile()){
             throw new UtilityException("file.err.exist", toClone.getName());
         }
-        else if (!toClone.canRead()) {
+        else if(!toClone.canRead()){
             throw new UtilityException("file.err.read", toClone.getName());
         }
-
         UtilityException ue = null;
         FileInputStream instream = null;
         FileOutputStream outstream = null;
-
-        try {
+        try{
             instream = new FileInputStream(toClone);
             outstream = new FileOutputStream(clone);
-
             int inByte;
-            while ((inByte = instream.read()) != -1) {
+            while((inByte = instream.read()) != -1){
                 outstream.write(inByte);
                 outstream.flush();
             }
         }
-        catch (IOException ex) {
+        catch(IOException ex){
             ue = new UtilityException("file.err.ioe", clone.getName());
         }
-        finally {
-            try {
+        finally{
+            try{
                 instream.close();
                 outstream.close();
             }
-            catch (IOException e) {}
-            if (ue != null) {
+            catch(IOException e){}
+            if(ue != null){
                 throw ue;
             }
         }
@@ -307,40 +305,49 @@ public final class FileUtils {
      * <br>
      *             if an IOException occurrs
      */
-    public static final void cloneFileFromJar(String jarPath, String fileToMove, String pathTo) throws UtilityException {
+    public static final void cloneFileFromJar(String jarPath, String fileToMove, String pathTo) throws UtilityException{
         JarFile jar = null;
         FileOutputStream out = null;
         UtilityException toThrow = null;
-        try {
+        try{
             jar = new JarFile(jarPath);
             JarEntry entry = jar.getJarEntry(fileToMove);
             InputStream in = jar.getInputStream(entry);
             out = new FileOutputStream(pathTo);
             byte[] buffer = new byte[BUFFER];
             int readBytes = 0;
-            while ((readBytes = in.read(buffer, 0, buffer.length)) != -1) {
+            while((readBytes = in.read(buffer, 0, buffer.length)) != -1){
                 out.write(buffer, 0, readBytes);
             }
         }
-        catch (IOException e) {
+        catch(IOException e){
             toThrow = new UtilityException("Exception occured while moving file from Jar...", e);
         }
-        catch (NullPointerException npe) {
+        catch(NullPointerException npe){
             toThrow = new UtilityException("The Jar did not contain the file to be moved...", npe);
         }
-        finally {
-            try {
-                if (out != null) {
+        finally{
+            try{
+                if(out != null){
                     out.close();
                 }
-                if (jar != null) {
+                if(jar != null){
                     jar.close();
                 }
             }
-            catch (IOException e) {}
-            if (toThrow != null) {
+            catch(IOException e){}
+            if(toThrow != null){
                 throw toThrow;
             }
         }
+    }
+
+    /**
+     * Gets this class's version number
+     * 
+     * @return the class version
+     */
+    public static final float getClassVersion(){
+        return classVersion;
     }
 }

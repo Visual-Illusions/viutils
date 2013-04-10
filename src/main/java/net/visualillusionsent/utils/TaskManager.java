@@ -32,40 +32,37 @@ import java.util.concurrent.TimeUnit;
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
-public final class TaskManager {
+public final class TaskManager{
+
+    private static final float classVersion = 1.0F;
     /**
      * The ThreadPool object
      */
     private ScheduledThreadPoolExecutor threadpool;
-
     /**
      * The Map of Tasks
      */
     private ConcurrentHashMap<Runnable, ScheduledFuture<?>> tasks;
-
     /**
      * TaskManager instance
      */
     private static TaskManager $;
-
     /**
      * Synchronization Lock Object
      */
     private static final Object lock = new Object();
-
     /**
      * Referneces to {@link TimeUnit} objects for less typing
      */
     private static final TimeUnit micro = TimeUnit.MICROSECONDS, milli = TimeUnit.MILLISECONDS, sec = TimeUnit.SECONDS, min = TimeUnit.MINUTES;
-
-    static {
+    static{
         $ = new TaskManager();
     }
 
     /**
      * Internal use Constructor to initialize the Thread Pool
      */
-    private TaskManager() {
+    private TaskManager(){
         threadpool = new ScheduledThreadPoolExecutor(8);
         threadpool.setKeepAliveTime(5, sec);
         threadpool.allowCoreThreadTimeOut(true);
@@ -83,8 +80,8 @@ public final class TaskManager {
      * <br>
      *             if task is null
      */
-    public static final void executeTask(Runnable task) throws UtilityException {
-        if (task == null) {
+    public static final void executeTask(Runnable task) throws UtilityException{
+        if(task == null){
             throw new UtilityException("arg.null", "Runnable task");
         }
         $.threadpool.execute(task);
@@ -98,8 +95,8 @@ public final class TaskManager {
      * @return a Future representing pending completion of the task
      * @throws UtilityException
      */
-    public static final Future<?> submitTask(Runnable task) throws UtilityException {
-        if (task == null) {
+    public static final Future<?> submitTask(Runnable task) throws UtilityException{
+        if(task == null){
             throw new UtilityException("arg.null", "Runnable task");
         }
         return $.threadpool.submit(task);
@@ -117,8 +114,8 @@ public final class TaskManager {
      * <br>
      *             if task is null
      */
-    public static final ScheduledFuture<?> scheduleDelayedTaskInMicros(Runnable task, long delay) throws UtilityException {
-        if (task == null) {
+    public static final ScheduledFuture<?> scheduleDelayedTaskInMicros(Runnable task, long delay) throws UtilityException{
+        if(task == null){
             throw new UtilityException("arg.null", "Runnable task");
         }
         ScheduledFuture<?> stask = $.threadpool.schedule(task, delay, micro);
@@ -138,8 +135,8 @@ public final class TaskManager {
      * <br>
      *             if task is null
      */
-    public static final ScheduledFuture<?> scheduleDelayedTaskInMillis(Runnable task, long delay) throws UtilityException {
-        if (task == null) {
+    public static final ScheduledFuture<?> scheduleDelayedTaskInMillis(Runnable task, long delay) throws UtilityException{
+        if(task == null){
             throw new UtilityException("arg.null", "Runnable task");
         }
         ScheduledFuture<?> stask = $.threadpool.schedule(task, delay, milli);
@@ -159,8 +156,8 @@ public final class TaskManager {
      * <br>
      *             if task is null
      */
-    public static final ScheduledFuture<?> scheduleDelayedTaskInSeconds(Runnable task, long delay) throws UtilityException {
-        if (task == null) {
+    public static final ScheduledFuture<?> scheduleDelayedTaskInSeconds(Runnable task, long delay) throws UtilityException{
+        if(task == null){
             throw new UtilityException("arg.null", "Runnable task");
         }
         ScheduledFuture<?> stask = $.threadpool.schedule(task, delay, sec);
@@ -180,8 +177,8 @@ public final class TaskManager {
      * <br>
      *             if task is null
      */
-    public static final ScheduledFuture<?> scheduleDelayedTaskInMinutes(Runnable task, long delay) throws UtilityException {
-        if (task == null) {
+    public static final ScheduledFuture<?> scheduleDelayedTaskInMinutes(Runnable task, long delay) throws UtilityException{
+        if(task == null){
             throw new UtilityException("arg.null", "Runnable task");
         }
         ScheduledFuture<?> stask = $.threadpool.schedule(task, delay, min);
@@ -203,8 +200,8 @@ public final class TaskManager {
      * <br>
      *             if task is null
      */
-    public static final ScheduledFuture<?> scheduleContinuedTaskInMicros(Runnable task, long initialdelay, long delay) throws UtilityException {
-        if (task == null) {
+    public static final ScheduledFuture<?> scheduleContinuedTaskInMicros(Runnable task, long initialdelay, long delay) throws UtilityException{
+        if(task == null){
             throw new UtilityException("arg.null", "Runnable task");
         }
         ScheduledFuture<?> stask = $.threadpool.scheduleAtFixedRate(task, initialdelay, delay, micro);
@@ -226,8 +223,8 @@ public final class TaskManager {
      * <br>
      *             if task is null
      */
-    public static final ScheduledFuture<?> scheduleContinuedTaskInMillis(Runnable task, long initialdelay, long delay) throws UtilityException {
-        if (task == null) {
+    public static final ScheduledFuture<?> scheduleContinuedTaskInMillis(Runnable task, long initialdelay, long delay) throws UtilityException{
+        if(task == null){
             throw new UtilityException("arg.null", "Runnable task");
         }
         ScheduledFuture<?> stask = $.threadpool.scheduleAtFixedRate(task, initialdelay, delay, milli);
@@ -249,8 +246,8 @@ public final class TaskManager {
      * <br>
      *             if task is null
      */
-    public static final ScheduledFuture<?> scheduleContinuedTaskInSeconds(Runnable task, long initialdelay, long delay) throws UtilityException {
-        if (task == null) {
+    public static final ScheduledFuture<?> scheduleContinuedTaskInSeconds(Runnable task, long initialdelay, long delay) throws UtilityException{
+        if(task == null){
             throw new UtilityException("arg.null", "Runnable task");
         }
         ScheduledFuture<?> stask = $.threadpool.scheduleAtFixedRate(task, initialdelay, delay, sec);
@@ -272,8 +269,8 @@ public final class TaskManager {
      * <br>
      *             if task is null
      */
-    public static final ScheduledFuture<?> scheduleContinuedTaskInMinutes(Runnable task, long initialdelay, long delay) throws UtilityException {
-        if (task == null) {
+    public static final ScheduledFuture<?> scheduleContinuedTaskInMinutes(Runnable task, long initialdelay, long delay) throws UtilityException{
+        if(task == null){
             throw new UtilityException("arg.null", "Runnable task");
         }
         ScheduledFuture<?> stask = $.threadpool.scheduleAtFixedRate(task, initialdelay, delay, min);
@@ -297,8 +294,8 @@ public final class TaskManager {
      * <br>
      *             if task is null
      */
-    public static final ScheduledFuture<?> scheduleContinuedTask(Runnable task, long initialdelay, long delay, TimeUnit timeunit) throws UtilityException {
-        if (task == null) {
+    public static final ScheduledFuture<?> scheduleContinuedTask(Runnable task, long initialdelay, long delay, TimeUnit timeunit) throws UtilityException{
+        if(task == null){
             throw new UtilityException("arg.null", "Runnable task");
         }
         ScheduledFuture<?> stask = $.threadpool.scheduleAtFixedRate(task, initialdelay, delay, timeunit);
@@ -313,17 +310,17 @@ public final class TaskManager {
      *            the task to be removed
      * @return {@code true} if successfully removed, {@code false} otherwise
      */
-    public static final boolean removeTask(Runnable task) {
-        synchronized (lock) {
+    public static final boolean removeTask(Runnable task){
+        synchronized(lock){
             boolean check = false;
-            if ($.tasks.containsKey(task)) {
+            if($.tasks.containsKey(task)){
                 check = $.tasks.get(task).cancel(true);
                 $.tasks.remove(task);
             }
-            if (!check) {
+            if(!check){
                 check = $.threadpool.remove(task);
             }
-            if (check) {
+            if(check){
                 $.threadpool.purge();
             }
             return check;
@@ -333,9 +330,18 @@ public final class TaskManager {
     /**
      * Terminates the ThreadPool
      */
-    public static final void terminateThreadPool() {
+    public static final void terminateThreadPool(){
         $.threadpool.shutdownNow();
         $.threadpool = null;
         $ = null;
+    }
+
+    /**
+     * Gets this class's version number
+     * 
+     * @return the class version
+     */
+    public final static float getClassVersion(){
+        return classVersion;
     }
 }

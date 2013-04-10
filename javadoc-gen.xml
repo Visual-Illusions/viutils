@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="public" 
+        	author="true" 
+        	destdir="docs" 
+        	doctitle="VIUtils" 
+    	    nodeprecated="false" 
+        	nodeprecatedlist="false" 
+        	noindex="false" 
+        	nonavbar="false" 
+        	notree="false" 
+        	source="1.7" 
+        	sourcepath="src/main/java" 
+        	splitindex="true" 
+        	use="true" 
+        	version="true">
+            <link href="http://download.oracle.com/javase/6/docs/api/"/>
+        </javadoc>
+    </target>
+</project>

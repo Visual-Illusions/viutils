@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
  */
 public final class IPAddressUtils{
 
+    private static final float classVersion = 1.0F;
     /**
      * Internet Protocol Version 4 Syntax checking pattern
      */
@@ -38,7 +39,7 @@ public final class IPAddressUtils{
     private static final Pattern IPv6_REGEX = Pattern.compile("\\A(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\\z");
 
     /**
-     * This class should never be constructed
+     * This class should never be externally constructed
      */
     private IPAddressUtils(){}
 
@@ -84,7 +85,7 @@ public final class IPAddressUtils{
      *            the long value representing the IP address.
      * @return An {@code byte[]} of size 4.
      */
-    public static byte[] longToIPv4(long address){
+    public static final byte[] longToIPv4(long address){
         byte[] ip = new byte[4];
         for(int index = 0; index < 4; index++){
             ip[index] = (byte)(address % 256);
@@ -104,7 +105,7 @@ public final class IPAddressUtils{
      * <br>
      *             if the byte array is not of length 4
      */
-    public static long ipv4ToLong(byte[] address) throws UtilityException{
+    public static final long ipv4ToLong(byte[] address) throws UtilityException{
         if(address.length != 4){
             throw new UtilityException("byte array must be of length 4");
         }
@@ -128,7 +129,7 @@ public final class IPAddressUtils{
      * <br>
      *             if the byte array is not of length 4
      */
-    public static String ipv4BytestoString(byte[] address) throws UtilityException{
+    public static final String ipv4BytestoString(byte[] address) throws UtilityException{
         if(address.length != 4){
             throw new UtilityException("byte array must be of length 4");
         }
@@ -139,5 +140,14 @@ public final class IPAddressUtils{
         }
         String temp = build.toString();
         return temp.substring(0, temp.lastIndexOf('.'));
+    }
+
+    /**
+     * Gets this class's version number
+     * 
+     * @return the class version
+     */
+    public static final float getClassVersion(){
+        return classVersion;
     }
 }

@@ -31,15 +31,15 @@ import java.util.Map;
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
-public final class UtilityException extends RuntimeException {
-    private static final Map<String, String> errors;
+public final class UtilityException extends RuntimeException{
 
+    private static final float classVersion = 1.0F;
+    private static final Map<String, String> errors;
     /**
      * Serial Version
      */
     private static final long serialVersionUID = 042216122012L;
-
-    static {
+    static{
         HashMap<String, String> temp = new HashMap<String, String>();
         temp.put("arg.null", "'%s' cannot be null");
         temp.put("arg.empty", "'%s' cannot be empty");
@@ -64,22 +64,31 @@ public final class UtilityException extends RuntimeException {
      * @param msg
      *            the message of why the exception is being thrown
      */
-    UtilityException(String msg) {
+    UtilityException(String msg){
         super(msg);
     }
 
-    UtilityException(String msg, Throwable thrown) {
+    UtilityException(String msg, Throwable thrown){
         super(msg, thrown);
     }
 
-    UtilityException(String error, String... form) {
+    UtilityException(String error, String... form){
         super(parseError(error, form));
     }
 
-    private final static String parseError(String error, String[] form) {
-        if (errors.containsKey(error)) {
-            return String.format(errors.get(error), (Object[]) form);
+    private final static String parseError(String error, String[] form){
+        if(errors.containsKey(error)){
+            return String.format(errors.get(error), (Object[])form);
         }
         return error;
+    }
+
+    /**
+     * Gets this class's version number
+     * 
+     * @return the class version
+     */
+    public final static float getClassVersion(){
+        return classVersion;
     }
 }
