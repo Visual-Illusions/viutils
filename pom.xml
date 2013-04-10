@@ -59,7 +59,7 @@
     <snapshotRepository>
       <id>vi-snapshot-repo</id>
       <name>Visual Illusions Repository</name>
-      <url>ftp://repo.visualillusionsent.net/snapshots/</url>
+      <url>ftp://repo.visualillusionsent.net/</url>
     </snapshotRepository>
   </distributionManagement>
   <properties>
