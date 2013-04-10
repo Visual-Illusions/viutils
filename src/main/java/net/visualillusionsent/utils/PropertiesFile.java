@@ -1,14 +1,14 @@
 /*
  * Copyright © 2012-2013 Visual Illusions Entertainment.
- *  
+ *
  * This file is part of VIUtils.
  *
  * VIUtils is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
- * VIUtils is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ *
+ * VIUtils is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
@@ -39,7 +39,7 @@ import java.util.jar.JarFile;
  * Properties File helper
  * <p>
  * Provides methods to help with creating and accessing a Properties File
- * 
+ *
  * @since 1.0
  * @version 1.0
  * @author Jason (darkdiplomat)
@@ -54,7 +54,7 @@ public final class PropertiesFile{
 
     /**
      * Creates or loads a PropertiesFile
-     * 
+     *
      * @param filepath
      *            the path to the properties file
      * @throws UtilityException
@@ -62,35 +62,40 @@ public final class PropertiesFile{
      *             if there was an error with either reading or writing the properties file
      */
     public PropertiesFile(String filepath) throws UtilityException{
-        if(filepath == null){
-            throw new UtilityException("arg.null", "String filepath");
-        }
-        else if(filepath.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String filepath");
-        }
-        this.filepath = filepath;
-        propsFile = new File(filepath);
-        if(propsFile.exists()){
-            try{
-                load(new FileInputStream(propsFile));
+        this.initFromFile(filepath);
+    }
+
+    /**
+     * Creates or loads a PropertiesFile, if the file does not exist it creates it.
+     *
+     * @param file
+     *            the file to create the properties file from
+     * @throws UtilityException
+     * <br>
+     *             if there was an error with either reading or writing the properties file
+     */
+    public PropertiesFile(File file) {
+        UtilityException uex = null;
+        if (!file.exists()) {
+            new File("plugins/config/FiveStarTowns/").mkdirs();
+            try {
+                file.createNewFile();
+            } catch (IOException ioe) {
+                UtilsLogger.severe(String.format("An IOException occurred Creating File: '%s'", filepath), ioe);
+                uex = new UtilityException("file.err.ioe", filepath);
             }
-            catch(FileNotFoundException e){
-                throw new UtilityException("file.err.ioe", filepath);
-            }
-        }
-        else{
-            File temp = new File(filepath.substring(0, filepath.lastIndexOf(File.separator)));
-            if(!temp.exists()){
-                if(!temp.mkdirs()){
-                    throw new UtilityException("Failed to make directory path for FilePath: ".concat(filepath));
+            finally{
+                if(uex != null){
+                    throw uex;
                 }
             }
         }
+        this.initFromFile(file.getName());
     }
 
     /**
      * Loads a PropertiesFile stored inside a Jar file
-     * 
+     *
      * @param jarpath
      *            the path to the Jar file
      * @param entry
@@ -134,9 +139,36 @@ public final class PropertiesFile{
         }
     }
 
+    private void initFromFile(String filepath) {
+        if(filepath == null){
+            throw new UtilityException("arg.null", "String filepath");
+        }
+        else if(filepath.trim().isEmpty()){
+            throw new UtilityException("arg.empty", "String filepath");
+        }
+        this.filepath = filepath;
+        propsFile = new File(filepath);
+        if(propsFile.exists()){
+            try{
+                load(new FileInputStream(propsFile));
+            }
+            catch(FileNotFoundException e){
+                throw new UtilityException("file.err.ioe", filepath);
+            }
+        }
+        else{
+            File temp = new File(filepath.substring(0, filepath.lastIndexOf(File.separator)));
+            if(!temp.exists()){
+                if(!temp.mkdirs()){
+                    throw new UtilityException("Failed to make directory path for FilePath: ".concat(filepath));
+                }
+            }
+        }
+    }
+
     /**
      * Loads the Properties File
-     * 
+     *
      * @throws UtilityException
      * <br>
      *             if there was an error with reading the properties file
@@ -201,7 +233,7 @@ public final class PropertiesFile{
 
     /**
      * Reloads the PropertiesFile from its source
-     * 
+     *
      * @throws UtilityException
      * <br>
      *             if there was an error with reading the properties file<br>
@@ -236,7 +268,7 @@ public final class PropertiesFile{
     /**
      * Saves the Properties File<br>
      * <b>NOTE:</b> Saving is not supported for PropertiesFiles inside of Jar Files
-     * 
+     *
      * @throws UtilityException
      * <br>
      *             if there was an error with writing the properties file<br>
@@ -282,7 +314,7 @@ public final class PropertiesFile{
 
     /**
      * Checks if the PropertiesFile contains a key
-     * 
+     *
      * @param key
      *            the key to check
      * @return {@code true} if the PropertiesFile contains the key, {@code false} otherwise
@@ -302,7 +334,7 @@ public final class PropertiesFile{
 
     /**
      * Removes a key and it's associated property and comments from the PropertiesFile
-     * 
+     *
      * @param key
      *            the key to be removed
      * @throws UtilityException
@@ -326,7 +358,7 @@ public final class PropertiesFile{
 
     /**
      * Gets the property associated to the key as a {@link String}
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @return the property associated with the key if found
@@ -351,7 +383,7 @@ public final class PropertiesFile{
     /**
      * Gets the property associated to the key as a {@link String} or returns the default specified<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param def
@@ -379,7 +411,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -395,7 +427,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile with comments added
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -424,7 +456,7 @@ public final class PropertiesFile{
     /**
      * Gets the property associated to the key as a {@link String} Array<br>
      * Separates at commas ',' and trims extra whitespace from the new elements
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @return the property associated with the key if found
@@ -441,7 +473,7 @@ public final class PropertiesFile{
      * Gets the property associated to the key as a {@link String} Array or returns the default specified<br>
      * Separates at commas ',' and trims extra whitespace from the new elements<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param def
@@ -464,7 +496,7 @@ public final class PropertiesFile{
     /**
      * Sets a property to be saved to the PropertiesFile<br>
      * Separates elements with a comma ','
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -481,7 +513,7 @@ public final class PropertiesFile{
     /**
      * Sets a property to be saved to the PropertiesFile with comments added<br>
      * Separates elements with a comma ','
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -500,7 +532,7 @@ public final class PropertiesFile{
     /**
      * Gets the property associated to the key as a {@link String} Array<br>
      * Separates at specified character(s) and trims extra whitespace from the new elements
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param splitBy
@@ -526,7 +558,7 @@ public final class PropertiesFile{
      * Gets the property associated to the key as a {@link String} Array or returns the default specified<br>
      * Separates at specified character(s) and trims extra whitespace from the new elements<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param splitBy
@@ -558,7 +590,7 @@ public final class PropertiesFile{
     /**
      * Sets a property to be saved to the PropertiesFile<br>
      * Separates elements with specified spacer
-     * 
+     *
      * @param key
      *            the key for the property
      * @param spacer
@@ -578,7 +610,7 @@ public final class PropertiesFile{
     /**
      * Sets a property to be saved to the PropertiesFile with comments added<br>
      * Separates elements with specified spacer
-     * 
+     *
      * @param key
      *            the key for the property
      * @param spacer
@@ -618,7 +650,7 @@ public final class PropertiesFile{
 
     /**
      * Gets a byte associated with specified key
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @return byte associated with the property
@@ -640,7 +672,7 @@ public final class PropertiesFile{
     /**
      * Gets a byte associated with specified key or returns the default specified<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param def
@@ -668,7 +700,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a byte as a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -683,7 +715,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a byte as a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -708,7 +740,7 @@ public final class PropertiesFile{
     /**
      * Gets the property associated to the key as a byte Array<br>
      * Separates at commas ',' and trims extra whitespace from the new elements
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @return the property associated with the key if found
@@ -725,7 +757,7 @@ public final class PropertiesFile{
      * Gets the property associated to the key as a byte Array or returns the default specified<br>
      * Separates at commas ',' and trims extra whitespace from the new elements<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param def
@@ -748,7 +780,7 @@ public final class PropertiesFile{
     /**
      * Sets a property to be saved to the PropertiesFile<br>
      * Separates elements with a comma ','
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -765,7 +797,7 @@ public final class PropertiesFile{
     /**
      * Sets a property to be saved to the PropertiesFile with comments added<br>
      * Separates elements with a comma ','
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -784,7 +816,7 @@ public final class PropertiesFile{
     /**
      * Gets the property associated to the key as a byte array<br>
      * Separates at specified character(s) and trims extra whitespace from the new elements
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param splitBy
@@ -810,7 +842,7 @@ public final class PropertiesFile{
      * Gets the property associated to the key as a byte array or returns the default specified<br>
      * Separates at specified character(s) and trims extra whitespace from the new elements<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param splitBy
@@ -842,7 +874,7 @@ public final class PropertiesFile{
     /**
      * Sets a property to be saved to the PropertiesFile<br>
      * Separates elements with specified spacer
-     * 
+     *
      * @param key
      *            the key for the property
      * @param spacer
@@ -862,7 +894,7 @@ public final class PropertiesFile{
     /**
      * Sets a property to be saved to the PropertiesFile with comments added<br>
      * Separates elements with specified spacer
-     * 
+     *
      * @param key
      *            the key for the property
      * @param spacer
@@ -902,7 +934,7 @@ public final class PropertiesFile{
 
     /**
      * Gets a short associated with specified key
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @return short associated with the property
@@ -924,7 +956,7 @@ public final class PropertiesFile{
     /**
      * Gets a short associated with specified key or returns the default specified<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param def
@@ -953,7 +985,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a short as a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -968,7 +1000,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a short as a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -993,7 +1025,7 @@ public final class PropertiesFile{
     /**
      * Gets the property associated to the key as a short Array<br>
      * Separates at commas ',' and trims extra whitespace from the new elements
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @return the property associated with the key if found
@@ -1010,7 +1042,7 @@ public final class PropertiesFile{
      * Gets the property associated to the key as a short Array or returns the default specified<br>
      * Separates at commas ',' and trims extra whitespace from the new elements<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param def
@@ -1032,7 +1064,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -1048,7 +1080,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile with comments added
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -1067,7 +1099,7 @@ public final class PropertiesFile{
     /**
      * Gets the property associated to the key as a short array<br>
      * Separates at specified character(s) and trims extra whitespace from the new elements
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param splitBy
@@ -1093,7 +1125,7 @@ public final class PropertiesFile{
      * Gets the property associated to the key as a short array or returns the default specified<br>
      * Separates at commas ',' and trims extra whitespace from the new elements<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param splitBy
@@ -1124,7 +1156,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param spacer
@@ -1143,7 +1175,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile with comments added
-     * 
+     *
      * @param key
      *            the key for the property
      * @param spacer
@@ -1183,7 +1215,7 @@ public final class PropertiesFile{
 
     /**
      * Gets an integer associated with specified key
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @return integer associated with the property
@@ -1205,7 +1237,7 @@ public final class PropertiesFile{
     /**
      * Gets an integer associated with specified key or returns the default specified<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param def
@@ -1233,7 +1265,7 @@ public final class PropertiesFile{
 
     /**
      * Sets an integer as a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -1248,7 +1280,7 @@ public final class PropertiesFile{
 
     /**
      * Sets an integer as a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -1273,7 +1305,7 @@ public final class PropertiesFile{
     /**
      * Gets the property associated to the key as a integer Array<br>
      * Separates at commas ',' and trims extra whitespace from the new elements
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @return the property associated with the key if found
@@ -1290,7 +1322,7 @@ public final class PropertiesFile{
      * Gets the property associated to the key as a integer Array or returns the default specified<br>
      * Separates at commas ',' and trims extra whitespace from the new elements<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param def
@@ -1312,7 +1344,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -1328,7 +1360,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile with comments added
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -1347,7 +1379,7 @@ public final class PropertiesFile{
     /**
      * Gets the property associated to the key as a integer array<br>
      * Separates at specified character(s) and trims extra whitespace from the new elements
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param splitBy
@@ -1373,7 +1405,7 @@ public final class PropertiesFile{
      * Gets the property associated to the key as a integer array or returns the default specified<br>
      * Separates at specified character(s) and trims extra whitespace from the new elements<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param splitBy
@@ -1404,7 +1436,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param spacer
@@ -1423,7 +1455,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile with comments added
-     * 
+     *
      * @param key
      *            the key for the property
      * @param spacer
@@ -1463,7 +1495,7 @@ public final class PropertiesFile{
 
     /**
      * Gets a long associated with specified key
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @return long associated with the property
@@ -1485,7 +1517,7 @@ public final class PropertiesFile{
     /**
      * Gets a long associated with specified key or returns the default specified<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param def
@@ -1513,7 +1545,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a long as a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -1528,7 +1560,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a long as a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -1553,7 +1585,7 @@ public final class PropertiesFile{
     /**
      * Gets the property associated to the key as a long Array<br>
      * Separates at commas ',' and trims extra whitespace from the new elements
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @return the property associated with the key if found
@@ -1570,7 +1602,7 @@ public final class PropertiesFile{
      * Gets the property associated to the key as a long Array or returns the default specified<br>
      * Separates at commas ',' and trims extra whitespace from the new elements<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param def
@@ -1593,7 +1625,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -1609,7 +1641,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile with comments added
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -1628,7 +1660,7 @@ public final class PropertiesFile{
     /**
      * Gets the property associated to the key as a long array<br>
      * Separates at specified character(s) and trims extra whitespace from the new elements
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param splitBy
@@ -1654,7 +1686,7 @@ public final class PropertiesFile{
      * Gets the property associated to the key as a long array or returns the default specified<br>
      * Separates at specified character(s) and trims extra whitespace from the new elements<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param splitBy
@@ -1686,7 +1718,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param spacer
@@ -1705,7 +1737,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile with comments added
-     * 
+     *
      * @param key
      *            the key for the property
      * @param spacer
@@ -1745,7 +1777,7 @@ public final class PropertiesFile{
 
     /**
      * Gets a float associated with specified key
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @return float associated with the property
@@ -1767,7 +1799,7 @@ public final class PropertiesFile{
     /**
      * Gets a float associated with specified key or returns the default specified<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param def
@@ -1795,7 +1827,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a float as a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -1810,7 +1842,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a float as a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -1835,7 +1867,7 @@ public final class PropertiesFile{
     /**
      * Gets the property associated to the key as a float Array<br>
      * Separates at commas ',' and trims extra whitespace from the new elements
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @return the property associated with the key if found
@@ -1852,7 +1884,7 @@ public final class PropertiesFile{
      * Gets the property associated to the key as a float Array or returns the default specified<br>
      * Separates at commas ',' and trims extra whitespace from the new elements<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param def
@@ -1874,7 +1906,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -1890,7 +1922,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile with comments added
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -1909,7 +1941,7 @@ public final class PropertiesFile{
     /**
      * Gets the property associated to the key as a float array<br>
      * Separates at specified character(s) and trims extra whitespace from the new elements
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param splitBy
@@ -1935,7 +1967,7 @@ public final class PropertiesFile{
      * Gets the property associated to the key as a float array or returns the default specified<br>
      * Separates at specified character(s) and trims extra whitespace from the new elements<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param splitBy
@@ -1967,7 +1999,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param spacer
@@ -1986,7 +2018,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile with comments added
-     * 
+     *
      * @param key
      *            the key for the property
      * @param spacer
@@ -2026,7 +2058,7 @@ public final class PropertiesFile{
 
     /**
      * Gets a double associated with specified key
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @return double associated with the property
@@ -2048,7 +2080,7 @@ public final class PropertiesFile{
     /**
      * Gets a double associated with specified key or returns the default specified<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param def
@@ -2076,7 +2108,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a double as a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -2091,7 +2123,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a double as a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -2116,7 +2148,7 @@ public final class PropertiesFile{
     /**
      * Gets the property associated to the key as a double Array<br>
      * Separates at commas ',' and trims extra whitespace from the new elements
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @return the property associated with the key if found
@@ -2133,7 +2165,7 @@ public final class PropertiesFile{
      * Gets the property associated to the key as a double Array or returns the default specified<br>
      * Separates at commas ',' and trims extra whitespace from the new elements<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param def
@@ -2155,7 +2187,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -2171,7 +2203,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile with comments added
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -2190,7 +2222,7 @@ public final class PropertiesFile{
     /**
      * Gets the property associated to the key as a float array<br>
      * Separates at specified character(s) and trims extra whitespace from the new elements
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param splitBy
@@ -2216,7 +2248,7 @@ public final class PropertiesFile{
      * Gets the property associated to the key as a double array or returns the default specified<br>
      * Separates at specified character(s) and trims extra whitespace from the new elements<br>
      * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param splitBy
@@ -2247,7 +2279,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param spacer
@@ -2266,7 +2298,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a property to be saved to the PropertiesFile with comments added
-     * 
+     *
      * @param key
      *            the key for the property
      * @param spacer
@@ -2306,7 +2338,7 @@ public final class PropertiesFile{
 
     /**
      * Gets a boolean associated with specified key
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @return boolean associated with the property
@@ -2322,7 +2354,7 @@ public final class PropertiesFile{
 
     /**
      * Gets a boolean associated with specified key
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param def
@@ -2346,7 +2378,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a boolean as a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -2361,7 +2393,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a boolean as a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param value
@@ -2385,7 +2417,7 @@ public final class PropertiesFile{
 
     /**
      * Gets a character associated with specified key
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @return character associated with the property
@@ -2400,7 +2432,7 @@ public final class PropertiesFile{
 
     /**
      * Gets a character associated with specified key
-     * 
+     *
      * @param key
      *            the key to get the property for
      * @param def
@@ -2422,7 +2454,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a character as a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param ch
@@ -2437,7 +2469,7 @@ public final class PropertiesFile{
 
     /**
      * Sets a character as a property to be saved to the PropertiesFile
-     * 
+     *
      * @param key
      *            the key for the property
      * @param ch
@@ -2461,7 +2493,7 @@ public final class PropertiesFile{
 
     /**
      * Gets an unmodifiableMap of all keys and properties as Strings
-     * 
+     *
      * @return unmodifiable properties map
      */
     public Map<String, String> getPropertiesMap(){
@@ -2470,7 +2502,7 @@ public final class PropertiesFile{
 
     /**
      * Method for adding comments to keys
-     * 
+     *
      * @param key
      *            the key to add comments for
      * @param comment
@@ -2492,7 +2524,7 @@ public final class PropertiesFile{
 
     /**
      * Gets all the comments attached to the property key
-     * 
+     *
      * @param key
      *            the property key
      * @return comments if found, {@code null} if no comments found
@@ -2506,7 +2538,7 @@ public final class PropertiesFile{
 
     /**
      * Removes a comment from a property key
-     * 
+     *
      * @param key
      *            the property key
      * @param comment
@@ -2522,7 +2554,7 @@ public final class PropertiesFile{
 
     /**
      * Removes all the comments from a property key
-     * 
+     *
      * @param key
      *            the property key to remove comments for
      */
@@ -2541,7 +2573,7 @@ public final class PropertiesFile{
 
     /**
      * Boolean parsing handler
-     * 
+     *
      * @param property
      *            the property to parse
      * @return {@code boolean value} associated with the property
@@ -2568,7 +2600,7 @@ public final class PropertiesFile{
 
     /**
      * Checks is an {@link Object} is equal to the {@code PropertiesFile}
-     * 
+     *
      * @return {@code true} if equal; {@code false} otherwise
      * @see Object#equals(Object)
      */
@@ -2591,7 +2623,7 @@ public final class PropertiesFile{
 
     /**
      * Returns a string representation of the {@code PropertiesFile} as {@code PropertiesFile[FilePath=%s]}
-     * 
+     *
      * @return string representation of the {@code PropertiesFile}
      * @see Object#toString()
      */
@@ -2602,7 +2634,7 @@ public final class PropertiesFile{
 
     /**
      * Returns a hash code value for the {@code PropertiesFile}.
-     * 
+     *
      * @return hash
      * @see Object#hashCode()
      */
