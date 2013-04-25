@@ -80,10 +80,14 @@ public final class PropertiesFile{
             }
         }
         else{
-            File temp = new File(filepath.substring(0, filepath.lastIndexOf(File.separator)));
-            if(!temp.exists()){
-                if(!temp.mkdirs()){
-                    throw new UtilityException("Failed to make directory path for FilePath: ".concat(filepath));
+            filepath = FileUtils.normalizePath(filepath);
+            if(filepath.contains(File.separator)){
+                File temp = new File(filepath.substring(0, filepath.lastIndexOf(File.separator)));
+                if(!temp.exists()){
+                    if(!temp.mkdirs()){
+                        throw new UtilityException("Failed to make directory path for FilePath: ".concat(filepath));
+                    }
+                    save();
                 }
             }
         }

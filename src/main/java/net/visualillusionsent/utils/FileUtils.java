@@ -343,6 +343,23 @@ public final class FileUtils{
     }
 
     /**
+     * Normalizes File paths to the OS Specific file separators (\ on Windows and / on Unix based systems)
+     * 
+     * @param path
+     *            the path to be normalized
+     * @return
+     *         the normalized file path
+     */
+    public static final String normalizePath(String path){
+        if(SystemUtils.isWindows()){
+            return path.replace('/', '\\');
+        }
+        else{
+            return path.replace('\\', '/');
+        }
+    }
+
+    /**
      * Gets this class's version number
      * 
      * @return the class version
