@@ -21,12 +21,12 @@ package net.visualillusionsent.utils;
  * Provides static methods to help with {@link String} manipulations
  * 
  * @since 1.0
- * @version 1.0
+ * @version 1.1
  * @author Jason (darkdiplomat)
  */
 public final class StringUtils{
 
-    private static final float classVersion = 1.0F;
+    private static final float classVersion = 1.1F;
 
     /**
      * This class should never be constructed
@@ -521,7 +521,7 @@ public final class StringUtils{
         int[] toRet = new int[strarr.length];
         for(int index = 0; index < strarr.length; index++){
             try{
-                toRet[index] = Short.parseShort(strarr[index].trim());
+                toRet[index] = Integer.parseInt(strarr[index].trim());
             }
             catch(NumberFormatException nfe){
                 throw new UtilityException("str.nan", strarr[index]);
@@ -649,7 +649,7 @@ public final class StringUtils{
         long[] toRet = new long[strarr.length];
         for(int index = 0; index < strarr.length; index++){
             try{
-                toRet[index] = Short.parseShort(strarr[index].trim());
+                toRet[index] = Long.parseLong(strarr[index].trim());
             }
             catch(NumberFormatException nfe){
                 throw new UtilityException("str.nan", strarr[index]);
@@ -777,7 +777,7 @@ public final class StringUtils{
         float[] toRet = new float[strarr.length];
         for(int index = 0; index < strarr.length; index++){
             try{
-                toRet[index] = Short.parseShort(strarr[index].trim());
+                toRet[index] = Float.parseFloat(strarr[index].trim());
             }
             catch(NumberFormatException nfe){
                 throw new UtilityException("str.nan", strarr[index]);
@@ -907,7 +907,7 @@ public final class StringUtils{
         double[] toRet = new double[strarr.length];
         for(int index = 0; index < strarr.length; index++){
             try{
-                toRet[index] = Short.parseShort(strarr[index].trim());
+                toRet[index] = Double.parseDouble(strarr[index].trim());
             }
             catch(NumberFormatException nfe){
                 throw new UtilityException("str.nan", strarr[index]);
