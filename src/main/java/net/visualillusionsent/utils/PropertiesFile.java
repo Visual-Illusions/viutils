@@ -2322,7 +2322,7 @@ public final class PropertiesFile{
      * @see #parseBoolean(String)
      */
     public boolean getBoolean(String key) throws UtilityException{
-        return parseBoolean(getString(key));
+        return BooleanUtils.parseBoolean(getString(key));
     }
 
     /**
@@ -2341,7 +2341,7 @@ public final class PropertiesFile{
      */
     public boolean getBoolean(String key, boolean def) throws UtilityException{
         if(containsKey(key)){
-            return parseBoolean(getString(key));
+            return BooleanUtils.parseBoolean(getString(key));
         }
         else{
             setBoolean(key, def);
@@ -2542,33 +2542,6 @@ public final class PropertiesFile{
      */
     public void removeAllCommentsFromFile(){
         comments.clear();
-    }
-
-    /**
-     * Boolean parsing handler
-     * 
-     * @param property
-     *            the property to parse
-     * @return {@code boolean value} associated with the property
-     * @throws UtilityException
-     *             if value does not parse as boolean
-     */
-    private final boolean parseBoolean(String property) throws UtilityException{
-        if(property.matches("(?i:on|true|yes|1|allow)")){
-            return true;
-        }
-        else if(property.matches("(?i:off|false|no|0|deny)")){
-            return false;
-        }
-        else{
-            if(property.matches("(?i:".concat(UtilsLocaleHelper.localeTranslation("on")).concat("|").concat(UtilsLocaleHelper.localeTranslation("true")).concat("|").concat(UtilsLocaleHelper.localeTranslation("yes")).concat("|").concat(UtilsLocaleHelper.localeTranslation("allow")).concat(")"))){
-                return true;
-            }
-            else if(property.matches("(?i:".concat(UtilsLocaleHelper.localeTranslation("off")).concat("|").concat(UtilsLocaleHelper.localeTranslation("false")).concat("|").concat(UtilsLocaleHelper.localeTranslation("no")).concat("|").concat(UtilsLocaleHelper.localeTranslation("deny")).concat(")"))){
-                return false;
-            }
-            throw new UtilityException("Property not a boolean");
-        }
     }
 
     /**
