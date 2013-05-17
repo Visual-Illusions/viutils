@@ -84,7 +84,7 @@ public final class StringUtils{
         else if(startIndex > endIndex){
             throw new UtilityException("startIndex greater than endIndex");
         }
-        else if(endIndex > args.length){
+        else if(endIndex >= args.length){
             throw new UtilityException("endIndex greater than or equal to args.length");
         }
         else if(spacer == null){
