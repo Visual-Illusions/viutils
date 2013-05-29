@@ -85,6 +85,11 @@ public abstract class LocaleHelper{
      *            the path to the directory for the external files
      */
     protected LocaleHelper(boolean useExternalFiles, String externalDirectory){
+        if(externalDirectory == null){
+            external = false;
+            extDir = null;
+            return;
+        }
         this.external = useExternalFiles;
         String adjustPath = FileUtils.normalizePath(externalDirectory);
         extDir = adjustPath.endsWith(File.separator) ? adjustPath : adjustPath.concat(File.separator);
