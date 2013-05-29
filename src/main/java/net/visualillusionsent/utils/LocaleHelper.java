@@ -52,7 +52,7 @@ public abstract class LocaleHelper{
      */
     private PropertiesFile utils_eng;
     /**
-     * Jar path container
+     * Jar path container, override as needed
      */
     protected String jarPath;
     /**
@@ -236,6 +236,12 @@ public abstract class LocaleHelper{
         return MessageFormat.format(key, form);
     }
 
+    /**
+     * Checks the Language files and loads them
+     * 
+     * @throws UtilityException
+     * @throws URISyntaxException
+     */
     private final void checkLangFiles() throws UtilityException, URISyntaxException{
         if(utils_lang == null){
             if(!external){
@@ -273,6 +279,19 @@ public abstract class LocaleHelper{
                 }
             }
         }
+    }
+
+    /**
+     * Reloads the language files.
+     * 
+     * @throws UtilityException
+     * @see PropertiesFile#reload
+     */
+    public final void reloadLangFiles() throws UtilityException{
+        if(utils_sysLang != null){
+            utils_sysLang.reload();
+        }
+        utils_eng.reload();
     }
 
     /**

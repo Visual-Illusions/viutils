@@ -39,7 +39,7 @@ public enum ProgramStatus{
     /**
      * {@inheritDoc}
      */
-    public String toString(){
+    public final String toString(){
         if(this == RELEASE_CANDIDATE){
             return name().replace("_", " ");
         }

@@ -36,13 +36,12 @@ import java.util.jar.JarFile;
  * Provides static methods to help with {@link File} manipulations
  * 
  * @since 1.0
- * @version 1.0
+ * @version 1.1
  * @author Jason (darkdiplomat)
  */
 public final class FileUtils{
 
-    private static final float classVersion = 1.0F;
-    private static final int BUFFER = 512;
+    private static final float classVersion = 1.1F;
 
     /**
      * This class should never be externally constructed
@@ -120,7 +119,7 @@ public final class FileUtils{
      *             if the {@link File} can not be read<br>
      *             if the {@link File} can not be written to<br>
      *             if lines are null or an empty array<br>
-     *             if some other IOException occurrs
+     *             if some other IOException occurs
      */
     public static final void removeLines(File file, String... lines) throws UtilityException{
         if(file == null){
@@ -179,9 +178,9 @@ public final class FileUtils{
      * Clones a {@link File}
      * 
      * @param toClone
-     *            the filepath to the {@link File} to clone
+     *            the file path to the {@link File} to clone
      * @param clone
-     *            the filepath to clone to
+     *            the file path to clone to
      * @throws UtilityException
      * <br>
      *             if toClone is null or empty<br>
@@ -213,7 +212,7 @@ public final class FileUtils{
      * @param toClone
      *            the {@link File} to clone
      * @param clone
-     *            the filepath to clone to
+     *            the file path to clone to
      * @throws UtilityException
      * <br>
      *             if toClone is null<br>
@@ -244,7 +243,7 @@ public final class FileUtils{
      * <br>
      *             if toClone is null, does not exist, is not a file, or can not be read<br>
      *             if clone is null, path matches toClone, or is a directory<br>
-     *             if some other IOException occurrs
+     *             if some other IOException occurs
      */
     public static final void cloneFile(File toClone, File clone) throws UtilityException{
         if(toClone == null){
@@ -272,8 +271,9 @@ public final class FileUtils{
             instream = new FileInputStream(toClone);
             outstream = new FileOutputStream(clone);
             int inByte;
-            while((inByte = instream.read()) != -1){
-                outstream.write(inByte);
+            byte[] buffer = new byte[1024];
+            while((inByte = instream.read(buffer)) != -1){
+                outstream.write(buffer, 0, inByte);
                 outstream.flush();
             }
         }
@@ -303,7 +303,7 @@ public final class FileUtils{
      *            the path to clone the file to
      * @throws UtilityException
      * <br>
-     *             if an IOException occurrs
+     *             if an IOException occurs
      */
     public static final void cloneFileFromJar(String jarPath, String fileToMove, String pathTo) throws UtilityException{
         JarFile jar = null;
@@ -314,8 +314,8 @@ public final class FileUtils{
             JarEntry entry = jar.getJarEntry(fileToMove);
             InputStream in = jar.getInputStream(entry);
             out = new FileOutputStream(pathTo);
-            byte[] buffer = new byte[BUFFER];
             int readBytes = 0;
+            byte[] buffer = new byte[1024];
             while((readBytes = in.read(buffer, 0, buffer.length)) != -1){
                 out.write(buffer, 0, readBytes);
             }
