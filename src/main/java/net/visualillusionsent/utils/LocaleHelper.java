@@ -22,22 +22,23 @@ import java.security.CodeSource;
 import java.text.MessageFormat;
 import java.util.logging.Logger;
 
-import com.sun.org.apache.xerces.internal.util.MessageFormatter;
-
 /**
  * Message Localization helper
  * <p>
  * If extending this class you should include a folder called resources in your jar and in that a folder called lang.<br>
  * Then include a text file called languages.txt that contains keys like the language.txt included with VIUtils.<br>
  * You should also include a en_US.lang file with default English messages for your implementation.
+ * <p>
+ * As of LocaleHelper 1.2, you can now specify an external directory as the path to the lang files.<br>
+ * The directory should be set up the same as though it is inside the Jar file.
  * 
  * @since 1.0
- * @version 1.1
+ * @version 1.2
  * @author Jason (darkdiplomat)
  */
 public abstract class LocaleHelper{
 
-    private static final float classVersion = 1.1F;
+    private static final float classVersion = 1.2F;
     /**
      * The language.txt file for knowing which languages are supported
      */
@@ -58,6 +59,34 @@ public abstract class LocaleHelper{
      * Overrides the System default code
      */
     protected String localeCodeOverride;
+    /**
+     * Set to true if external files are used
+     */
+    private final boolean external;
+    /**
+     * Path to external files
+     */
+    private final String extDir;
+
+    /**
+     * Constructs a default LocaleHelper that will look in the jar for the lang files
+     */
+    protected LocaleHelper(){
+        this(false, null);
+    }
+
+    /**
+     * Constructs a new LocaleHelper with specifing external files and the directory for those files
+     * 
+     * @param useExternalFiles
+     *            {@code true} for external files; {@code false} otherwise
+     * @param externalDirectory
+     *            the path to the directory for the external files
+     */
+    protected LocaleHelper(boolean useExternalFiles, String externalDirectory){
+        this.external = useExternalFiles;
+        this.extDir = FileUtils.normalizePath(externalDirectory);
+    }
 
     /**
      * Gets the translated message for the given key
@@ -136,7 +165,7 @@ public abstract class LocaleHelper{
      * @param key
      *            the key to the translated message
      * @param form
-     *            the arguments to pass the {@link MessageFormatter}
+     *            the arguments to pass the {@link MessageFormat}
      * @return translated message
      * @see MessageFormat#format(String, Object...)
      */
@@ -188,7 +217,7 @@ public abstract class LocaleHelper{
      * @param key
      *            the key to the translated message
      * @param form
-     *            the arguments to pass the {@link MessageFormatter}
+     *            the arguments to pass the {@link MessageFormat}
      * @return translated message
      * @see MessageFormat#format(String, Object...)
      */
@@ -209,19 +238,39 @@ public abstract class LocaleHelper{
 
     private final void checkLangFiles() throws UtilityException, URISyntaxException{
         if(utils_lang == null){
-            utils_lang = new PropertiesFile(getJarPath(), "resources/lang/languages.txt");
+            if(!external){
+                utils_lang = new PropertiesFile(getJarPath(), "resources/lang/languages.txt");
+            }
+            else{
+                utils_lang = new PropertiesFile(FileUtils.normalizePath(extDir.concat("/languages.txt")));
+            }
         }
         if(utils_eng == null){
-            utils_eng = new PropertiesFile(getJarPath(), "resources/lang/en_US.lang");
+            if(!external){
+                utils_eng = new PropertiesFile(getJarPath(), "resources/lang/en_US.lang");
+            }
+            else{
+                utils_eng = new PropertiesFile(FileUtils.normalizePath(extDir.concat("/languages.txt")));
+            }
         }
         if(localeCodeOverride != null && localeCodeOverride.matches("([a-z]{2,3})_([A-Z]{2,3})")){
             if(utils_sysLang == null && utils_lang.containsKey(localeCodeOverride)){
-                utils_sysLang = new PropertiesFile(getJarPath(), "resources/lang/".concat(utils_lang.getString(localeCodeOverride)).concat(".lang"));
+                if(!external){
+                    utils_sysLang = new PropertiesFile(getJarPath(), "resources/lang/".concat(utils_lang.getString(localeCodeOverride)).concat(".lang"));
+                }
+                else{
+                    utils_sysLang = new PropertiesFile(FileUtils.normalizePath(extDir.concat(utils_lang.getString(localeCodeOverride)).concat(".lang")));
+                }
             }
         }
         else if(SystemUtils.SYSTEM_LOCALE != null){
             if(utils_sysLang == null && utils_lang.containsKey(SystemUtils.SYSTEM_LOCALE)){
-                utils_sysLang = new PropertiesFile(getJarPath(), "resources/lang/".concat(utils_sysLang.getString(SystemUtils.SYSTEM_LOCALE)).concat(".lang"));
+                if(!external){
+                    utils_sysLang = new PropertiesFile(getJarPath(), "resources/lang/".concat(utils_sysLang.getString(SystemUtils.SYSTEM_LOCALE)).concat(".lang"));
+                }
+                else{
+                    utils_sysLang = new PropertiesFile(FileUtils.normalizePath(extDir.concat(utils_lang.getString(SystemUtils.SYSTEM_LOCALE)).concat(".lang")));
+                }
             }
         }
     }
