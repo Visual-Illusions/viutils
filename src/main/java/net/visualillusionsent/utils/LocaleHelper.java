@@ -17,6 +17,7 @@
  */
 package net.visualillusionsent.utils;
 
+import java.io.File;
 import java.net.URISyntaxException;
 import java.security.CodeSource;
 import java.text.MessageFormat;
@@ -85,7 +86,8 @@ public abstract class LocaleHelper{
      */
     protected LocaleHelper(boolean useExternalFiles, String externalDirectory){
         this.external = useExternalFiles;
-        this.extDir = FileUtils.normalizePath(externalDirectory);
+        String adjustPath = FileUtils.normalizePath(externalDirectory);
+        extDir = adjustPath.endsWith(File.separator) ? adjustPath : adjustPath.concat(File.separator);
     }
 
     /**
@@ -248,7 +250,7 @@ public abstract class LocaleHelper{
                 utils_lang = new PropertiesFile(getJarPath(), "resources/lang/languages.txt");
             }
             else{
-                utils_lang = new PropertiesFile(FileUtils.normalizePath(extDir.concat("/languages.txt")));
+                utils_lang = new PropertiesFile(extDir.concat("languages.txt"));
             }
         }
         if(utils_eng == null){
@@ -256,7 +258,7 @@ public abstract class LocaleHelper{
                 utils_eng = new PropertiesFile(getJarPath(), "resources/lang/en_US.lang");
             }
             else{
-                utils_eng = new PropertiesFile(FileUtils.normalizePath(extDir.concat("/languages.txt")));
+                utils_eng = new PropertiesFile(extDir.concat("languages.txt"));
             }
         }
         if(localeCodeOverride != null && localeCodeOverride.matches("([a-z]{2,3})_([A-Z]{2,3})")){
@@ -265,7 +267,7 @@ public abstract class LocaleHelper{
                     utils_sysLang = new PropertiesFile(getJarPath(), "resources/lang/".concat(utils_lang.getString(localeCodeOverride)).concat(".lang"));
                 }
                 else{
-                    utils_sysLang = new PropertiesFile(FileUtils.normalizePath(extDir.concat(utils_lang.getString(localeCodeOverride)).concat(".lang")));
+                    utils_sysLang = new PropertiesFile(extDir.concat(utils_lang.getString(localeCodeOverride)).concat(".lang"));
                 }
             }
         }
@@ -275,7 +277,7 @@ public abstract class LocaleHelper{
                     utils_sysLang = new PropertiesFile(getJarPath(), "resources/lang/".concat(utils_sysLang.getString(SystemUtils.SYSTEM_LOCALE)).concat(".lang"));
                 }
                 else{
-                    utils_sysLang = new PropertiesFile(FileUtils.normalizePath(extDir.concat(utils_lang.getString(SystemUtils.SYSTEM_LOCALE)).concat(".lang")));
+                    utils_sysLang = new PropertiesFile(extDir.concat(utils_lang.getString(SystemUtils.SYSTEM_LOCALE)).concat(".lang"));
                 }
             }
         }
