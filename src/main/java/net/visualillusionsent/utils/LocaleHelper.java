@@ -88,11 +88,23 @@ public abstract class LocaleHelper{
         if(externalDirectory == null){
             external = false;
             extDir = null;
-            return;
         }
-        this.external = useExternalFiles;
-        String adjustPath = FileUtils.normalizePath(externalDirectory);
-        extDir = adjustPath.endsWith(File.separator) ? adjustPath : adjustPath.concat(File.separator);
+        else{
+            this.external = useExternalFiles;
+            String adjustPath = FileUtils.normalizePath(externalDirectory);
+            extDir = adjustPath.endsWith(File.separator) ? adjustPath : adjustPath.concat(File.separator);
+        }
+        try{
+            checkLangFiles();
+        }
+        catch(UtilityException uex){
+            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check logs.");
+            UtilsLogger.warning("Initialize Error: ", uex);
+        }
+        catch(URISyntaxException usex){
+            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check logs.");
+            UtilsLogger.warning("Initialize Error: ", usex);
+        }
     }
 
     /**
@@ -298,7 +310,15 @@ public abstract class LocaleHelper{
         if(utils_sysLang != null){
             utils_sysLang.reload();
         }
-        utils_eng.reload();
+        if(utils_eng != null){
+            utils_eng.reload();
+        }
+        else{
+            try{
+                checkLangFiles();
+            }
+            catch(URISyntaxException e){}
+        }
     }
 
     /**
