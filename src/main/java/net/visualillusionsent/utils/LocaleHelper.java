@@ -94,17 +94,6 @@ public abstract class LocaleHelper{
             String adjustPath = FileUtils.normalizePath(externalDirectory);
             extDir = adjustPath.endsWith(File.separator) ? adjustPath : adjustPath.concat(File.separator);
         }
-        try{
-            checkLangFiles();
-        }
-        catch(UtilityException uex){
-            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check logs.");
-            UtilsLogger.warning("Initialize Error: ", uex);
-        }
-        catch(URISyntaxException usex){
-            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check logs.");
-            UtilsLogger.warning("Initialize Error: ", usex);
-        }
     }
 
     /**
