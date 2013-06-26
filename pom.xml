@@ -38,8 +38,8 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:git@github.com/Visual-Illusions/viutils.git</connection>
-    <developerConnection>scm:git:git@github.com/Visual-Illusions/viutils.git</developerConnection>
+    <connection>scm:git:git@github.com:Visual-Illusions/viutils.git</connection>
+    <developerConnection>scm:git:git@github.com:Visual-Illusions/viutils.git</developerConnection>
     <url>https://github.com/Visual-Illusions/viutils/</url>
   </scm>
   <issueManagement>
