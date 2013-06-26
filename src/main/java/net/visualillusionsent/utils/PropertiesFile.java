@@ -26,8 +26,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -55,7 +53,7 @@ public final class PropertiesFile{
     private String filepath;
     private JarFile jar;
     private LinkedHashMap<String, String> props = new LinkedHashMap<String, String>();
-    private LinkedHashMap<String, String[]> comments = new LinkedHashMap<String, String[]>();
+    private LinkedHashMap<String, LinkedList<String>> comments = new LinkedHashMap<String, LinkedList<String>>();
     private LinkedList<String> header = new LinkedList<String>();
     private LinkedList<String> footer = new LinkedList<String>();
 
@@ -152,13 +150,14 @@ public final class PropertiesFile{
      * <br>
      *             if there was an error with reading the properties file
      */
+    @SuppressWarnings("unchecked")
     private final void load(InputStream instream) throws UtilityException{
         UtilityException uex = null;
         BufferedReader in = null;
         try{
             in = new BufferedReader(new InputStreamReader(instream, "UTF-8"));
             String inLine;
-            ArrayList<String> inComments = new ArrayList<String>();
+            LinkedList<String> inComments = new LinkedList<String>();
             while((inLine = in.readLine()) != null){
                 if(inLine.startsWith(";#")){
                     header.add(inLine);
@@ -187,11 +186,7 @@ public final class PropertiesFile{
                         }
                     }
                     if(!inComments.isEmpty()){
-                        String[] commented = new String[inComments.size()];
-                        for(int index = 0; index < inComments.size(); index++){
-                            commented[index] = inComments.get(index);
-                        }
-                        comments.put(propsLine[0], commented);
+                        comments.put(propsLine[0], (LinkedList<String>)inComments.clone());
                         inComments.clear();
                     }
                 }
@@ -2502,16 +2497,40 @@ public final class PropertiesFile{
      *            the comment(s) to be added
      */
     public final void addComment(String key, String... comment){
-        if(comment != null && comment.length > 0){
-            for(int i = 0; i < comment.length; i++){
-                if(comment[i] == null){
-                    comment[i] = "";
+        if(containsKey(key)){
+            if(comment != null && comment.length > 0){
+                LinkedList<String> the_comments = comments.containsKey(key) ? comments.get(key) : new LinkedList<String>();
+                for(int i = 0; i < comment.length; i++){
+                    if(comment[i] == null){
+                        comment[i] = "";
+                    }
+                    if(!comment[i].startsWith(";") && !comment[i].startsWith("#")){
+                        comment[i] = ";".concat(comment[i]);
+                    }
+                    the_comments.add(comment[i]);
                 }
-                if(!comment[i].startsWith(";") && !comment[i].startsWith("#")){
-                    comment[i] = ";".concat(comment[i]);
+                if(!comments.containsKey(key)){ //Basicly, the list pointer should be enough to change the list in the map without re-adding
+                    comments.put(key, the_comments);
                 }
             }
-            comments.put(key, comment);
+        }
+    }
+
+    /**
+     * Sets the comments for a given property.<br>
+     * NOTE: If comment is null or length of 0, this will essentially remove all comments.
+     * 
+     * @param key
+     *            the key to the property to set comments for
+     * @param comment
+     *            the comment(s) to set
+     */
+    public final void setComments(String key, String... comment){
+        if(containsKey(key)){
+            if(comments.containsKey(key)){
+                comments.get(key).clear();
+            }
+            this.addComment(key, comment);
         }
     }
 
@@ -2523,6 +2542,20 @@ public final class PropertiesFile{
      * @return comments if found, {@code null} if no comments found
      */
     public final String[] getComments(String key){
+        if(comments.containsKey(key)){
+            return comments.get(key).toArray(new String[0]);
+        }
+        return null;
+    }
+
+    /**
+     * Gets all the comments attached to the property key
+     * 
+     * @param key
+     *            the property key
+     * @return comments if found; {@code null} if no comments found
+     */
+    public final List<String> getCommentsAsList(String key){
         if(comments.containsKey(key)){
             return comments.get(key);
         }
@@ -2539,9 +2572,7 @@ public final class PropertiesFile{
      */
     public final void removeComment(String key, String comment){
         if(comments.containsKey(key)){
-            List<String> comms = Arrays.asList(comments.get(key));
-            comms.remove(comment);
-            comments.put(key, comms.toArray(new String[]{}));
+            comments.get(key).remove(comment);
         }
     }
 
