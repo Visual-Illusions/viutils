@@ -21,12 +21,12 @@ package net.visualillusionsent.utils;
  * Provides static methods to help with {@link String} manipulations
  * 
  * @since 1.0
- * @version 1.1
+ * @version 1.2
  * @author Jason (darkdiplomat)
  */
 public final class StringUtils{
 
-    private static final float classVersion = 1.1F;
+    private static final float classVersion = 1.2F;
 
     /**
      * This class should never be constructed
@@ -867,7 +867,7 @@ public final class StringUtils{
      *            the string to be converted
      * @param splitBy
      *            the character(s) to split at
-     * @return float array of the string
+     * @return double array of the string
      * @throws UtilityException
      *             if str is null or empty<br>
      *             or if splitBy is null or empty<br>
@@ -890,11 +890,11 @@ public final class StringUtils{
     }
 
     /**
-     * Converts a String Array into a float array
+     * Converts a String Array into a double array
      * 
      * @param strarr
      *            the string array to convert
-     * @return float array
+     * @return double array
      * @throws UtilityException
      */
     public static double[] stringArrayToDoubleArray(String[] strarr) throws UtilityException{
@@ -917,7 +917,7 @@ public final class StringUtils{
     }
 
     /**
-     * Joins a double array into a single {@link String} seperated by a comma
+     * Joins a double array into a single {@link String} separated by a comma
      * 
      * @param doubles
      *            the doubles array to be joined
@@ -931,10 +931,10 @@ public final class StringUtils{
     }
 
     /**
-     * Joins a double array into a single {@link String} seperated by specified character(s)
+     * Joins a double array into a single {@link String} separated by specified character(s)
      * 
      * @param doubles
-     *            the doule array to be joined
+     *            the double array to be joined
      * @param spacer
      *            the character(s) to space the doubles apart with
      * @return the joined double array as a String
@@ -973,6 +973,132 @@ public final class StringUtils{
         String[] arr = new String[doubles.length];
         for(int index = 0; index < doubles.length; index++){
             arr[index] = String.valueOf(doubles[index]);
+        }
+        return arr;
+    }
+
+    /**
+     * Splits a {@link String} at commas ',' and converts the elements to boolean
+     * 
+     * @param str
+     *            the string to be converted
+     * @return boolean array of the string
+     * @throws UtilityException
+     *             if str is null or empty<br>
+     *             or if an element is not a number
+     */
+    public static boolean[] stringToBooleanArray(String str) throws UtilityException{
+        return stringToBooleanArray(str, ",");
+    }
+
+    /**
+     * Splits a {@link String} at specified character(s) and converts the elements to boolean
+     * 
+     * @param str
+     *            the string to be converted
+     * @param splitBy
+     *            the character(s) to split at
+     * @return boolean array of the string
+     * @throws UtilityException
+     *             if str is null or empty<br>
+     *             or if splitBy is null or empty<br>
+     *             or if an element is not a number
+     */
+    public static boolean[] stringToBooleanArray(String str, String splitBy) throws UtilityException{
+        if(str == null){
+            throw new UtilityException("arg.null", "String str");
+        }
+        else if(str.isEmpty()){
+            throw new UtilityException("arg.empty", "String str");
+        }
+        else if(splitBy == null){
+            throw new UtilityException("arg.null", "String splitBy");
+        }
+        else if(splitBy.isEmpty()){
+            throw new UtilityException("arg.empty", "String splitBy");
+        }
+        return stringArrayToBooleanArray(str.split(splitBy));
+    }
+
+    /**
+     * Converts a String Array into a float array
+     * 
+     * @param strarr
+     *            the string array to convert
+     * @return boolean array
+     * @throws UtilityException
+     */
+    public static boolean[] stringArrayToBooleanArray(String[] strarr) throws UtilityException{
+        if(strarr == null){
+            throw new UtilityException("arg.null", "String strarr");
+        }
+        else if(strarr.length < 1){
+            throw new UtilityException("arg.empty", "String strarr");
+        }
+        boolean[] toRet = new boolean[strarr.length];
+        for(int index = 0; index < strarr.length; index++){
+            toRet[index] = BooleanUtils.parseBoolean(strarr[index].trim());
+        }
+        return toRet;
+    }
+
+    /**
+     * Joins a boolean array into a single {@link String} seperated by a comma
+     * 
+     * @param bools
+     *            the boolean array to be joined
+     * @return the joined boolean array as a String
+     * @throws UtilityException
+     *             if doubles is null or empty<br>
+     *             or if spacer is null
+     */
+    public static String booleanArrayToString(boolean[] bools) throws UtilityException{
+        return booleanArrayToString(bools, ",");
+    }
+
+    /**
+     * Joins a boolean array into a single {@link String} seperated by specified character(s)
+     * 
+     * @param bools
+     *            the boolean array to be joined
+     * @param spacer
+     *            the character(s) to space the doubles apart with
+     * @return the joined double array as a String
+     * @throws UtilityException
+     *             if doubles is null or empty<br>
+     *             or if spacer is null
+     */
+    public static String booleanArrayToString(boolean[] bools, String spacer) throws UtilityException{
+        if(bools == null){
+            throw new UtilityException("arg.null", "boolean[] bools");
+        }
+        else if(bools.length <= 0){
+            throw new UtilityException("arg.empty", "boolean[] bools");
+        }
+        if(spacer == null){
+            throw new UtilityException("arg.null", "String spacer");
+        }
+        return joinString(booleanArrayToStringArray(bools), spacer, 0);
+    }
+
+    /**
+     * Converts the elements of the boolean array to Strings
+     * 
+     * @param bools
+     *            the boolean array to convert
+     * @return string array
+     * @throws UtilityException
+     */
+    public static String[] booleanArrayToStringArray(boolean[] bools) throws UtilityException{
+        if(bools == null){
+            throw new UtilityException("arg.null", "boolean[] bools");
+        }
+        else if(bools.length == 0){
+            throw new UtilityException("arg.empty", "boolean[] bools");
+        }
+        String[] arr = new String[bools.length];
+        for(int index = 0; index < bools.length; index++){
+            arr[index] = String.valueOf(bools[index]);
         }
         return arr;
     }

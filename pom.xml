@@ -12,7 +12,7 @@
   <inceptionYear>2012</inceptionYear>
   <organization>
     <name>Visual Illusions Entertainment</name>
-    <url>http://visualillusionsent.net</url>
+    <url>http://wiki.visualillusionsent.net/VIUtils</url>
   </organization>
   <licenses>
     <license>
@@ -40,7 +40,6 @@
   <scm>
     <connection>scm:git:git@github.com:Visual-Illusions/viutils.git</connection>
     <developerConnection>scm:git:git@github.com:Visual-Illusions/viutils.git</developerConnection>
-    <tag>HEAD</tag>
     <url>https://github.com/Visual-Illusions/viutils/</url>
   </scm>
   <issueManagement>
@@ -76,7 +75,19 @@
     </dependency>
   </dependencies>
   <build>
+  	<defaultGoal>clean install</defaultGoal>
   	<plugins>
+  	  <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.7</version>
+        <configuration>
+          <linksource>true</linksource>
+          <doctitle>${project.name} ${project.version}</doctitle>
+          <header>Generated: ${timestamp}</header>
+          <footer><![CDATA[Licensed under the <a href="http://www.gnu.org/licenses/lgpl.html">GNU Lesser General Public License v3</a>]]></footer>
+        </configuration>
+      </plugin>
       <!-- Compile plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
