@@ -1,6 +1,8 @@
-package net.visualillusionsent.utils;
+package net.visualillusionsent.utils.testing;
 
 import java.util.TimeZone;
+
+import net.visualillusionsent.utils.DateUtils;
 
 import org.junit.Assert;
 import org.junit.Test;

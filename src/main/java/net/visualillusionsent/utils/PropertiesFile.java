@@ -41,7 +41,8 @@ import java.util.jar.JarFile;
  * Lines that start with {@literal ;#} are seen as header comments<br>
  * Lines that start with {@literal #;} are seen as footer comments<br>
  * Other comments can be prefixed with either # or ; and will be attached to the top of they property that follows it<br>
- * Inline comments can be performed using #! {@literal <Comment>}
+ * Inline comments can be performed using #! {@literal <Comment>} at the end of a line<br>
+ * If #! is needed as a property it can be escaped with \ ie: \#\!
  * 
  * @since 1.0
  * @version 1.3
@@ -177,10 +178,11 @@ public final class PropertiesFile{
                         String key = propsLine[0].trim();
                         String value = propsLine[1];
                         if(value.contains("#!")){
-                            String inlinec = value.split("#!")[1].trim();
+                            String inlinec = value.split("#!")[1]; //Don't trim the comment
                             inlineCom.put(key, inlinec);
+                            value = value.split("#!")[0];
                         }
-                        props.put(key.trim(), value.trim());
+                        props.put(key.trim(), value.replace("\\#\\!", "#!").trim()); //remove escape sequence
                     }
                     catch(ArrayIndexOutOfBoundsException aioobe){
                         //Empty value?
@@ -2982,6 +2984,17 @@ public final class PropertiesFile{
      */
     public final void clearFooter(){
         footer.clear();
+    }
+
+    /**
+     * Gets the InLine comment for a property
+     * 
+     * @param key
+     *            the property key to get inline comment for
+     * @return the inline comment or {@code null} if no comment
+     */
+    public final String getInlineComment(String key){
+        return inlineCom.get(key);
     }
 
     /**

@@ -1,4 +1,6 @@
-package net.visualillusionsent.utils;
+package net.visualillusionsent.utils.testing;
+
+import net.visualillusionsent.utils.IPAddressUtils;
 
 import org.junit.Assert;
 import org.junit.Test;

@@ -5,7 +5,11 @@
   <artifactId>viutils</artifactId>
   <version>1.0.5-SNAPSHOT</version>
   <packaging>jar</packaging>
-  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <timestamp>${maven.build.timestamp}</timestamp>
+    <maven.build.timestamp.format>dd MMMM yyyy HH:mm z</maven.build.timestamp.format>
+  </properties>
   <name>VIUtils</name>
   <description>Visual Illusions Entertainment Java Utilities Library</description>
   <url>http://visualillusionsent.net</url>
@@ -62,9 +66,6 @@
       <url>ftp://repo.visualillusionsent.net/</url>
     </snapshotRepository>
   </distributionManagement>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
   <!-- testing -->
   <dependencies>
     <dependency>
