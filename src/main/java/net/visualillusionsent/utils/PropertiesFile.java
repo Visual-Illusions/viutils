@@ -62,6 +62,11 @@ public final class PropertiesFile extends AbstractPropertiesFile{
      */
     public PropertiesFile(String filepath) throws UtilityException{
         super(filepath);
+        this.props = new LinkedHashMap<String, String>();
+        this.comments = new LinkedHashMap<String, List<String>>();
+        this.inlineCom = new LinkedHashMap<String, String>();
+        this.header = new LinkedList<String>();
+        this.footer = new LinkedList<String>();
         if(propsFile.exists()){
             try{
                 load(new FileInputStream(propsFile));
@@ -105,6 +110,7 @@ public final class PropertiesFile extends AbstractPropertiesFile{
         this.comments = new LinkedHashMap<String, List<String>>();
         this.inlineCom = new LinkedHashMap<String, String>();
         this.header = new LinkedList<String>();
+        this.footer = new LinkedList<String>();
         try{
             load(jar.getInputStream(ent));
         }
