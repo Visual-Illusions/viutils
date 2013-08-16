@@ -276,6 +276,95 @@ public final class DateUtils{
     }
 
     /**
+     * Get the Unix timestamp for the current time.<br>
+     * The time in seconds since January 01 1970
+     * 
+     * @return {@code long} timestamp
+     */
+    public static long getUnixTimestamp(){
+        return (System.currentTimeMillis() / 1000L);
+    }
+
+    /**
+     * Gets a readable string for the days/hours/minutes/seconds until a period of time
+     * 
+     * @param time
+     *            the Unix-TimeStamp to start from
+     * @param delay
+     *            the delay from the start point until expiration
+     * @return the String representation of the time until
+     */
+    public static String getTimeUntil(long time, long delay){
+        long correctedTime = (time + delay) - getUnixTimestamp();
+        if(correctedTime <= 0){
+            return "ERR Time";
+        }
+        return getTimeUntil(correctedTime);
+    }
+
+    /**
+     * Gets a readable string for the days/hours/minutes/seconds until a period of time
+     * 
+     * @param time
+     *            the Unix-TimeStamp of (or amount of seconds until) the future time expiration
+     * @return the String representation of the time until
+     */
+    public static String getTimeUntil(long time){
+        if(time <= 0){
+            return "ERR Time";
+        }
+        // How many days left?
+        String stringTimeLeft = "";
+        if(time >= 60 * 60 * 24){
+            int days = (int)Math.floor(time / (60 * 60 * 24));
+            time -= 60 * 60 * 24 * days;
+            if(days == 1){
+                stringTimeLeft += Integer.toString(days) + " day, ";
+            }
+            else{
+                stringTimeLeft += Integer.toString(days) + " days, ";
+            }
+        }
+        if(time >= 60 * 60){
+            int hours = (int)Math.floor(time / (60 * 60));
+            time -= 60 * 60 * hours;
+            if(hours == 1){
+                stringTimeLeft += Integer.toString(hours) + " hour, ";
+            }
+            else{
+                stringTimeLeft += Integer.toString(hours) + " hours, ";
+            }
+        }
+        if(time >= 60){
+            int minutes = (int)Math.floor(time / (60));
+            time -= 60 * minutes;
+            if(minutes == 1){
+                stringTimeLeft += Integer.toString(minutes) + " minute ";
+            }
+            else{
+                stringTimeLeft += Integer.toString(minutes) + " minutes ";
+            }
+        }
+        else{
+            // Lets remove the last comma, since it will look bad with 2 days, 3 hours, and 14 seconds.
+            if(!stringTimeLeft.isEmpty()){
+                stringTimeLeft = stringTimeLeft.substring(0, stringTimeLeft.length() - 1);
+            }
+        }
+        int secs = (int)time;
+        if(!stringTimeLeft.isEmpty()){
+            stringTimeLeft += "and ";
+        }
+        if(secs == 1){
+            stringTimeLeft += secs + " second.";
+        }
+        else{
+            stringTimeLeft += secs + " seconds.";
+        }
+        return stringTimeLeft;
+    }
+
+    /**
      * Gets this class's version number
      * 
      * @return the class version
