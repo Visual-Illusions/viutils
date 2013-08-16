@@ -18,8 +18,6 @@
 package net.visualillusionsent.utils;
 
 import java.io.File;
-import java.net.URISyntaxException;
-import java.security.CodeSource;
 import java.text.MessageFormat;
 import java.util.logging.Logger;
 
@@ -34,28 +32,32 @@ import java.util.logging.Logger;
  * The directory should be set up the same as though it is inside the Jar file.
  * 
  * @since 1.0
- * @version 1.2
+ * @version 1.3
  * @author Jason (darkdiplomat)
  */
 public abstract class LocaleHelper{
 
-    private static final float classVersion = 1.2F;
+    private static final float classVersion = 1.3F;
+    /* languages.txt quick reference */
+    private static final String langTXT = "languages.txt";
+    /* en_US.lang quick reference */
+    private static final String enUS = "en_US.lang";
     /**
      * The language.txt file for knowing which languages are supported
      */
-    private PropertiesFile utils_lang;
+    protected final UnmodifiablePropertiesFile utils_lang;
     /**
      * The .lang file that has the proper translations
      */
-    private PropertiesFile utils_sysLang;
+    protected final UnmodifiablePropertiesFile utils_sysLang;
     /**
      * The default English message file
      */
-    private PropertiesFile utils_eng;
+    protected final UnmodifiablePropertiesFile utils_eng;
     /**
      * Jar path container, override as needed
      */
-    protected String jarPath;
+    protected final String jarPath;
     /**
      * Overrides the System default code
      */
@@ -63,11 +65,11 @@ public abstract class LocaleHelper{
     /**
      * Set to true if external files are used
      */
-    private final boolean external;
+    protected final boolean external;
     /**
      * Path to external files
      */
-    private final String extDir;
+    protected final String extDir;
 
     /**
      * Constructs a default LocaleHelper that will look in the jar for the lang files
@@ -94,6 +96,38 @@ public abstract class LocaleHelper{
             String adjustPath = FileUtils.normalizePath(externalDirectory);
             extDir = adjustPath.endsWith(File.separator) ? adjustPath : adjustPath.concat(File.separator);
         }
+        this.jarPath = JarUtils.getJarPath(getClass());
+        if(!external){
+            utils_lang = new UnmodifiablePropertiesFile(jarPath, "resources/lang/".concat(langTXT));
+        }
+        else{
+            utils_lang = new UnmodifiablePropertiesFile(extDir.concat(langTXT));
+        }
+        if(!external){
+            utils_eng = new UnmodifiablePropertiesFile(jarPath, "resources/lang/".concat(enUS));
+        }
+        else{
+            utils_eng = new UnmodifiablePropertiesFile(extDir.concat(enUS));
+        }
+        if(localeCodeOverride != null && localeCodeOverride.matches("([a-z]{2,3})_([A-Z]{2,3})") && utils_lang.containsKey(localeCodeOverride)){
+            if(!external){
+                utils_sysLang = new UnmodifiablePropertiesFile(jarPath, "resources/lang/".concat(utils_lang.getString(localeCodeOverride)).concat(".lang"));
+            }
+            else{
+                utils_sysLang = new UnmodifiablePropertiesFile(extDir.concat(utils_lang.getString(localeCodeOverride)).concat(".lang"));
+            }
+        }
+        else if(SystemUtils.SYSTEM_LOCALE != null && utils_lang.containsKey(SystemUtils.SYSTEM_LOCALE)){
+            if(!external){
+                utils_sysLang = new UnmodifiablePropertiesFile(jarPath, "resources/lang/".concat(utils_lang.getString(SystemUtils.SYSTEM_LOCALE)).concat(".lang"));
+            }
+            else{
+                utils_sysLang = new UnmodifiablePropertiesFile(extDir.concat(utils_lang.getString(SystemUtils.SYSTEM_LOCALE)).concat(".lang"));
+            }
+        }
+        else{
+            utils_sysLang = utils_eng;
+        }
     }
 
     /**
@@ -105,7 +139,6 @@ public abstract class LocaleHelper{
      */
     public final String localeTranslate(String key){
         try{
-            checkLangFiles();
             if(utils_sysLang != null && utils_sysLang.containsKey(key)){
                 return utils_sysLang.getString(key);
             }
@@ -127,7 +160,6 @@ public abstract class LocaleHelper{
      */
     public final String defaultTranslate(String key){
         try{
-            checkLangFiles();
             if(utils_eng.containsKey(key)){
                 return utils_eng.getString(key);
             }
@@ -143,33 +175,6 @@ public abstract class LocaleHelper{
     /**
      * Gets the translated message for the given key and then formated to include the form string
      * 
-     * @deprecated Use {@link #localeTranslateMessage(String, Object...)} instead
-     * @param key
-     *            the key to the translated message
-     * @param form
-     *            the String to format the message String with
-     * @return translated message
-     * @see String#format(String, Object...)
-     */
-    @Deprecated
-    public final String localeTranslateFormat(String key, String... form){
-        try{
-            checkLangFiles();
-            if(utils_sysLang != null && utils_sysLang.containsKey(key)){
-                return String.format(utils_sysLang.getString(key), (Object[])form);
-            }
-            return defaultTranslateFormat(key, form);
-        }
-        catch(Exception e){
-            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check logs.");
-            UtilsLogger.warning("Translate Error: ", e);
-        }
-        return defaultTranslateFormat(key, form);
-    }
-
-    /**
-     * Gets the translated message for the given key and then formated to include the form string
-     * 
      * @param key
      *            the key to the translated message
      * @param form
@@ -179,7 +184,6 @@ public abstract class LocaleHelper{
      */
     public final String localeTranslateMessage(String key, Object... form){
         try{
-            checkLangFiles();
             if(utils_sysLang != null && utils_sysLang.containsKey(key)){
                 return MessageFormat.format(utils_sysLang.getString(key), form);
             }
@@ -195,33 +199,6 @@ public abstract class LocaleHelper{
     /**
      * Gets the default English message for the given key and then formated to include the form string
      * 
-     * @deprecated Use {@link #defaultTranslateMessage(String, Object...)} instead
-     * @param key
-     *            the key to the translated message
-     * @param form
-     *            the String to format the message String with
-     * @return translated message
-     * @see String#format(String, Object...)
-     */
-    @Deprecated
-    public final String defaultTranslateFormat(String key, String... form){
-        try{
-            checkLangFiles();
-            if(utils_eng.containsKey(key)){
-                return String.format(utils_eng.getString(key), (Object[])form);
-            }
-        }
-        catch(Exception e){
-            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check logs.");
-            UtilsLogger.warning("Translate Error: ", e);
-        }
-        //May have forgot a translation and left a regular message
-        return String.format(key, (Object[])form);
-    }
-
-    /**
-     * Gets the default English message for the given key and then formated to include the form string
-     * 
      * @param key
      *            the key to the translated message
      * @param form
@@ -231,7 +208,6 @@ public abstract class LocaleHelper{
      */
     public final String defaultTranslateMessage(String key, Object... form){
         try{
-            checkLangFiles();
             if(utils_eng.containsKey(key)){
                 return MessageFormat.format(utils_eng.getString(key), form);
             }
@@ -242,51 +218,6 @@ public abstract class LocaleHelper{
         }
         //May have forgot a translation and left a regular message
         return MessageFormat.format(key, form);
-    }
-
-    /**
-     * Checks the Language files and loads them
-     * 
-     * @throws UtilityException
-     * @throws URISyntaxException
-     */
-    private final void checkLangFiles() throws UtilityException, URISyntaxException{
-        if(utils_lang == null){
-            if(!external){
-                utils_lang = new PropertiesFile(getJarPath(), "resources/lang/languages.txt");
-            }
-            else{
-                utils_lang = new PropertiesFile(extDir.concat("languages.txt"));
-            }
-        }
-        if(utils_eng == null){
-            if(!external){
-                utils_eng = new PropertiesFile(getJarPath(), "resources/lang/en_US.lang");
-            }
-            else{
-                utils_eng = new PropertiesFile(extDir.concat("languages.txt"));
-            }
-        }
-        if(localeCodeOverride != null && localeCodeOverride.matches("([a-z]{2,3})_([A-Z]{2,3})")){
-            if(utils_sysLang == null && utils_lang.containsKey(localeCodeOverride)){
-                if(!external){
-                    utils_sysLang = new PropertiesFile(getJarPath(), "resources/lang/".concat(utils_lang.getString(localeCodeOverride)).concat(".lang"));
-                }
-                else{
-                    utils_sysLang = new PropertiesFile(extDir.concat(utils_lang.getString(localeCodeOverride)).concat(".lang"));
-                }
-            }
-        }
-        else if(SystemUtils.SYSTEM_LOCALE != null){
-            if(utils_sysLang == null && utils_lang.containsKey(SystemUtils.SYSTEM_LOCALE)){
-                if(!external){
-                    utils_sysLang = new PropertiesFile(getJarPath(), "resources/lang/".concat(utils_sysLang.getString(SystemUtils.SYSTEM_LOCALE)).concat(".lang"));
-                }
-                else{
-                    utils_sysLang = new PropertiesFile(extDir.concat(utils_lang.getString(SystemUtils.SYSTEM_LOCALE)).concat(".lang"));
-                }
-            }
-        }
     }
 
     /**
@@ -302,28 +233,6 @@ public abstract class LocaleHelper{
         if(utils_eng != null){
             utils_eng.reload();
         }
-        else{
-            try{
-                checkLangFiles();
-            }
-            catch(URISyntaxException e){}
-        }
-    }
-
-    /**
-     * Gets where this class is implemented and uses it to get the language resources
-     * 
-     * @return path to the jar with the resources
-     * @throws URISyntaxException
-     *             caught in the translation methods and ignored internally
-     */
-    private final String getJarPath() throws URISyntaxException{
-        if(jarPath != null){
-            return jarPath;
-        }
-        CodeSource codeSource = this.getClass().getProtectionDomain().getCodeSource();
-        jarPath = codeSource.getLocation().toURI().getPath();
-        return jarPath;
     }
 
     /**

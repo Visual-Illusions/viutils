@@ -11,5 +11,5 @@ package net.visualillusionsent.utils;
  */
 public final class VIUtils{
 
-    public static final String VIUTILS_VERSION = "1.0.4";
+    public static final String VIUTILS_VERSION = "1.0.5";
 }

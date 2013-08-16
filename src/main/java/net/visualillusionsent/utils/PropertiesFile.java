@@ -32,7 +32,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 /**
  * Properties File helper
@@ -48,18 +47,9 @@ import java.util.jar.JarFile;
  * @version 1.3
  * @author Jason (darkdiplomat)
  */
-public final class PropertiesFile{
+public final class PropertiesFile extends AbstractPropertiesFile{
 
     private static final float classVersion = 1.3F;
-    private File propsFile;
-    private String filepath;
-    private JarFile jar;
-    private LinkedHashMap<String, String> props = new LinkedHashMap<String, String>();
-    private LinkedHashMap<String, LinkedList<String>> comments = new LinkedHashMap<String, LinkedList<String>>();
-    private LinkedHashMap<String, String> inlineCom = new LinkedHashMap<String, String>();
-    private LinkedList<String> header = new LinkedList<String>();
-    private LinkedList<String> footer = new LinkedList<String>();
-    private boolean hasChanged;
 
     /**
      * Creates or loads a PropertiesFile
@@ -71,14 +61,7 @@ public final class PropertiesFile{
      *             if there was an error with either reading or writing the properties file
      */
     public PropertiesFile(String filepath) throws UtilityException{
-        if(filepath == null){
-            throw new UtilityException("arg.null", "String filepath");
-        }
-        else if(filepath.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String filepath");
-        }
-        this.filepath = filepath;
-        propsFile = new File(filepath);
+        super(filepath);
         if(propsFile.exists()){
             try{
                 load(new FileInputStream(propsFile));
@@ -116,29 +99,12 @@ public final class PropertiesFile{
      *             or if the Jar file does not contain the entry
      */
     public PropertiesFile(String jarpath, String entry) throws UtilityException{
-        if(jarpath == null){
-            throw new UtilityException("arg.null", "String jarpath");
-        }
-        else if(jarpath.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String jarpath");
-        }
-        else if(entry == null){
-            throw new UtilityException("arg.null", "String entry");
-        }
-        else if(entry.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String entry");
-        }
-        try{
-            jar = new JarFile(jarpath);
-        }
-        catch(IOException ioe){
-            throw new UtilityException("Unable to get JarFile");
-        }
+        super(jarpath, entry);
         JarEntry ent = jar.getJarEntry(entry);
-        if(ent == null){
-            throw new UtilityException("entry.missing", entry);
-        }
-        filepath = entry;
+        this.props = new LinkedHashMap<String, String>();
+        this.comments = new LinkedHashMap<String, List<String>>();
+        this.inlineCom = new LinkedHashMap<String, String>();
+        this.header = new LinkedList<String>();
         try{
             load(jar.getInputStream(ent));
         }
@@ -148,13 +114,10 @@ public final class PropertiesFile{
     }
 
     /**
-     * Loads the Properties File
-     * 
-     * @throws UtilityException
-     * <br>
-     *             if there was an error with reading the properties file
+     * {@inheritDoc}
      */
-    private final void load(InputStream instream) throws UtilityException{
+    @Override
+    protected final void load(InputStream instream) throws UtilityException{
         UtilityException uex = null;
         BufferedReader in = null;
         try{
@@ -222,14 +185,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Reloads the PropertiesFile from its source
-     * 
-     * @throws UtilityException
-     * <br>
-     *             if there was an error with reading the properties file<br>
-     *             or if the Jar file is not found or unable to be read from<br>
-     *             or if the Jar file does not contain the entry
+     * {@inheritDoc}
      */
+    @Override
     public final void reload() throws UtilityException{
         props.clear();
         comments.clear();
@@ -257,32 +215,26 @@ public final class PropertiesFile{
     }
 
     /**
-     * Saves the Properties File<br>
-     * <b>NOTE:</b> Saving is not supported for PropertiesFiles inside of Jar Files
-     * 
-     * @throws UtilityException
-     * <br>
-     *             if there was an error with writing the properties file<br>
-     *             or if save is called for a PropertiesFile inside of a Jar
-     * @deprecated Use {@link #save(boolean)} instead
+     * {@inheritDoc}
      */
-    @Deprecated
+    @Override
     public final void save() throws UtilityException{
         this.save(false);
     }
 
     /**
-     * Saves the Properties File<br>
-     * <b>NOTE:</b> Saving is not supported for PropertiesFiles inside of Jar Files
-     * 
-     * @param force
-     *            {@code true} to force save the file; {@code false} to save as needed
-     * @throws UtilityException
-     * <br>
-     *             if there was an error with writing the properties file<br>
-     *             or if save is called for a PropertiesFile inside of a Jar
+     * {@inheritDoc}
      */
-    public final void save(boolean force) throws UtilityException{
+    @Override
+    public final void forceSave() throws UtilityException{
+        this.save(true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected final void save(boolean force) throws UtilityException{
         if(jar != null){
             throw new UtilityException("Saving is not supported with PropertiesFiles inside of Jar files");
         }
@@ -334,15 +286,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Checks if the PropertiesFile contains a key
-     * 
-     * @param key
-     *            the key to check
-     * @return {@code true} if the PropertiesFile contains the key, {@code false} otherwise
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final boolean containsKey(String key) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -354,14 +300,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Removes a key and it's associated property and comments from the PropertiesFile
-     * 
-     * @param key
-     *            the key to be removed
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void removeKey(String key) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -379,16 +320,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a {@link String}
-     * 
-     * @param key
-     *            the key to get the property for
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final String getString(String key) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -403,18 +337,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a {@link String} or returns the default specified<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param def
-     *            the default value to use if key is not found
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
+     * {@inheritDoc}
      */
+    @Override
     public final String getString(String key, String def) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -432,35 +357,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the property to be stored
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if value is null
+     * {@inheritDoc}
      */
+    @Override
     public final void setString(String key, String value) throws UtilityException{
         setString(key, value, (String[])null);
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile with comments added
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the property to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if value is null
+     * {@inheritDoc}
      */
+    @Override
     public final void setString(String key, String value, String... comment) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -480,35 +387,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a {@link String} Array<br>
-     * Separates at commas ',' and trims extra whitespace from the new elements
-     * 
-     * @param key
-     *            the key to get the property for
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final String[] getStringArray(String key) throws UtilityException{
         return getStringArray(key, ",");
     }
 
     /**
-     * Gets the property associated to the key as a {@link String} Array or returns the default specified<br>
-     * Separates at commas ',' and trims extra whitespace from the new elements<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param def
-     *            the default value to use if key is not found
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
+     * {@inheritDoc}
      */
+    @Override
     public final String[] getStringArray(String key, String[] def) throws UtilityException{
         if(containsKey(key)){
             return getStringArray(key, ",");
@@ -520,56 +409,25 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile<br>
-     * Separates elements with a comma ','
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the property to be stored (elements combined using a comma as a spacer)
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setStringArray(String key, String[] value) throws UtilityException{
         setStringArray(key, ",", value, (String[])null);
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile with comments added<br>
-     * Separates elements with a comma ','
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the property to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setStringArray(String key, String[] value, String... comment) throws UtilityException{
         setStringArray(key, ",", value, comment);
     }
 
     /**
-     * Gets the property associated to the key as a {@link String} Array<br>
-     * Separates at specified character(s) and trims extra whitespace from the new elements
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param splitBy
-     *            the character(s) to split the property value with
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if specified splitter is null or empty<br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final String[] getStringArray(String key, String splitBy) throws UtilityException{
         if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
@@ -581,22 +439,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a {@link String} Array or returns the default specified<br>
-     * Separates at specified character(s) and trims extra whitespace from the new elements<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param splitBy
-     *            the character(s) to split the property value with
-     * @param def
-     *            the default value to use if key is not found
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if specified splitter is null or empty<br>
+     * {@inheritDoc}
      */
+    @Override
     public final String[] getStringArray(String key, String splitBy, String[] def) throws UtilityException{
         if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
@@ -614,43 +459,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile<br>
-     * Separates elements with specified spacer
-     * 
-     * @param key
-     *            the key for the property
-     * @param spacer
-     *            the character(s) to space the elements with
-     * @param value
-     *            the property to be stored (elements combined using a comma as a spacer)
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if specified spacer is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setStringArray(String key, String spacer, String[] value) throws UtilityException{
         setStringArray(key, spacer, value, (String[])null);
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile with comments added<br>
-     * Separates elements with specified spacer
-     * 
-     * @param key
-     *            the key for the property
-     * @param spacer
-     *            the character(s) to space the elements with
-     * @param value
-     *            the property to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if specified spacer is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setStringArray(String key, String spacer, String[] value, String... comment) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -680,17 +499,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets a byte associated with specified key
-     * 
-     * @param key
-     *            the key to get the property for
-     * @return byte associated with the property
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if the property is not a number<br>
-     *             or if property is not found
+     * {@inheritDoc}
      */
+    @Override
     public final byte getByte(String key) throws UtilityException{
         try{
             return Byte.parseByte(getString(key));
@@ -701,19 +512,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets a byte associated with specified key or returns the default specified<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param def
-     *            the default value to use if key is not found
-     * @return byte associated with the property
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if the property is not a number<br>
+     * {@inheritDoc}
      */
+    @Override
     public final byte getByte(String key, byte def) throws UtilityException{
         if(containsKey(key)){
             try{
@@ -730,33 +531,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a byte as a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the byte value to be stored
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setByte(String key, byte value) throws UtilityException{
         setByte(key, value, (String[])null);
     }
 
     /**
-     * Sets a byte as a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the byte value to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setByte(String key, byte value, String... comment) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -774,35 +559,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a byte Array<br>
-     * Separates at commas ',' and trims extra whitespace from the new elements
-     * 
-     * @param key
-     *            the key to get the property for
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final byte[] getByteArray(String key) throws UtilityException{
         return getByteArray(key, ",");
     }
 
     /**
-     * Gets the property associated to the key as a byte Array or returns the default specified<br>
-     * Separates at commas ',' and trims extra whitespace from the new elements<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param def
-     *            the default value to use if key is not found
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final byte[] getByteArray(String key, byte[] def) throws UtilityException{
         if(containsKey(key)){
             return getByteArray(key, ",");
@@ -814,56 +581,25 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile<br>
-     * Separates elements with a comma ','
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the property to be stored (elements combined using a comma as a spacer)
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setByteArray(String key, byte[] value) throws UtilityException{
         setByteArray(key, ",", value, (String[])null);
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile with comments added<br>
-     * Separates elements with a comma ','
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the property to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setByteArray(String key, byte[] value, String... comment) throws UtilityException{
         setByteArray(key, ",", value, comment);
     }
 
     /**
-     * Gets the property associated to the key as a byte array<br>
-     * Separates at specified character(s) and trims extra whitespace from the new elements
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param splitBy
-     *            the character(s) to split the property value with
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if specified splitter is null or empty<br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final byte[] getByteArray(String key, String splitBy) throws UtilityException{
         if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
@@ -875,22 +611,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a byte array or returns the default specified<br>
-     * Separates at specified character(s) and trims extra whitespace from the new elements<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param splitBy
-     *            the character(s) to split the property value with
-     * @param def
-     *            the default value to use if key is not found
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if specified splitter is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final byte[] getByteArray(String key, String splitBy, byte[] def) throws UtilityException{
         if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
@@ -908,43 +631,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile<br>
-     * Separates elements with specified spacer
-     * 
-     * @param key
-     *            the key for the property
-     * @param spacer
-     *            the character(s) to space the elements with
-     * @param value
-     *            the property to be stored (elements combined using a comma as a spacer)
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if specified spacer is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setByteArray(String key, String spacer, byte[] value) throws UtilityException{
         setByteArray(key, spacer, value, (String[])null);
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile with comments added<br>
-     * Separates elements with specified spacer
-     * 
-     * @param key
-     *            the key for the property
-     * @param spacer
-     *            the character(s) to space the elements with
-     * @param value
-     *            the property to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if specified spacer is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setByteArray(String key, String spacer, byte[] value, String... comment) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -974,17 +671,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets a short associated with specified key
-     * 
-     * @param key
-     *            the key to get the property for
-     * @return short associated with the property
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if the property is not a number<br>
-     *             or if property is not found
+     * {@inheritDoc}
      */
+    @Override
     public final short getShort(String key) throws UtilityException{
         try{
             return Short.parseShort(getString(key));
@@ -995,20 +684,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets a short associated with specified key or returns the default specified<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param def
-     *            the default value to use if key is not found
-     * @return short associated with the property
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if the property is not a number<br>
-     *             or if property is not found
+     * {@inheritDoc}
      */
+    @Override
     public final short getShort(String key, short def) throws UtilityException{
         if(containsKey(key)){
             try{
@@ -1025,33 +703,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a short as a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the short value to be stored
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setShort(String key, short value) throws UtilityException{
         setShort(key, value, (String[])null);
     }
 
     /**
-     * Sets a short as a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the short value to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setShort(String key, short value, String... comment) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -1069,35 +731,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a short Array<br>
-     * Separates at commas ',' and trims extra whitespace from the new elements
-     * 
-     * @param key
-     *            the key to get the property for
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final short[] getShortArray(String key) throws UtilityException{
         return getShortArray(key, ",");
     }
 
     /**
-     * Gets the property associated to the key as a short Array or returns the default specified<br>
-     * Separates at commas ',' and trims extra whitespace from the new elements<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param def
-     *            the default value to use if key is not found
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
+     * {@inheritDoc}
      */
+    @Override
     public final short[] getShortArray(String key, short[] def) throws UtilityException{
         if(containsKey(key)){
             return getShortArray(key, ",");
@@ -1109,54 +753,25 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the property to be stored (elements combined using a comma as a spacer)
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setShortArray(String key, short[] value) throws UtilityException{
         setShortArray(key, ",", value, (String[])null);
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile with comments added
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the property to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setShortArray(String key, short[] value, String... comment) throws UtilityException{
         setShortArray(key, ",", value, comment);
     }
 
     /**
-     * Gets the property associated to the key as a short array<br>
-     * Separates at specified character(s) and trims extra whitespace from the new elements
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param splitBy
-     *            the character(s) to split the property value with
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if specified splitter is null or empty<br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final short[] getShortArray(String key, String splitBy) throws UtilityException{
         if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
@@ -1168,22 +783,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a short array or returns the default specified<br>
-     * Separates at commas ',' and trims extra whitespace from the new elements<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param splitBy
-     *            the character(s) to split the property value with
-     * @param def
-     *            the default value to use if key is not found
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if specified splitter is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final short[] getShortArray(String key, String splitBy, short[] def) throws UtilityException{
         if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
@@ -1201,41 +803,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param spacer
-     *            the character(s) to space the elements with
-     * @param value
-     *            the property to be stored (elements combined using a comma as a spacer)
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if specified spacer is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setShortArray(String key, String spacer, short[] value) throws UtilityException{
         setShortArray(key, spacer, value, (String[])null);
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile with comments added
-     * 
-     * @param key
-     *            the key for the property
-     * @param spacer
-     *            the character(s) to space the elements with
-     * @param value
-     *            the property to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if specified spacer is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setShortArray(String key, String spacer, short[] value, String... comment) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -1265,17 +843,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets an integer associated with specified key
-     * 
-     * @param key
-     *            the key to get the property for
-     * @return integer associated with the property
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if the property is not a number<br>
-     *             or if property is not found
+     * {@inheritDoc}
      */
+    @Override
     public final int getInt(String key) throws UtilityException{
         try{
             return Integer.parseInt(getString(key));
@@ -1286,19 +856,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets an integer associated with specified key or returns the default specified<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param def
-     *            the default value to use if key is not found
-     * @return integer associated with the property
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if the property is not a number
+     * {@inheritDoc}
      */
+    @Override
     public final int getInt(String key, int def) throws UtilityException{
         if(containsKey(key)){
             try{
@@ -1315,33 +875,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets an integer as a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the integer value to be stored
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setInt(String key, int value) throws UtilityException{
         setInt(key, value, (String[])null);
     }
 
     /**
-     * Sets an integer as a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the integer value to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setInt(String key, int value, String... comment) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -1359,35 +903,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a integer Array<br>
-     * Separates at commas ',' and trims extra whitespace from the new elements
-     * 
-     * @param key
-     *            the key to get the property for
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final int[] getIntArray(String key) throws UtilityException{
         return getIntArray(key, ",");
     }
 
     /**
-     * Gets the property associated to the key as a integer Array or returns the default specified<br>
-     * Separates at commas ',' and trims extra whitespace from the new elements<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param def
-     *            the default value to use if key is not found
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final int[] getIntArray(String key, int[] def) throws UtilityException{
         if(containsKey(key)){
             return getIntArray(key, ",");
@@ -1399,54 +925,25 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the property to be stored (elements combined using a comma as a spacer)
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setIntArray(String key, int[] value) throws UtilityException{
         setIntArray(key, ",", value, (String[])null);
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile with comments added
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the property to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setIntArray(String key, int[] value, String... comment) throws UtilityException{
         setIntArray(key, ",", value, comment);
     }
 
     /**
-     * Gets the property associated to the key as a integer array<br>
-     * Separates at specified character(s) and trims extra whitespace from the new elements
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param splitBy
-     *            the character(s) to split the property value with
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if specified splitter is null or empty<br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final int[] getIntArray(String key, String splitBy) throws UtilityException{
         if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
@@ -1458,22 +955,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a integer array or returns the default specified<br>
-     * Separates at specified character(s) and trims extra whitespace from the new elements<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param splitBy
-     *            the character(s) to split the property value with
-     * @param def
-     *            the default value to use if key is not found
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if specified splitter is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final int[] getIntArray(String key, String splitBy, int[] def) throws UtilityException{
         if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
@@ -1491,41 +975,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param spacer
-     *            the character(s) to space the elements with
-     * @param value
-     *            the property to be stored (elements combined using a comma as a spacer)
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if specified spacer is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setIntArray(String key, String spacer, int[] value) throws UtilityException{
         setIntArray(key, spacer, value, (String[])null);
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile with comments added
-     * 
-     * @param key
-     *            the key for the property
-     * @param spacer
-     *            the character(s) to space the elements with
-     * @param value
-     *            the property to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if specified spacer is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setIntArray(String key, String spacer, int[] value, String... comment) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -1555,17 +1015,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets a long associated with specified key
-     * 
-     * @param key
-     *            the key to get the property for
-     * @return long associated with the property
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if the property is not a number<br>
-     *             or if property is not found
+     * {@inheritDoc}
      */
+    @Override
     public final long getLong(String key) throws UtilityException{
         try{
             return Long.parseLong(getString(key));
@@ -1576,19 +1028,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets a long associated with specified key or returns the default specified<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param def
-     *            the default value to use if key is not found
-     * @return long associated with the property
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if the property is not a number
+     * {@inheritDoc}
      */
+    @Override
     public final long getLong(String key, long def) throws UtilityException{
         if(containsKey(key)){
             try{
@@ -1605,33 +1047,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a long as a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the long value to be stored
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setLong(String key, long value) throws UtilityException{
         setLong(key, value, (String[])null);
     }
 
     /**
-     * Sets a long as a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the long value to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setLong(String key, long value, String... comment) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -1649,36 +1075,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a long Array<br>
-     * Separates at commas ',' and trims extra whitespace from the new elements
-     * 
-     * @param key
-     *            the key to get the property for
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final long[] getLongArray(String key) throws UtilityException{
         return getLongArray(key, ",");
     }
 
     /**
-     * Gets the property associated to the key as a long Array or returns the default specified<br>
-     * Separates at commas ',' and trims extra whitespace from the new elements<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param def
-     *            the default value to use if key is not found
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final long[] getLongArray(String key, long[] def) throws UtilityException{
         if(containsKey(key)){
             return getLongArray(key, ",");
@@ -1690,54 +1097,25 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the property to be stored (elements combined using a comma as a spacer)
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setLongArray(String key, long[] value) throws UtilityException{
         setLongArray(key, ",", value, (String[])null);
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile with comments added
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the property to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setLongArray(String key, long[] value, String... comment) throws UtilityException{
         setLongArray(key, ",", value, comment);
     }
 
     /**
-     * Gets the property associated to the key as a long array<br>
-     * Separates at specified character(s) and trims extra whitespace from the new elements
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param splitBy
-     *            the character(s) to split the property value with
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if specified splitter is null or empty<br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final long[] getLongArray(String key, String splitBy) throws UtilityException{
         if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
@@ -1749,23 +1127,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a long array or returns the default specified<br>
-     * Separates at specified character(s) and trims extra whitespace from the new elements<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param splitBy
-     *            the character(s) to split the property value with
-     * @param def
-     *            the default value to use if key is not found
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if specified splitter is null or empty<br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final long[] getLongArray(String key, String splitBy, long[] def) throws UtilityException{
         if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
@@ -1783,41 +1147,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param spacer
-     *            the character(s) to space the elements with
-     * @param value
-     *            the property to be stored (elements combined using a comma as a spacer)
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if specified spacer is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setLongArray(String key, String spacer, long[] value) throws UtilityException{
         setLongArray(key, spacer, value, (String[])null);
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile with comments added
-     * 
-     * @param key
-     *            the key for the property
-     * @param spacer
-     *            the character(s) to space the elements with
-     * @param value
-     *            the property to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if specified spacer is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setLongArray(String key, String spacer, long[] value, String... comment) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -1847,17 +1187,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets a float associated with specified key
-     * 
-     * @param key
-     *            the key to get the property for
-     * @return float associated with the property
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if the property is not a number<br>
-     *             or if property is not found
+     * {@inheritDoc}
      */
+    @Override
     public final float getFloat(String key) throws UtilityException{
         try{
             return Float.parseFloat(getString(key));
@@ -1868,19 +1200,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets a float associated with specified key or returns the default specified<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param def
-     *            the default value to use if key is not found
-     * @return float associated with the property
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if the property is not a number
+     * {@inheritDoc}
      */
+    @Override
     public final float getFloat(String key, float def) throws UtilityException{
         if(containsKey(key)){
             try{
@@ -1897,33 +1219,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a float as a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the float value to be stored
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setFloat(String key, float value) throws UtilityException{
         setFloat(key, value, (String[])null);
     }
 
     /**
-     * Sets a float as a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the float value to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setFloat(String key, float value, String... comment) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -1941,35 +1247,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a float Array<br>
-     * Separates at commas ',' and trims extra whitespace from the new elements
-     * 
-     * @param key
-     *            the key to get the property for
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final float[] getFloatArray(String key) throws UtilityException{
         return getFloatArray(key, ",");
     }
 
     /**
-     * Gets the property associated to the key as a float Array or returns the default specified<br>
-     * Separates at commas ',' and trims extra whitespace from the new elements<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param def
-     *            the default value to use if key is not found
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
+     * {@inheritDoc}
      */
+    @Override
     public final float[] getFloatArray(String key, float[] def) throws UtilityException{
         if(containsKey(key)){
             return getFloatArray(key, ",");
@@ -1981,54 +1269,25 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the property to be stored (elements combined using a comma as a spacer)
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setFloatArray(String key, float[] value) throws UtilityException{
         setFloatArray(key, ",", value, (String[])null);
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile with comments added
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the property to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setFloatArray(String key, float[] value, String... comment) throws UtilityException{
         setFloatArray(key, ",", value, comment);
     }
 
     /**
-     * Gets the property associated to the key as a float array<br>
-     * Separates at specified character(s) and trims extra whitespace from the new elements
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param splitBy
-     *            the character(s) to split the property value with
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if specified splitter is null or empty<br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final float[] getFloatArray(String key, String splitBy) throws UtilityException{
         if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
@@ -2040,23 +1299,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a float array or returns the default specified<br>
-     * Separates at specified character(s) and trims extra whitespace from the new elements<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param splitBy
-     *            the character(s) to split the property value with
-     * @param def
-     *            the default value to use if key is not found
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if specified splitter is null or empty<br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final float[] getFloatArray(String key, String splitBy, float[] def) throws UtilityException{
         if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
@@ -2074,41 +1319,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param spacer
-     *            the character(s) to space the elements with
-     * @param value
-     *            the property to be stored (elements combined using a comma as a spacer)
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if specified spacer is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setFloatArray(String key, String spacer, float[] value) throws UtilityException{
         setFloatArray(key, spacer, value, (String[])null);
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile with comments added
-     * 
-     * @param key
-     *            the key for the property
-     * @param spacer
-     *            the character(s) to space the elements with
-     * @param value
-     *            the property to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if specified spacer is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setFloatArray(String key, String spacer, float[] value, String... comment) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -2138,17 +1359,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets a double associated with specified key
-     * 
-     * @param key
-     *            the key to get the property for
-     * @return double associated with the property
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if the property is not a number<br>
-     *             or if property is not found
+     * {@inheritDoc}
      */
+    @Override
     public final double getDouble(String key) throws UtilityException{
         try{
             return Double.parseDouble(getString(key));
@@ -2159,19 +1372,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets a double associated with specified key or returns the default specified<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param def
-     *            the default value to use if key is not found
-     * @return double associated with the property
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if the property is not a number
+     * {@inheritDoc}
      */
+    @Override
     public final double getDouble(String key, double def) throws UtilityException{
         if(containsKey(key)){
             try{
@@ -2188,33 +1391,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a double as a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the double value to be stored
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setDouble(String key, double value) throws UtilityException{
         setDouble(key, value, (String[])null);
     }
 
     /**
-     * Sets a double as a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the double value to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setDouble(String key, double value, String... comment) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -2232,35 +1419,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a double Array<br>
-     * Separates at commas ',' and trims extra whitespace from the new elements
-     * 
-     * @param key
-     *            the key to get the property for
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final double[] getDoubleArray(String key) throws UtilityException{
         return getDoubleArray(key, ",");
     }
 
     /**
-     * Gets the property associated to the key as a double Array or returns the default specified<br>
-     * Separates at commas ',' and trims extra whitespace from the new elements<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param def
-     *            the default value to use if key is not found
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
+     * {@inheritDoc}
      */
+    @Override
     public final double[] getDoubleArray(String key, double[] def) throws UtilityException{
         if(containsKey(key)){
             return getDoubleArray(key, ",");
@@ -2272,54 +1441,25 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the property to be stored (elements combined using a comma as a spacer)
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setDoubleArray(String key, double[] value) throws UtilityException{
         setDoubleArray(key, ",", value, (String[])null);
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile with comments added
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the property to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setDoubleArray(String key, double[] value, String... comment) throws UtilityException{
         setDoubleArray(key, ",", value, comment);
     }
 
     /**
-     * Gets the property associated to the key as a double array<br>
-     * Separates at specified character(s) and trims extra whitespace from the new elements
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param splitBy
-     *            the character(s) to split the property value with
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if specified splitter is null or empty<br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final double[] getDoubleArray(String key, String splitBy) throws UtilityException{
         if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
@@ -2331,22 +1471,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a double array or returns the default specified<br>
-     * Separates at specified character(s) and trims extra whitespace from the new elements<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param splitBy
-     *            the character(s) to split the property value with
-     * @param def
-     *            the default value to use if key is not found
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if specified splitter is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final double[] getDoubleArray(String key, String splitBy, double[] def) throws UtilityException{
         if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
@@ -2364,41 +1491,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param spacer
-     *            the character(s) to space the elements with
-     * @param value
-     *            the property to be stored (elements combined using a comma as a spacer)
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if specified spacer is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setDoubleArray(String key, String spacer, double[] value) throws UtilityException{
         setDoubleArray(key, spacer, value, (String[])null);
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile with comments added
-     * 
-     * @param key
-     *            the key for the property
-     * @param spacer
-     *            the character(s) to space the elements with
-     * @param value
-     *            the property to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if specified spacer is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setDoubleArray(String key, String spacer, double[] value, String... comment) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -2428,35 +1531,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets a boolean associated with specified key
-     * 
-     * @param key
-     *            the key to get the property for
-     * @return boolean associated with the property
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if property is not found
-     * @see BooleanUtils#parseBoolean(String)
+     * {@inheritDoc}
      */
+    @Override
     public final boolean getBoolean(String key) throws UtilityException{
         return BooleanUtils.parseBoolean(getString(key));
     }
 
     /**
-     * Gets a boolean associated with specified key
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param def
-     *            the default value to use if key is not found
-     * @return boolean associated with the property
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if property is not found
-     * @see BooleanUtils#parseBoolean(String)
+     * {@inheritDoc}
      */
+    @Override
     public final boolean getBoolean(String key, boolean def) throws UtilityException{
         if(containsKey(key)){
             return BooleanUtils.parseBoolean(getString(key));
@@ -2468,33 +1553,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a boolean as a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the boolean value to be stored
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setBoolean(String key, boolean value) throws UtilityException{
         setBoolean(key, value, (String[])null);
     }
 
     /**
-     * Sets a boolean as a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the double value to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setBoolean(String key, boolean value, String... comment) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -2512,35 +1581,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a boolean Array<br>
-     * Separates at commas ',' and trims extra whitespace from the new elements
-     * 
-     * @param key
-     *            the key to get the property for
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final boolean[] getBooleanArray(String key) throws UtilityException{
         return getBooleanArray(key, ",");
     }
 
     /**
-     * Gets the property associated to the key as a boolean Array or returns the default specified<br>
-     * Separates at commas ',' and trims extra whitespace from the new elements<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param def
-     *            the default value to use if key is not found
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
+     * {@inheritDoc}
      */
+    @Override
     public final boolean[] getBooleanArray(String key, boolean[] def) throws UtilityException{
         if(containsKey(key)){
             return getBooleanArray(key, ",");
@@ -2552,54 +1603,25 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the property to be stored (elements combined using a comma as a spacer)
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setBooleanArray(String key, boolean[] value) throws UtilityException{
         setBooleanArray(key, ",", value, (String[])null);
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile with comments added
-     * 
-     * @param key
-     *            the key for the property
-     * @param value
-     *            the property to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setBooleanArray(String key, boolean[] value, String... comment) throws UtilityException{
         setBooleanArray(key, ",", value, comment);
     }
 
     /**
-     * Gets the property associated to the key as a boolean array<br>
-     * Separates at specified character(s) and trims extra whitespace from the new elements
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param splitBy
-     *            the character(s) to split the property value with
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if specified splitter is null or empty<br>
-     *             or if property was not found
+     * {@inheritDoc}
      */
+    @Override
     public final boolean[] getBooleanArray(String key, String splitBy) throws UtilityException{
         if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
@@ -2611,22 +1633,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the property associated to the key as a boolean array or returns the default specified<br>
-     * Separates at specified character(s) and trims extra whitespace from the new elements<br>
-     * NOTE: This will not save the properties file, it will add the key and value to the map for later saving.
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param splitBy
-     *            the character(s) to split the property value with
-     * @param def
-     *            the default value to use if key is not found
-     * @return the property associated with the key if found
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty <br>
-     *             or if specified splitter is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final boolean[] getBooleanArray(String key, String splitBy, boolean[] def) throws UtilityException{
         if(splitBy == null){
             throw new UtilityException("arg.null", "String splitBy");
@@ -2644,41 +1653,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param spacer
-     *            the character(s) to space the elements with
-     * @param value
-     *            the property to be stored (elements combined using a comma as a spacer)
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if specified spacer is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setBooleanArray(String key, String spacer, boolean[] value) throws UtilityException{
         setBooleanArray(key, spacer, value, (String[])null);
     }
 
     /**
-     * Sets a property to be saved to the PropertiesFile with comments added
-     * 
-     * @param key
-     *            the key for the property
-     * @param spacer
-     *            the character(s) to space the elements with
-     * @param value
-     *            the property to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if specified spacer is null or empty<br>
-     *             or if value is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setBooleanArray(String key, String spacer, boolean[] value, String... comment) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -2708,32 +1693,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets a character associated with specified key
-     * 
-     * @param key
-     *            the key to get the property for
-     * @return character associated with the property
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
-     *             or if property is not found
+     * {@inheritDoc}
      */
+    @Override
     public final char getCharacter(String key) throws UtilityException{
         return getString(key).trim().charAt(0);
     }
 
     /**
-     * Gets a character associated with specified key
-     * 
-     * @param key
-     *            the key to get the property for
-     * @param def
-     *            the default value to use if key is not found
-     * @return character associated with the property
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty<br>
+     * {@inheritDoc}
      */
+    @Override
     public final char getCharacter(String key, char def) throws UtilityException{
         if(containsKey(key)){
             return getString(key).trim().charAt(0);
@@ -2745,33 +1715,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets a character as a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param ch
-     *            the boolean value to be stored
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setCharacter(String key, char ch) throws UtilityException{
         setCharacter(key, ch, (String[])null);
     }
 
     /**
-     * Sets a character as a property to be saved to the PropertiesFile
-     * 
-     * @param key
-     *            the key for the property
-     * @param ch
-     *            the double value to be stored
-     * @param comment
-     *            the comments to add
-     * @throws UtilityException
-     * <br>
-     *             if specified key is null or empty
+     * {@inheritDoc}
      */
+    @Override
     public final void setCharacter(String key, char ch, String... comment) throws UtilityException{
         if(key == null){
             throw new UtilityException("arg.null", "String key");
@@ -2789,26 +1743,21 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets an unmodifiableMap of all keys and properties as Strings
-     * 
-     * @return unmodifiable properties map
+     * {@inheritDoc}
      */
+    @Override
     public final Map<String, String> getPropertiesMap(){
         return Collections.unmodifiableMap(props);
     }
 
     /**
-     * Method for adding comments to keys
-     * 
-     * @param key
-     *            the key to add comments for
-     * @param comment
-     *            the comment(s) to be added
+     * {@inheritDoc}
      */
+    @Override
     public final void addComment(String key, String... comment){
         if(containsKey(key)){
             if(comment != null && comment.length > 0){
-                LinkedList<String> the_comments = comments.containsKey(key) ? comments.get(key) : new LinkedList<String>();
+                List<String> the_comments = comments.containsKey(key) ? comments.get(key) : new LinkedList<String>();
                 for(int i = 0; i < comment.length; i++){
                     if(comment[i] == null){
                         comment[i] = "";
@@ -2826,14 +1775,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Sets the comments for a given property.<br>
-     * NOTE: If comment is null or length of 0, this will essentially remove all comments.
-     * 
-     * @param key
-     *            the key to the property to set comments for
-     * @param comment
-     *            the comment(s) to set
+     * {@inheritDoc}
      */
+    @Override
     public final void setComments(String key, String... comment){
         if(containsKey(key)){
             if(comments.containsKey(key)){
@@ -2844,12 +1788,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets all the comments attached to the property key
-     * 
-     * @param key
-     *            the property key
-     * @return comments if found, {@code null} if no comments found
+     * {@inheritDoc}
      */
+    @Override
     public final String[] getComments(String key){
         if(comments.containsKey(key)){
             return comments.get(key).toArray(new String[0]);
@@ -2858,12 +1799,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets all the comments attached to the property key
-     * 
-     * @param key
-     *            the property key
-     * @return comments if found; {@code null} if no comments found
+     * {@inheritDoc}
      */
+    @Override
     public final List<String> getCommentsAsList(String key){
         if(comments.containsKey(key)){
             return comments.get(key);
@@ -2872,13 +1810,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Removes a comment from a property key
-     * 
-     * @param key
-     *            the property key
-     * @param comment
-     *            the comment to be removed
+     * {@inheritDoc}
      */
+    @Override
     public final void removeComment(String key, String comment){
         if(comments.containsKey(key)){
             comments.get(key).remove(comment);
@@ -2886,11 +1820,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Removes all the comments from a property key
-     * 
-     * @param key
-     *            the property key to remove comments for
+     * {@inheritDoc}
      */
+    @Override
     public final void removeAllCommentsFromKey(String key){
         if(comments.containsKey(key)){
             comments.remove(key);
@@ -2898,8 +1830,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Removes all the comments from all the properties in the file
+     * {@inheritDoc}
      */
+    @Override
     public final void removeAllCommentsFromFile(){
         comments.clear();
         header.clear();
@@ -2907,11 +1840,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Adds lines to the Header of the PropertiesFile
-     * 
-     * @param lines
-     *            the lines to be added
+     * {@inheritDoc}
      */
+    @Override
     public final void addHeaderLines(String... lines){
         if(lines != null && lines.length > 0){
             for(String line : lines){
@@ -2929,10 +1860,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the lines of the Header
-     * 
-     * @return the header lines
+     * {@inheritDoc}
      */
+    @Override
     public final LinkedList<String> getHeaderLines(){
         LinkedList<String> toRet = new LinkedList<String>(header);
         Collections.copy(header, toRet);
@@ -2940,18 +1870,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Clears the header
+     * {@inheritDoc}
      */
+    @Override
     public final void clearHeader(){
         header.clear();
     }
 
     /**
-     * Adds lines to the Footer of the PropertiesFile
-     * 
-     * @param lines
-     *            the lines to be added
+     * {@inheritDoc}
      */
+    @Override
     public final void addFooterLines(String... lines){
         if(lines != null && lines.length > 0){
             for(String line : lines){
@@ -2969,10 +1898,9 @@ public final class PropertiesFile{
     }
 
     /**
-     * Gets the lines of the Header
-     * 
-     * @return the header lines
+     * {@inheritDoc}
      */
+    @Override
     public final LinkedList<String> getFooterLines(){
         LinkedList<String> toRet = new LinkedList<String>(footer);
         Collections.copy(footer, toRet);
@@ -2980,19 +1908,17 @@ public final class PropertiesFile{
     }
 
     /**
-     * Clears the footer
+     * {@inheritDoc}
      */
+    @Override
     public final void clearFooter(){
         footer.clear();
     }
 
     /**
-     * Gets the InLine comment for a property
-     * 
-     * @param key
-     *            the property key to get inline comment for
-     * @return the inline comment or {@code null} if no comment
+     * {@inheritDoc}
      */
+    @Override
     public final String getInlineComment(String key){
         return inlineCom.get(key);
     }
