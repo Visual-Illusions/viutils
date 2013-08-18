@@ -135,8 +135,8 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile{
      */
     @Override
     public final void reload() throws UtilityException{
-        props.clear();
-        comments.clear();
+        //props.clear();  UNSUPPORTED
+        //comments.clear(); UNSUPPORTED
         if(jar != null){
             JarEntry ent = jar.getJarEntry(filepath);
             if(ent == null){

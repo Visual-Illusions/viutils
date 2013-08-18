@@ -41,8 +41,6 @@ public abstract class LocaleHelper{
     private static final float classVersion = 1.3F;
     /* languages.txt quick reference */
     private static final String langTXT = "languages.txt";
-    /* en_US.lang quick reference */
-    private static final String enUS = "en_US.lang";
     /**
      * Map of supported languages
      */
@@ -102,11 +100,8 @@ public abstract class LocaleHelper{
             utils_lang = new UnmodifiablePropertiesFile(extDir.concat(langTXT));
         }
         loadLang("en_US");
-        if(defaultLocale != null && defaultLocale.matches("([a-z]{2,3})_([A-Z]{2,3})") && utils_lang.containsKey(defaultLocale)){
-            loadLang(defaultLocale);
-        }
-        else if(SystemUtils.SYSTEM_LOCALE != null && utils_lang.containsKey(SystemUtils.SYSTEM_LOCALE)){
-            loadLang(defaultLocale);
+        if(this.defaultLocale != null && this.defaultLocale.matches("([a-z]{2,3})_([A-Z]{2,3})")){
+            loadLang(this.defaultLocale);
         }
     }
 
