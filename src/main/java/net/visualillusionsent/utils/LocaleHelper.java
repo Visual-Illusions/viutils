@@ -101,7 +101,7 @@ public abstract class LocaleHelper{
         else{
             utils_lang = new UnmodifiablePropertiesFile(extDir.concat(langTXT));
         }
-        loadLang(enUS);
+        loadLang("en_US");
         if(defaultLocale != null && defaultLocale.matches("([a-z]{2,3})_([A-Z]{2,3})") && utils_lang.containsKey(defaultLocale)){
             loadLang(defaultLocale);
         }
@@ -155,8 +155,8 @@ public abstract class LocaleHelper{
      */
     public final String defaultTranslate(String key){
         try{
-            if(langs.get(enUS).containsKey(key)){
-                return langs.get(enUS).getString(key);
+            if(langs.get("en_US").containsKey(key)){
+                return langs.get("en_US").getString(key);
             }
         }
         catch(Exception e){
@@ -218,8 +218,8 @@ public abstract class LocaleHelper{
      */
     public final String defaultTranslate(String key, Object... form){
         try{
-            if(langs.get(enUS).containsKey(key)){
-                return MessageFormat.format(langs.get(enUS).getString(key), form);
+            if(langs.get("en_US").containsKey(key)){
+                return MessageFormat.format(langs.get("en_US").getString(key), form);
             }
         }
         catch(Exception e){
