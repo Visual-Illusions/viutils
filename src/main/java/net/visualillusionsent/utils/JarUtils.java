@@ -55,16 +55,34 @@ public final class JarUtils{
      *            the class to check manifest for
      * @return the Manifest if found
      * @throws IOException
-     *             if the Manifest is missing
+     *             if the Manifest is missing or the JarFile is not readable
      */
     public static final Manifest getManifest(Class<?> clazz) throws IOException{
         return getManifest(new JarFile(getJarPath(clazz)));
     }
 
+    /**
+     * Gets the manifest of the Jar on the specified path
+     * 
+     * @param path
+     *            the path to the Jar file
+     * @return the Manifest if found
+     * @throws IOException
+     *             if the Manifest is missing or the JarFile is not readable
+     */
     public static final Manifest getManifest(String path) throws IOException{
         return getManifest(new JarFile(path));
     }
 
+    /**
+     * Gets the manifest of the {@link JarFile}
+     * 
+     * @param jarfile
+     *            the {@link JarFile} to get the manifest for
+     * @return the {@link Manifest} if found
+     * @throws IOException
+     *             if the Manifest is missing or the JarFile is not readable
+     */
     public static final Manifest getManifest(JarFile jarfile) throws IOException{
         if(jarfile == null){
             return null;

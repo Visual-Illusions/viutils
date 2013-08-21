@@ -184,6 +184,19 @@ public final class StringUtils{
     }
 
     /**
+     * Centers a String in the specified Line Length
+     * 
+     * @param toCenter
+     *            the String to center
+     * @param lineLength
+     *            the length of the line to center on
+     * @return the padded String
+     */
+    public static final String centerLine(String toCenter, int lineLength){
+        return padCharLeft(toCenter, (int)(Math.floor(lineLength - toCenter.length()) / 2), ' ');
+    }
+
+    /**
      * Trims whitespace off each element in a {@link String} array
      * 
      * @param toTrim
