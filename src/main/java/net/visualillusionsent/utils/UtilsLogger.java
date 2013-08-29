@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 /**
- * Utilties Logger Manager
+ * Utilities Logger Manager
  * <p>
  * For internal use by VIUtils to log errors
  * 
@@ -101,7 +101,7 @@ public final class UtilsLogger{
         public final String format(LogRecord rec){
             StringBuilder message = new StringBuilder();
             message.append(dateform.format(rec.getMillis()));
-            message.append(" [VIUtils - " + rec.getLevel().getName() + "] ");
+            message.append(" [" + rec.getLevel().getName() + "] ");
             message.append(rec.getMessage());
             message.append(linesep);
             if(rec.getThrown() != null){
@@ -114,7 +114,7 @@ public final class UtilsLogger{
     }
 
     /**
-     * Gets this classes version number
+     * Gets this class's version number
      * 
      * @return the class version
      */

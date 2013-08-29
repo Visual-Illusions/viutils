@@ -53,6 +53,7 @@ public final class UtilityException extends RuntimeException{
         temp.put("prop.nan", "Property for KEY: %s was not a number.");
         temp.put("str.nan", "String Index: %s was not a number");
         temp.put("entry.missing", "JarFile does not contain Entry: %s");
+        temp.put("delay.negative", "Delay cannot be negative or zero");
         errors = Collections.unmodifiableMap(temp);
     }
 
