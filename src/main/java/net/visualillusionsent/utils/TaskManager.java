@@ -19,6 +19,7 @@ package net.visualillusionsent.utils;
 
 import java.util.Iterator;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -617,6 +618,9 @@ public final class TaskManager{
                 if(tasks.get(task).isDone()){ // Check task for completion
                     try{
                         tasks.get(task).get(); // Test for execution exceptions
+                    }
+                    catch(CancellationException cex){
+                        // Don't care if it was cancelled
                     }
                     catch(InterruptedException e){
                         // The task was probably canceled so skip this

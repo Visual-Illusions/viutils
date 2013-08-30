@@ -7,7 +7,6 @@
   <packaging>jar</packaging>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>dd MMMM yyyy HH:mm z</maven.build.timestamp.format>
   </properties>
   <name>VIUtils</name>
@@ -118,7 +117,7 @@
         <configuration>
           <linksource>true</linksource>
           <doctitle>${project.name} ${project.version}</doctitle>
-          <header>Generated: ${timestamp}</header>
+          <header>Generated: ${maven.build.timestamp}</header>
           <footer><![CDATA[Licensed under the <a href="http://www.gnu.org/licenses/lgpl.html">GNU Lesser General Public License v3</a>]]></footer>
         </configuration>
       </plugin>
@@ -146,6 +145,7 @@
             <manifestEntries>
               <Sealed>true</Sealed>
               <Build-By>${user.name}</Build-By>
+              <Built>${maven.build.timestamp}</Built>
             </manifestEntries>
           </archive>
         </configuration>
@@ -164,8 +164,8 @@
         <artifactId>maven-release-plugin</artifactId>
         <version>2.2.2</version>
         <configuration>
-          <preparationGoals>jar:jar</preparationGoals>
-          <goals>jar:jar</goals>
+          <preparationGoals>clean package</preparationGoals>
+          <goals>install</goals>
           <tagNameFormat>@{project.version}</tagNameFormat>
         </configuration>
       </plugin>

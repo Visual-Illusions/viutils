@@ -11,5 +11,17 @@
 			<outputDirectory>/</outputDirectory>
 			<filtered>false</filtered>
 		</file>
+		<file>
+			<source>${project.build.directory}/${artifactId}-${project.version}-sources.jar</source>
+			<destName>VIUtils-${project.version}.jar</destName>
+			<outputDirectory>/</outputDirectory>
+			<filtered>false</filtered>
+		</file>
+		<file>
+			<source>${project.build.directory}/${artifactId}-${project.version}-javadoc.jar</source>
+			<destName>VIUtils-${project.version}.jar</destName>
+			<outputDirectory>/</outputDirectory>
+			<filtered>false</filtered>
+		</file>
 	</files>
 </assembly>

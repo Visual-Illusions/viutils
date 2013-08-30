@@ -62,6 +62,10 @@ public final class SystemUtils{
      */
     public static final String SYSTEM_LOCALE = SYSTEM_LANGUAGE.concat("_").concat(SYSTEM_COUNTRY);
     /**
+     * The Java Vendor
+     */
+    public static final String JAVA_VENDOR = System.getProperty("java.vendor");
+    /**
      * The Java Version
      */
     public static final String JAVA_VERSION = System.getProperty("java.version");
