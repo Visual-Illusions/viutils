@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Provides methods to help with parsing Boolean values<br>
  * 
  * @since 1.0.4
- * @version 1.0
+ * @version 1.1
  * @author Jason (darkdiplomat)
  */
 public final class BooleanUtils{

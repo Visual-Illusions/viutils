@@ -29,7 +29,7 @@ import java.util.jar.JarFile;
 /**
  * Abstract Properties File
  * 
- * @since 1.1
+ * @since 1.1.0
  * @version 1.0
  * @author Jason (darkdiplomat)
  */
