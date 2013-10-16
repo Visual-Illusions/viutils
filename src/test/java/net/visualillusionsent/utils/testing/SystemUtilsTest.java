@@ -1,7 +1,6 @@
 package net.visualillusionsent.utils.testing;
 
 import net.visualillusionsent.utils.SystemUtils;
-
 import org.junit.Assert;
 import org.junit.Test;
 

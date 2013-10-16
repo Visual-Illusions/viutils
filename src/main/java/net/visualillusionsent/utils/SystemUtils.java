@@ -19,99 +19,80 @@ package net.visualillusionsent.utils;
 
 /**
  * Provides static fields and methods to help with getting System information
- * 
- * @since 1.0.0
- * @version 1.0
+ *
  * @author Jason (darkdiplomat)
+ * @version 1.0
+ * @since 1.0.0
  */
-public final class SystemUtils{
+public final class SystemUtils {
 
     private static final float classVersion = 1.0F;
 
-    /**
-     * This class should never be externally constructed
-     */
-    private SystemUtils(){}
+    /** This class should never be externally constructed */
+    private SystemUtils() {
+    }
 
-    /**
-     * The System Line Separator (Windows = \r\n Unix = \n Older Macs = \r)
-     */
+    /** The System Line Separator (Windows = \r\n Unix = \n Older Macs = \r) */
     public static final String LINE_SEP = System.getProperty("line.separator");
-    /**
-     * The System Operation System
-     */
+    /** The System Operation System */
     public static final String SYSTEM_OS = System.getProperty("os.name");
-    /**
-     * The System Architecture (x86 [32Bit] x64 x86-64 [64Bit])
-     */
+    /** The System Architecture (x86 [32Bit] x64 x86-64 [64Bit]) */
     public static final String SYSTEM_ARCH = System.getProperty("os.arch");
-    /**
-     * The System Version
-     */
+    /** The System Version */
     public static final String SYSTEM_VERSION = System.getProperty("os.version");
-    /**
-     * The System Country
-     */
+    /** The System Country */
     public static final String SYSTEM_COUNTRY = System.getProperty("user.country");
-    /**
-     * The System Language
-     */
+    /** The System Language */
     public static final String SYSTEM_LANGUAGE = System.getProperty("user.language");
-    /**
-     * The System Locale
-     */
+    /** The System Locale */
     public static final String SYSTEM_LOCALE = SYSTEM_LANGUAGE.concat("_").concat(SYSTEM_COUNTRY);
-    /**
-     * The Java Vendor
-     */
+    /** The Java Vendor */
     public static final String JAVA_VENDOR = System.getProperty("java.vendor");
-    /**
-     * The Java Version
-     */
+    /** The Java Version */
     public static final String JAVA_VERSION = System.getProperty("java.version");
 
     /**
      * Tells if the OS is a Windows based OS
-     * 
+     *
      * @return {@code true} if Windows; {@code false} otherwise
      */
-    public static final boolean isWindows(){
+    public static final boolean isWindows() {
         return (SYSTEM_OS.toLowerCase().indexOf("win") >= 0);
     }
 
     /**
      * Tells if the OS is a MacOS based OS
-     * 
+     *
      * @return {@code true} if MacOS; {@code false} otherwise
      */
-    public static final boolean isMac(){
+    public static final boolean isMac() {
         return (SYSTEM_OS.toLowerCase().indexOf("mac") >= 0);
     }
 
     /**
-     * Tells if the OS is a Unix based OS (Linux/MacOSX)
-     * 
+     * Tells if the OS is a Unix based/like OS (Linux/MacOSX)
+     *
      * @return {@code true} if Unix; {@code false} otherwise
      */
-    public static final boolean isUnix(){
+    public static final boolean isUnix() {
         return (SYSTEM_OS.toLowerCase().indexOf("nix") >= 0 || SYSTEM_OS.toLowerCase().indexOf("nux") >= 0 || SYSTEM_OS.toLowerCase().indexOf("aix") > 0);
     }
 
     /**
      * Tells if the OS is a Solaris OS
-     * 
+     *
      * @return {@code true} if Solaris; {@code false} otherwise
      */
-    public static final boolean isSolaris(){
+    public static final boolean isSolaris() {
         return (SYSTEM_OS.toLowerCase().indexOf("sunos") >= 0);
     }
 
     /**
      * Gets this class's version number
-     * 
+     *
      * @return the class version
      */
-    public final static float getClassVersion(){
+    public final static float getClassVersion() {
         return classVersion;
     }
 }

@@ -30,24 +30,25 @@ import java.util.logging.SimpleFormatter;
 
 /**
  * Utilities Logger Manager
- * <p>
+ * <p/>
  * For internal use by VIUtils to log errors
- * 
- * @since 1.0.0
- * @version 1.0
+ *
  * @author Jason (darkdiplomat)
+ * @version 1.0
+ * @since 1.0.0
  */
-public final class UtilsLogger{
+public final class UtilsLogger {
 
     private static final float classVersion = 1.0F;
     private static Logger logger;
-    static{
+
+    static {
         logger = Logger.getLogger("VIUtils");
         File logDir = new File("viutilslogs/");
-        if(!logDir.exists()){
+        if (!logDir.exists()) {
             logDir.mkdirs();
         }
-        try{
+        try {
             UtilsLogFormat lf = new UtilsLogFormat();
             FileHandler fhand = new FileHandler("viutilslogs/utilslog%g.log", 52428800, 150, true);
             fhand.setLevel(Level.ALL);
@@ -57,54 +58,53 @@ public final class UtilsLogger{
             fhand.setEncoding("UTF-8");
             logger.addHandler(fhand);
         }
-        catch(IOException e){
+        catch (IOException e) {
             logger.warning("Fail to initialize Logging Formats!");
         }
         logger.setUseParentHandlers(false);
         logger.setLevel(Level.ALL);
     }
 
-    /**
-     * This class should never be constructed
-     */
-    private UtilsLogger(){}
+    /** This class should never be constructed */
+    private UtilsLogger() {
+    }
 
-    public static void info(String msg){
+    public static void info(String msg) {
         logger.info(msg);
     }
 
-    public static void info(String msg, Throwable thrown){
+    public static void info(String msg, Throwable thrown) {
         logger.log(Level.INFO, msg, thrown);
     }
 
-    public static void warning(String msg){
+    public static void warning(String msg) {
         logger.warning(msg);
     }
 
-    public static void warning(String msg, Throwable thrown){
+    public static void warning(String msg, Throwable thrown) {
         logger.log(Level.WARNING, msg, thrown);
     }
 
-    public static void severe(String msg){
+    public static void severe(String msg) {
         logger.severe(msg);
     }
 
-    public static void severe(String msg, Throwable thrown){
+    public static void severe(String msg, Throwable thrown) {
         logger.log(Level.SEVERE, msg, thrown);
     }
 
-    private final static class UtilsLogFormat extends SimpleFormatter{
+    private final static class UtilsLogFormat extends SimpleFormatter {
 
         private SimpleDateFormat dateform = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         private String linesep = System.getProperty("line.separator");
 
-        public final String format(LogRecord rec){
+        public final String format(LogRecord rec) {
             StringBuilder message = new StringBuilder();
             message.append(dateform.format(rec.getMillis()));
             message.append(" [" + rec.getLevel().getName() + "] ");
             message.append(rec.getMessage());
             message.append(linesep);
-            if(rec.getThrown() != null){
+            if (rec.getThrown() != null) {
                 StringWriter stringwriter = new StringWriter();
                 rec.getThrown().printStackTrace(new PrintWriter(stringwriter));
                 message.append(stringwriter.toString());
@@ -115,10 +115,10 @@ public final class UtilsLogger{
 
     /**
      * Gets this class's version number
-     * 
+     *
      * @return the class version
      */
-    public final static float getClassVersion(){
+    public final static float getClassVersion() {
         return classVersion;
     }
 }

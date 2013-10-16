@@ -20,12 +20,17 @@ package net.visualillusionsent.utils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -258,12 +263,8 @@ public final class FileUtils {
         try {
             instream = new FileInputStream(toClone);
             outstream = new FileOutputStream(clone);
-            int inByte;
-            byte[] buffer = new byte[1024];
-            while ((inByte = instream.read(buffer)) != -1) {
-                outstream.write(buffer, 0, inByte);
-                outstream.flush();
-            }
+            ReadableByteChannel rbc = Channels.newChannel(instream);
+            outstream.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         }
         catch (IOException ex) {
             ue = new UtilityException("file.err.ioe", clone.getName());
@@ -311,11 +312,8 @@ public final class FileUtils {
             JarEntry entry = jar.getJarEntry(fileToMove);
             InputStream in = jar.getInputStream(entry);
             out = new FileOutputStream(pathTo);
-            int readBytes;
-            byte[] buffer = new byte[1024];
-            while ((readBytes = in.read(buffer, 0, buffer.length)) != -1) {
-                out.write(buffer, 0, readBytes);
-            }
+            ReadableByteChannel rbc = Channels.newChannel(in);
+            out.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         }
         catch (IOException e) {
             toThrow = new UtilityException("Exception occurred while moving file from Jar...", e);
@@ -341,7 +339,7 @@ public final class FileUtils {
     }
 
     /**
-     * Normalizes File paths to the OS Specific file separators (\ on Windows and / on Unix based systems)
+     * Normalizes File paths to the OS Specific file separators (\ on Windows and / on Unix(-like) based systems)
      *
      * @param path
      *         the path to be normalized
@@ -361,7 +359,147 @@ public final class FileUtils {
     }
 
     /**
-     * Checks {@link InputStream}(s) check-sums for matching sums
+     * Checks file path files' checksums for matching sums
+     *
+     * @param filePathA
+     *         the first file path to check
+     * @param filePathB
+     *         the second file path to check
+     * @param algorithm
+     *         the algorithm to use
+     *
+     * @throws UtilityException
+     *         if an exception occurs where a check-sum cannot be completed
+     * @return{@code true} if the sums match; {@code false} if not
+     */
+    public static final boolean checkSumMatch(String filePathA, String filePathB, String algorithm) throws UtilityException, FileNotFoundException {
+        notNull(filePathA, "String filePathA");
+        notNull(filePathB, "String filePathB");
+        notEmpty(filePathA, "String filePathA");
+        notEmpty(filePathB, "String filePathB");
+
+        return checkSumMatch(new File(filePathA), new File(filePathB), algorithm);
+    }
+
+    /**
+     * Checks file path files' MD5 sums for matching sums
+     *
+     * @param filePathA
+     *         the first file path to check
+     * @param filePathB
+     *         the second file path to check
+     *
+     * @throws UtilityException
+     *         if an exception occurs where a check-sum cannot be completed
+     * @return{@code true} if the sums match; {@code false} if not
+     */
+    public static final boolean md5SumMatch(String filePathA, String filePathB) throws UtilityException, FileNotFoundException {
+        return checkSumMatch(filePathA, filePathB, "MD5");
+    }
+
+    /**
+     * Checks file path files' SHA-1 sums for matching sums
+     *
+     * @param filePathA
+     *         the first file path to check
+     * @param filePathB
+     *         the second file path to check
+     *
+     * @throws UtilityException
+     *         if an exception occurs where a check-sum cannot be completed
+     * @return{@code true} if the sums match; {@code false} if not
+     */
+    public static final boolean sha1SumMatch(String filePathA, String filePathB) throws UtilityException, FileNotFoundException {
+        return checkSumMatch(filePathA, filePathB, "SHA-1");
+    }
+
+    /**
+     * Checks file path files' SHA-256 sums for matching sums
+     *
+     * @param filePathA
+     *         the first file path to check
+     * @param filePathB
+     *         the second file path to check
+     *
+     * @throws UtilityException
+     *         if an exception occurs where a check-sum cannot be completed
+     * @return{@code true} if the sums match; {@code false} if not
+     */
+    public static final boolean sha256SumMatch(String filePathA, String filePathB) throws UtilityException, FileNotFoundException {
+        return checkSumMatch(filePathA, filePathB, "SHA-256");
+    }
+
+    /**
+     * Checks files' checksums for matching sums
+     *
+     * @param fileA
+     *         the first file to check
+     * @param fileB
+     *         the second file to check
+     * @param algorithm
+     *         the algorithm to use
+     *
+     * @throws UtilityException
+     *         if an exception occurs where a check-sum cannot be completed
+     * @return{@code true} if the sums match; {@code false} if not
+     */
+    public static final boolean checkSumMatch(File fileA, File fileB, String algorithm) throws UtilityException, FileNotFoundException {
+        notNull(fileA, "File fileA");
+        notNull(fileB, "File fileB");
+
+        return checkSumMatch(new FileInputStream(fileA), new FileInputStream(fileB), algorithm);
+    }
+
+    /**
+     * Checks files' MD5 sums for matching sums
+     *
+     * @param fileA
+     *         the first file to check
+     * @param fileB
+     *         the second file to check
+     *
+     * @throws UtilityException
+     *         if an exception occurs where a check-sum cannot be completed
+     * @return{@code true} if the sums match; {@code false} if not
+     */
+    public static final boolean md5SumMatch(File fileA, File fileB) throws UtilityException, FileNotFoundException {
+        return checkSumMatch(fileA, fileB, "MD5");
+    }
+
+    /**
+     * Checks files' SHA-1 sums for matching sums
+     *
+     * @param fileA
+     *         the first file to check
+     * @param fileB
+     *         the second file to check
+     *
+     * @throws UtilityException
+     *         if an exception occurs where a check-sum cannot be completed
+     * @return{@code true} if the sums match; {@code false} if not
+     */
+    public static final boolean sha1SumMatch(File fileA, File fileB) throws UtilityException, FileNotFoundException {
+        return checkSumMatch(fileA, fileB, "SHA-1");
+    }
+
+    /**
+     * Checks files' SHA-256 sums for matching sums
+     *
+     * @param fileA
+     *         the first file to check
+     * @param fileB
+     *         the second file to check
+     *
+     * @throws UtilityException
+     *         if an exception occurs where a check-sum cannot be completed
+     * @return{@code true} if the sums match; {@code false} if not
+     */
+    public static final boolean sha256SumMatch(File fileA, File fileB) throws UtilityException, FileNotFoundException {
+        return checkSumMatch(fileA, fileB, "SHA-256");
+    }
+
+    /**
+     * Checks {@link InputStream}(s) checksums for matching sums
      *
      * @param inStreamA
      *         the first {@link InputStream} to check
@@ -392,7 +530,7 @@ public final class FileUtils {
             digestJar = md.digest();
         }
         catch (Exception ex) {
-            throw new UtilityException("InputStream checksum failure (Algorithm: " + algorithm + ")", ex);
+            throw new UtilityException("checksum failure (Algorithm: " + algorithm + ")", ex);
         }
 
         return MessageDigest.isEqual(digestLocal, digestJar);
@@ -444,6 +582,271 @@ public final class FileUtils {
      */
     public static final boolean sha256SumMatch(InputStream inStreamA, InputStream inStreamB) throws UtilityException {
         return checkSumMatch(inStreamA, inStreamB, "SHA-256");
+    }
+
+    /**
+     * Gets the checksum for a file at the specified path using the specified algorithm
+     *
+     * @param filePath
+     *         the file path to the file to checksum
+     * @param algorithm
+     *         the algorithm to use
+     *
+     * @return the byte array check-sum
+     *
+     * @throws UtilityException
+     *         if there was an error getting the check-sum
+     * @throws FileNotFoundException
+     *         if there is no file at the specified path
+     */
+    public static final byte[] checkSum(String filePath, String algorithm) throws UtilityException, FileNotFoundException {
+        notNull(filePath, "String filePath");
+        notEmpty(filePath, "String filePath");
+
+        return checkSum(new File(filePath), algorithm);
+    }
+
+    /**
+     * Gets a MD5 sum of a file at the specified path
+     *
+     * @param filePath
+     *         the file path to the file to MD5 sum
+     *
+     * @return the MD5 sum
+     *
+     * @throws UtilityException
+     *         if there was an error getting the sum
+     * @throws FileNotFoundException
+     *         if there is no file at the specified path
+     */
+    public static byte[] md5sum(String filePath) throws UtilityException, FileNotFoundException {
+        return checkSum(filePath, "MD5");
+    }
+
+    /**
+     * Gets a SHA-1 sum of a file at the specified path
+     *
+     * @param filePath
+     *         the file path to the file to SHA-1 sum
+     *
+     * @return the SHA-1 sum
+     *
+     * @throws UtilityException
+     *         if there was an error getting the sum
+     * @throws FileNotFoundException
+     *         if there is no file at the specified path
+     */
+    public static byte[] sha1sum(String filePath) throws UtilityException, FileNotFoundException {
+        return checkSum(filePath, "SHA-1");
+    }
+
+    /**
+     * Gets a SHA-256 sum of a file at the specified path
+     *
+     * @param filePath
+     *         the file path to the file to SHA-256 sum
+     *
+     * @return the SHA-256 sum
+     *
+     * @throws UtilityException
+     *         if there was an error getting the sum
+     * @throws FileNotFoundException
+     *         if there is no file at the specified path
+     */
+    public static byte[] sha256sum(String filePath) throws UtilityException, FileNotFoundException {
+        return checkSum(filePath, "SHA-256");
+    }
+
+    /**
+     * Gets a checksum of the specified file
+     *
+     * @param file
+     *         the file to checksum
+     *
+     * @return the checksum
+     *
+     * @throws UtilityException
+     *         if there was an error getting the sum
+     * @throws FileNotFoundException
+     *         if there is no file at the specified path
+     */
+    public static byte[] checkSum(File file, String algorithm) throws UtilityException, FileNotFoundException {
+        notNull(file, "File file");
+
+        return checkSum(new FileInputStream(file), algorithm);
+    }
+
+    /**
+     * Gets a MD5 sum of the specified file
+     *
+     * @param file
+     *         the file to MD5 sum
+     *
+     * @return the MD5 sum
+     *
+     * @throws UtilityException
+     *         if there was an error getting the sum
+     * @throws FileNotFoundException
+     *         if there is no file at the specified path
+     */
+    public static byte[] md5sum(File file) throws UtilityException, FileNotFoundException {
+        return checkSum(file, "MD5");
+    }
+
+    /**
+     * Gets a SHA-1 sum of the specified file
+     *
+     * @param file
+     *         the file to SHA-1 sum
+     *
+     * @return the SHA-1 sum
+     *
+     * @throws UtilityException
+     *         if there was an error getting the sum
+     * @throws FileNotFoundException
+     *         if there is no file at the specified path
+     */
+    public static byte[] sha1sum(File file) throws UtilityException, FileNotFoundException {
+        return checkSum(file, "SHA-1");
+    }
+
+    /**
+     * Gets a SHA-256 sum of the specified file
+     *
+     * @param file
+     *         the file to SHA-256 sum
+     *
+     * @return the SHA-256 sum
+     *
+     * @throws UtilityException
+     *         if there was an error getting the sum
+     * @throws FileNotFoundException
+     *         if there is no file at the specified path
+     */
+    public static byte[] sha256sum(File file) throws UtilityException, FileNotFoundException {
+        return checkSum(file, "SHA-256");
+    }
+
+    /**
+     * Gets the checksum of an {@link InputStream}
+     *
+     * @param inStream
+     *         the {@link InputStream} to checksum
+     * @param algorithm
+     *         the algorithm to use
+     *
+     * @return the checksum
+     *
+     * @throws UtilityException
+     *         if there was an error getting the sum
+     */
+    public static final byte[] checkSum(InputStream inStream, String algorithm) throws UtilityException {
+        try {
+            MessageDigest md = MessageDigest.getInstance(algorithm);
+            DigestInputStream dis = new DigestInputStream(inStream, md);
+            dis.read(new byte[dis.available()]);
+            return md.digest();
+        }
+        catch (Exception ex) {
+            throw new UtilityException("checksum failure (Algorithm: " + algorithm + ")", ex);
+        }
+    }
+
+    /**
+     * Gets the MD5 sum of an {@link InputStream}
+     *
+     * @param inStream
+     *         the {@link InputStream} to MD5 sum
+     *
+     * @return the MD5 sum
+     *
+     * @throws UtilityException
+     *         if there was an error getting the sum
+     */
+    public static final byte[] md5sum(InputStream inStream) throws UtilityException {
+        return checkSum(inStream, "MD5");
+    }
+
+    /**
+     * Gets the SHA-1 sum of an {@link InputStream}
+     *
+     * @param inStream
+     *         the {@link InputStream} to SHA-1 sum
+     *
+     * @return the SHA-1 sum
+     *
+     * @throws UtilityException
+     *         if there was an error getting the sum
+     */
+    public static final byte[] sha1sum(InputStream inStream) throws UtilityException {
+        return checkSum(inStream, "SHA-1");
+    }
+
+    /**
+     * Gets the SHA-256 sum of an {@link InputStream}
+     *
+     * @param inStream
+     *         the {@link InputStream} to SHA-256 sum
+     *
+     * @return the SHA-256 sum
+     *
+     * @throws UtilityException
+     *         if there was an error getting the sum
+     */
+    public static final byte[] sha256sum(InputStream inStream) throws UtilityException {
+        return checkSum(inStream, "SHA-256");
+    }
+
+    /**
+     * Downloads a file from the specified url to the specified filePath
+     *
+     * @param url
+     *         the url to download from
+     * @param filePath
+     *         the file path to download to
+     *
+     * @throws UtilityException
+     *         if url is null, empty, or malformed<br/>
+     *         if file path is null or empty
+     */
+    public static final void downloadFile(String url, String filePath) throws UtilityException {
+        notNull(url, "String url");
+        notEmpty(url, "String url");
+
+        try {
+            downloadFile(new URL(url), filePath);
+        }
+        catch (MalformedURLException murlex) {
+            throw new UtilityException("URL is malformed...");
+        }
+    }
+
+
+    /**
+     * Downloads a file from the specified {@link URL} to the specified filePath
+     *
+     * @param url
+     *         the {@link URL} to download from
+     * @param filePath
+     *         the file path to download to
+     *
+     * @throws UtilityException
+     *         if url is null, empty, or malformed<br/>
+     *         if file path is null or empty
+     */
+    public static final void downloadFile(URL url, String filePath) throws UtilityException {
+        notNull(url, "URL url");
+        notNull(filePath, "String filePath");
+        notEmpty(filePath, "String filePath");
+
+        try {
+            ReadableByteChannel rbc = Channels.newChannel(url.openStream());
+            FileOutputStream fos = new FileOutputStream(filePath);
+            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        }
+        catch (Exception ex) {
+            throw new UtilityException("Failed to download file...", ex);
+        }
     }
 
     /**

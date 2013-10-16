@@ -19,15 +19,15 @@ package net.visualillusionsent.utils;
 
 /**
  * Program Status helper enum
- * <p>
+ * <p/>
  * Specifically used to tell VersionChecker the release status of the program.<br>
  * Can be used externally as a helpful way to state the same thing.
- * 
- * @since 1.0.0
- * @version 1.0
+ *
  * @author Jason (darkdiplomat)
+ * @version 1.0
+ * @since 1.0.0
  */
-public enum ProgramStatus{
+public enum ProgramStatus {
     UNKNOWN, //
     ALPHA, //
     BETA, //
@@ -36,24 +36,22 @@ public enum ProgramStatus{
 
     private static final float classVersion = 1.0F;
 
-    /**
-     * {@inheritDoc}
-     */
-    public final String toString(){
-        if(this == RELEASE_CANDIDATE){
+    /** {@inheritDoc} */
+    public final String toString() {
+        if (this == RELEASE_CANDIDATE) {
             return name().replace("_", " ");
         }
-        else{
+        else {
             return name();
         }
     }
 
     /**
      * Gets this class's version number
-     * 
+     *
      * @return the class version
      */
-    public static final float getClassVersion(){
+    public static final float getClassVersion() {
         return classVersion;
     }
 }
