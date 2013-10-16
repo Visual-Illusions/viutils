@@ -57,15 +57,15 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     /**
      * Creates or loads a PropertiesFile
      *
-     * @param filepath
+     * @param filePath
      *         the path to the properties file
      *
      * @throws UtilityException
      *         <br>
      *         if there was an error with either reading or writing the properties file
      */
-    public PropertiesFile(String filepath) throws UtilityException {
-        super(filepath);
+    public PropertiesFile(String filePath) throws UtilityException {
+        super(filePath);
         this.props = new LinkedHashMap<String, String>();
         this.comments = new LinkedHashMap<String, List<String>>();
         this.inlineCom = new LinkedHashMap<String, String>();
@@ -76,16 +76,16 @@ public final class PropertiesFile extends AbstractPropertiesFile {
                 load(new FileInputStream(propsFile));
             }
             catch (FileNotFoundException e) {
-                throw new UtilityException("file.err.ioe", filepath);
+                throw new UtilityException("file.err.ioe", filePath);
             }
         }
         else {
-            filepath = FileUtils.normalizePath(filepath);
-            if (filepath.contains(File.separator)) {
-                File temp = new File(filepath.substring(0, filepath.lastIndexOf(File.separator)));
+            filePath = FileUtils.normalizePath(filePath);
+            if (filePath.contains(File.separator)) {
+                File temp = new File(filePath.substring(0, filePath.lastIndexOf(File.separator)));
                 if (!temp.exists()) {
                     if (!temp.mkdirs()) {
-                        throw new UtilityException("Failed to make directory path for FilePath: ".concat(filepath));
+                        throw new UtilityException("Failed to make directory path for FilePath: ".concat(filePath));
                     }
                     save(true);
                 }
@@ -262,7 +262,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
                     }
                 }
                 String inLineC = inlineCom.get(prop);
-                out.write(prop.concat("=").concat(props.get(prop).concat(inLineC == null ? "" : " #!".concat(inLineC))));
+                out.write(prop.concat("=").concat(props.get(prop).replace("#!", "\\#\\!").concat(inLineC == null ? "" : " #!".concat(inLineC))));
                 out.newLine();
             }
             for (String footerLn : footer) {
