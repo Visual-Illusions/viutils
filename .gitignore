@@ -8,3 +8,5 @@
 /.settings
 /.idea
 *.iml
+release.sh
+pom.xml.bak
