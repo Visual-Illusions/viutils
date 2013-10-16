@@ -25,68 +25,86 @@ import java.util.jar.Manifest;
 
 /**
  * Jar File Utilities
- * 
- * @since 1.1.0
- * @version 1.0
+ *
  * @author Jason (darkdiplomat)
+ * @version 1.0
+ * @since 1.1.0
  */
-public final class JarUtils{
+public final class JarUtils {
+    private static final float classVersion = 1.0F;
 
     /**
      * Returns the path to the Jar File that the given class if from
-     * 
+     *
      * @param clazz
-     *            the Class to check Jar path of
+     *         the Class to check Jar path of
+     *
      * @return path to the jar
      */
-    public static final String getJarPath(Class<?> clazz){
+    public static final String getJarPath(Class<?> clazz) {
         CodeSource codeSource = clazz.getProtectionDomain().getCodeSource();
-        try{
+        try {
             return codeSource.getLocation().toURI().getPath();
         }
-        catch(URISyntaxException e){}
+        catch (URISyntaxException e) {
+        }
         return null;
     }
 
     /**
      * Gets the manifest of the Jar that contains the specified Class
-     * 
+     *
      * @param clazz
-     *            the class to check manifest for
+     *         the class to check manifest for
+     *
      * @return the Manifest if found
+     *
      * @throws IOException
-     *             if the Manifest is missing or the JarFile is not readable
+     *         if the Manifest is missing or the JarFile is not readable
      */
-    public static final Manifest getManifest(Class<?> clazz) throws IOException{
+    public static final Manifest getManifest(Class<?> clazz) throws IOException {
         return getManifest(new JarFile(getJarPath(clazz)));
     }
 
     /**
      * Gets the manifest of the Jar on the specified path
-     * 
+     *
      * @param path
-     *            the path to the Jar file
+     *         the path to the Jar file
+     *
      * @return the Manifest if found
+     *
      * @throws IOException
-     *             if the Manifest is missing or the JarFile is not readable
+     *         if the Manifest is missing or the JarFile is not readable
      */
-    public static final Manifest getManifest(String path) throws IOException{
+    public static final Manifest getManifest(String path) throws IOException {
         return getManifest(new JarFile(path));
     }
 
     /**
      * Gets the manifest of the {@link JarFile}
-     * 
+     *
      * @param jarfile
-     *            the {@link JarFile} to get the manifest for
+     *         the {@link JarFile} to get the manifest for
+     *
      * @return the {@link Manifest} if found
+     *
      * @throws IOException
-     *             if the Manifest is missing or the JarFile is not readable
+     *         if the Manifest is missing or the JarFile is not readable
      */
-    public static final Manifest getManifest(JarFile jarfile) throws IOException{
-        if(jarfile == null){
+    public static final Manifest getManifest(JarFile jarfile) throws IOException {
+        if (jarfile == null) {
             return null;
         }
         return jarfile.getManifest();
+    }
+
+    /**
+     * Gets this class's version number
+     *
+     * @return the class version
+     */
+    public static final float getClassVersion() {
+        return classVersion;
     }
 }

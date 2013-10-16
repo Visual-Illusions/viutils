@@ -19,20 +19,24 @@ package net.visualillusionsent.utils;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import static net.visualillusionsent.utils.Verify.notEmpty;
+import static net.visualillusionsent.utils.Verify.notNull;
+
 /**
  * BooleanUtils
- * <p>
+ * <p/>
  * Provides methods to help with parsing Boolean values<br>
- * 
- * @since 1.0.4
- * @version 1.1
+ *
  * @author Jason (darkdiplomat)
+ * @version 1.2
+ * @since 1.0.4
  */
-public final class BooleanUtils{
+public final class BooleanUtils {
 
-    private static final float classVersion = 1.1F;
+    private static final float classVersion = 1.2F;
     private static final ConcurrentHashMap<String, Boolean> boolMatch = new ConcurrentHashMap<String, Boolean>();
-    static{
+
+    static {
         boolMatch.put("yes", true);
         boolMatch.put("true", true);
         boolMatch.put("on", true);
@@ -48,37 +52,42 @@ public final class BooleanUtils{
 
     /**
      * Register String to boolean associations
-     * 
+     *
      * @param key
-     *            the String key to assign a boolean value for
+     *         the String key to assign a boolean value for
      * @param value
-     *            the boolean value to be assigned
+     *         the boolean value to be assigned
+     *
      * @return {@code null} if added, {@link Boolean} value if the key already had something associated.
      */
-    public final static Boolean registerBoolean(final String key, final boolean value){
+    public static Boolean registerBoolean(final String key, final boolean value) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
         return boolMatch.putIfAbsent(key, value);
     }
 
     /**
      * Boolean parsing handler
-     * 
-     * @param property
-     *            the property to parse
-     * @return {@code boolean value} associated with the property, or {@code false} if a value isn't associated.
+     *
+     * @param key
+     *         the key to parse
+     *
+     * @return {@code boolean value} associated with the key, or {@code false} if a value isn't associated.
      */
-    public final static boolean parseBoolean(String property){
-        if(boolMatch.containsKey(property)){
-            return boolMatch.get(property).booleanValue();
-        }
-        return false;
+    public static boolean parseBoolean(String key) {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
+        return boolMatch.containsKey(key) && boolMatch.get(key);
     }
 
     /**
      * Gets this class's version number
-     * 
+     *
      * @return the class version
      */
-    public static final float getClassVersion(){
+    public static float getClassVersion() {
         return classVersion;
     }
 }

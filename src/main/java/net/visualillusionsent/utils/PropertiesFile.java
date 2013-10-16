@@ -33,54 +33,58 @@ import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
 
+import static net.visualillusionsent.utils.Verify.notEmpty;
+import static net.visualillusionsent.utils.Verify.notNull;
+
 /**
  * Properties File helper
- * <p>
+ * <p/>
  * Provides methods to help with creating and accessing a Properties File<br>
  * Lines that start with {@literal ;#} are seen as header comments<br>
  * Lines that start with {@literal #;} are seen as footer comments<br>
  * Other comments can be prefixed with either # or ; and will be attached to the top of they property that follows it<br>
  * Inline comments can be performed using #! {@literal <Comment>} at the end of a line<br>
  * If #! is needed as a property it can be escaped with \ ie: \#\!
- * 
- * @since 1.0.0
- * @version 1.3
+ *
  * @author Jason (darkdiplomat)
+ * @version 1.3
+ * @since 1.0.0
  */
-public final class PropertiesFile extends AbstractPropertiesFile{
+public final class PropertiesFile extends AbstractPropertiesFile {
 
     private static final float classVersion = 1.3F;
 
     /**
      * Creates or loads a PropertiesFile
-     * 
+     *
      * @param filepath
-     *            the path to the properties file
+     *         the path to the properties file
+     *
      * @throws UtilityException
-     * <br>
-     *             if there was an error with either reading or writing the properties file
+     *         <br>
+     *         if there was an error with either reading or writing the properties file
      */
-    public PropertiesFile(String filepath) throws UtilityException{
+    public PropertiesFile(String filepath) throws UtilityException {
         super(filepath);
         this.props = new LinkedHashMap<String, String>();
         this.comments = new LinkedHashMap<String, List<String>>();
         this.inlineCom = new LinkedHashMap<String, String>();
         this.header = new LinkedList<String>();
         this.footer = new LinkedList<String>();
-        if(propsFile.exists()){
-            try{
+        if (propsFile.exists()) {
+            try {
                 load(new FileInputStream(propsFile));
             }
-            catch(FileNotFoundException e){
+            catch (FileNotFoundException e) {
                 throw new UtilityException("file.err.ioe", filepath);
             }
         }
-        else{
+        else {
             filepath = FileUtils.normalizePath(filepath);
-            if(filepath.contains(File.separator)){
+            if (filepath.contains(File.separator)) {
                 File temp = new File(filepath.substring(0, filepath.lastIndexOf(File.separator)));
-                if(!temp.exists()){
-                    if(!temp.mkdirs()){
+                if (!temp.exists()) {
+                    if (!temp.mkdirs()) {
                         throw new UtilityException("Failed to make directory path for FilePath: ".concat(filepath));
                     }
                     save(true);
@@ -91,300 +95,262 @@ public final class PropertiesFile extends AbstractPropertiesFile{
 
     /**
      * Loads a PropertiesFile stored inside a Jar file
-     * 
-     * @param jarpath
-     *            the path to the Jar file
+     *
+     * @param jarPath
+     *         the path to the Jar file
      * @param entry
-     *            the name of the file inside of the jar
+     *         the name of the file inside of the jar
+     *
      * @throws UtilityException
-     * <br>
-     *             if jarpath is null or empty<br>
-     *             or if entry is null or empty<br>
-     *             or if the Jar file is not found or unable to be read from<br>
-     *             or if the Jar file does not contain the entry
+     *         <br>
+     *         if jarPath is null or empty<br>
+     *         or if entry is null or empty<br>
+     *         or if the Jar file is not found or unable to be read from<br>
+     *         or if the Jar file does not contain the entry
      */
-    public PropertiesFile(String jarpath, String entry) throws UtilityException{
-        super(jarpath, entry);
+    public PropertiesFile(String jarPath, String entry) throws UtilityException {
+        super(jarPath, entry);
         JarEntry ent = jar.getJarEntry(entry);
         this.props = new LinkedHashMap<String, String>();
         this.comments = new LinkedHashMap<String, List<String>>();
         this.inlineCom = new LinkedHashMap<String, String>();
         this.header = new LinkedList<String>();
         this.footer = new LinkedList<String>();
-        try{
+        try {
             load(jar.getInputStream(ent));
         }
-        catch(IOException e){
-            throw new UtilityException("file.err.ioe", filepath);
+        catch (IOException e) {
+            throw new UtilityException("file.err.ioe", filePath);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    protected final void load(InputStream instream) throws UtilityException{
+    protected final void load(InputStream inStream) throws UtilityException {
         UtilityException uex = null;
         BufferedReader in = null;
-        try{
-            in = new BufferedReader(new InputStreamReader(instream, "UTF-8"));
+        try {
+            in = new BufferedReader(new InputStreamReader(inStream, "UTF-8"));
             String inLine;
             LinkedList<String> inComments = new LinkedList<String>();
-            while((inLine = in.readLine()) != null){
-                if(inLine.startsWith(";#")){
+            while ((inLine = in.readLine()) != null) {
+                if (inLine.startsWith(";#")) {
                     header.add(inLine);
                 }
-                else if(inLine.startsWith("#;")){
+                else if (inLine.startsWith("#;")) {
                     footer.add(inLine);
                 }
-                else if(inLine.startsWith(";") || inLine.startsWith("#")){
+                else if (inLine.startsWith(";") || inLine.startsWith("#")) {
                     inComments.add(inLine);
                 }
-                else{
+                else {
                     String[] propsLine = null;
-                    try{
+                    try {
                         propsLine = inLine.split("=");
                         String key = propsLine[0].trim();
                         String value = propsLine[1];
-                        if(value.contains("#!")){
-                            String inlinec = value.split("#!")[1]; //Don't trim the comment
-                            inlineCom.put(key, inlinec);
+                        if (value.contains("#!")) {
+                            inlineCom.put(key, value.split("#!")[1]);
                             value = value.split("#!")[0];
                         }
                         props.put(key.trim(), value.replace("\\#\\!", "#!").trim()); //remove escape sequence
                     }
-                    catch(ArrayIndexOutOfBoundsException aioobe){
+                    catch (ArrayIndexOutOfBoundsException aioobex) {
                         //Empty value?
-                        if(inLine.contains("=")){
+                        if (inLine.contains("=")) {
                             props.put(propsLine[0], "");
                         }
                         //Incomplete property, drop reference
-                        else{
+                        else {
                             inComments.clear();
                             continue;
                         }
                     }
-                    if(!inComments.isEmpty()){
+                    if (!inComments.isEmpty()) {
                         comments.put(propsLine[0], new LinkedList<String>(inComments));
                         inComments.clear();
                     }
                 }
             }
         }
-        catch(IOException ioe){
-            UtilsLogger.severe(String.format("An IOException occurred in File: '%s'", filepath), ioe);
-            uex = new UtilityException("file.err.ioe", filepath);
+        catch (IOException ioe) {
+            UtilsLogger.severe(String.format("An IOException occurred in File: '%s'", filePath), ioe);
+            uex = new UtilityException("file.err.ioe", filePath);
         }
-        finally{
-            if(in != null){
-                try{
+        finally {
+            if (in != null) {
+                try {
                     in.close();
                 }
-                catch(IOException e){
+                catch (IOException e) {
                     //do nothing
                 }
             }
-            if(uex != null){
+            if (uex != null) {
                 throw uex;
             }
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void reload() throws UtilityException{
+    public final void reload() throws UtilityException {
         props.clear();
         comments.clear();
-        if(jar != null){
-            JarEntry ent = jar.getJarEntry(filepath);
-            if(ent == null){
-                throw new UtilityException("entry.missing", filepath);
+        if (jar != null) {
+            JarEntry ent = jar.getJarEntry(filePath);
+            if (ent == null) {
+                throw new UtilityException("entry.missing", filePath);
             }
-            try{
+            try {
                 load(jar.getInputStream(ent));
             }
-            catch(IOException e){
-                throw new UtilityException("file.err.ioe", filepath);
+            catch (IOException e) {
+                throw new UtilityException("file.err.ioe", filePath);
             }
         }
-        else{
-            try{
+        else {
+            try {
                 load(new FileInputStream(propsFile));
             }
-            catch(FileNotFoundException e){
-                throw new UtilityException("file.err.ioe", filepath);
+            catch (FileNotFoundException e) {
+                throw new UtilityException("file.err.ioe", filePath);
             }
         }
         this.hasChanged = false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void save() throws UtilityException{
+    public final void save() throws UtilityException {
         this.save(false);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void forceSave() throws UtilityException{
+    public final void forceSave() throws UtilityException {
         this.save(true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    protected final void save(boolean force) throws UtilityException{
-        if(jar != null){
+    protected final void save(boolean force) throws UtilityException {
+        if (jar != null) {
             throw new UtilityException("Saving is not supported with PropertiesFiles inside of Jar files");
         }
-        if(!hasChanged && !force){
+        if (!hasChanged && !force) {
             return;
         }
         BufferedWriter out = null;
-        try{
-            if(propsFile.exists()){
-                if(!propsFile.delete()){
-                    throw new UtilityException("file.err.ioe", filepath);
+        try {
+            if (propsFile.exists()) {
+                if (!propsFile.delete()) {
+                    throw new UtilityException("file.err.ioe", filePath);
                 }
             }
-            propsFile = new File(filepath);
+            propsFile = new File(filePath);
             out = new BufferedWriter(new FileWriter(propsFile, true));
-            for(String headerLn : header){
+            for (String headerLn : header) {
                 out.write(headerLn);
                 out.newLine();
             }
-            for(String prop : props.keySet()){
-                if(comments.containsKey(prop)){
-                    for(String comment : comments.get(prop)){
+            for (String prop : props.keySet()) {
+                if (comments.containsKey(prop)) {
+                    for (String comment : comments.get(prop)) {
                         out.write(comment);
                         out.newLine();
                     }
                 }
-                String inlinec = inlineCom.get(prop);
-                out.write(prop.concat("=").concat(props.get(prop).concat(inlinec == null ? "" : " #!".concat(inlinec))));
+                String inLineC = inlineCom.get(prop);
+                out.write(prop.concat("=").concat(props.get(prop).concat(inLineC == null ? "" : " #!".concat(inLineC))));
                 out.newLine();
             }
-            for(String footerLn : footer){
+            for (String footerLn : footer) {
                 out.write(footerLn);
                 out.newLine();
             }
         }
-        catch(IOException ioe){
-            UtilsLogger.severe(String.format("An IOException occurred in File: '%s'", filepath), ioe);
-            throw new UtilityException("file.err.ioe", filepath);
+        catch (IOException ioe) {
+            UtilsLogger.severe(String.format("An IOException occurred in File: '%s'", filePath), ioe);
+            throw new UtilityException("file.err.ioe", filePath);
         }
-        finally{
-            if(out != null){
-                try{
+        finally {
+            if (out != null) {
+                try {
                     out.close();
                 }
-                catch(IOException e){}
+                catch (IOException e) {
+                }
             }
         }
         this.hasChanged = false; // Changes stored
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final boolean containsKey(String key) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
+    public final boolean containsKey(String key) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
         return props.containsKey(key);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void removeKey(String key) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
-        else if(props.containsKey(key)){
+    public final void removeKey(String key) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
+        if (props.containsKey(key)) {
             props.remove(key);
-            if(comments.containsKey(key)){
+            if (comments.containsKey(key)) {
                 comments.remove(key);
             }
             this.hasChanged = true;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final String getString(String key) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
-        else if(containsKey(key)){
+    public final String getString(String key) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
+        if (containsKey(key)) {
             return props.get(key);
         }
         throw new UtilityException("key.missing", key);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final String getString(String key, String def) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
-        else if(containsKey(key)){
+    public final String getString(String key, String def) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
+        if (containsKey(key)) {
             return props.get(key);
         }
-        else{
+        else {
             setString(key, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setString(String key, String value) throws UtilityException{
-        setString(key, value, (String[])null);
+    public final void setString(String key, String value) throws UtilityException {
+        setString(key, value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setString(String key, String value, String... comment) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
-        else if(value == null){
-            throw new UtilityException("arg.null", "String value");
-        }
-        if(value.equals(props.get(key))){
+    public final void setString(String key, String value, String... comment) throws UtilityException {
+        notNull(key, "String key");
+        notNull(value, "String value");
+        notEmpty(key, "String key");
+
+        if (value.equals(props.get(key))) {
             return;
         }
         props.put(key, value);
@@ -392,111 +358,71 @@ public final class PropertiesFile extends AbstractPropertiesFile{
         this.hasChanged = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final String[] getStringArray(String key) throws UtilityException{
+    public final String[] getStringArray(String key) throws UtilityException {
         return getStringArray(key, ",");
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final String[] getStringArray(String key, String[] def) throws UtilityException{
-        if(containsKey(key)){
+    public final String[] getStringArray(String key, String[] def) throws UtilityException {
+        if (containsKey(key)) {
             return getStringArray(key, ",");
         }
-        else{
+        else {
             setStringArray(key, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setStringArray(String key, String[] value) throws UtilityException{
-        setStringArray(key, ",", value, (String[])null);
+    public final void setStringArray(String key, String[] value) throws UtilityException {
+        setStringArray(key, ",", value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setStringArray(String key, String[] value, String... comment) throws UtilityException{
+    public final void setStringArray(String key, String[] value, String... comment) throws UtilityException {
         setStringArray(key, ",", value, comment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final String[] getStringArray(String key, String splitBy) throws UtilityException{
-        if(splitBy == null){
-            throw new UtilityException("arg.null", "String splitBy");
-        }
-        else if(splitBy.isEmpty()){
-            throw new UtilityException("arg.empty", "String splitBy");
-        }
-        return StringUtils.trimElements(getString(key).split(splitBy));
+    public final String[] getStringArray(String key, String delimiter) throws UtilityException {
+        notNull(delimiter, "String delimiter");
+        notEmpty(delimiter, "String delimiter");
+
+        return StringUtils.trimElements(getString(key).split(delimiter));
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final String[] getStringArray(String key, String splitBy, String[] def) throws UtilityException{
-        if(splitBy == null){
-            throw new UtilityException("arg.null", "String splitBy");
+    public final String[] getStringArray(String key, String delimiter, String[] def) throws UtilityException {
+        if (containsKey(key)) {
+            return getStringArray(key, delimiter);
         }
-        else if(splitBy.isEmpty()){
-            throw new UtilityException("arg.empty", "String splitBy");
-        }
-        if(containsKey(key)){
-            return StringUtils.trimElements(getString(key).split(splitBy));
-        }
-        else{
-            setStringArray(key, splitBy, def);
+        else {
+            setStringArray(key, delimiter, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setStringArray(String key, String spacer, String[] value) throws UtilityException{
-        setStringArray(key, spacer, value, (String[])null);
+    public final void setStringArray(String key, String delimiter, String[] value) throws UtilityException {
+        setStringArray(key, delimiter, value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setStringArray(String key, String spacer, String[] value, String... comment) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
-        else if(spacer == null){
-            throw new UtilityException("arg.null", "String spacer");
-        }
-        else if(spacer.isEmpty()){
-            throw new UtilityException("arg.empty", "String spacer");
-        }
-        else if(value == null){
-            throw new UtilityException("arg.null", "String[] value");
-        }
-        else if(value.length == 0){
-            throw new UtilityException("arg.empty", "String[] value");
-        }
-        String joinedValue = StringUtils.joinString(value, spacer, 0);
-        if(joinedValue.equals(props.get(key))){
+    public final void setStringArray(String key, String delimiter, String[] value, String... comment) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
+        String joinedValue = StringUtils.joinString(value, delimiter, 0);
+        if (joinedValue.equals(props.get(key))) {
             return;
         }
         props.put(key, joinedValue);
@@ -504,59 +430,48 @@ public final class PropertiesFile extends AbstractPropertiesFile{
         this.hasChanged = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final byte getByte(String key) throws UtilityException{
-        try{
+    public final byte getByte(String key) throws UtilityException {
+        try {
             return Byte.parseByte(getString(key));
         }
-        catch(NumberFormatException nfe){
+        catch (NumberFormatException nfe) {
             throw new UtilityException("prop.nan", key);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final byte getByte(String key, byte def) throws UtilityException{
-        if(containsKey(key)){
-            try{
+    public final byte getByte(String key, byte def) throws UtilityException {
+        if (containsKey(key)) {
+            try {
                 return Byte.parseByte(getString(key));
             }
-            catch(NumberFormatException nfe){
+            catch (NumberFormatException nfe) {
                 throw new UtilityException("prop.nan", key);
             }
         }
-        else{
+        else {
             setByte(key, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setByte(String key, byte value) throws UtilityException{
-        setByte(key, value, (String[])null);
+    public final void setByte(String key, byte value) throws UtilityException {
+        setByte(key, value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setByte(String key, byte value, String... comment) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
+    public final void setByte(String key, byte value, String... comment) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
         String strVal = String.valueOf(value);
-        if(strVal.equals(props.get(key))){
+        if (strVal.equals(props.get(key))) {
             return;
         }
         props.put(key, String.valueOf(value));
@@ -564,111 +479,68 @@ public final class PropertiesFile extends AbstractPropertiesFile{
         this.hasChanged = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final byte[] getByteArray(String key) throws UtilityException{
+    public final byte[] getByteArray(String key) throws UtilityException {
         return getByteArray(key, ",");
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final byte[] getByteArray(String key, byte[] def) throws UtilityException{
-        if(containsKey(key)){
+    public final byte[] getByteArray(String key, byte[] def) throws UtilityException {
+        if (containsKey(key)) {
             return getByteArray(key, ",");
         }
-        else{
+        else {
             setByteArray(key, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setByteArray(String key, byte[] value) throws UtilityException{
-        setByteArray(key, ",", value, (String[])null);
+    public final void setByteArray(String key, byte[] value) throws UtilityException {
+        setByteArray(key, ",", value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setByteArray(String key, byte[] value, String... comment) throws UtilityException{
+    public final void setByteArray(String key, byte[] value, String... comment) throws UtilityException {
         setByteArray(key, ",", value, comment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final byte[] getByteArray(String key, String splitBy) throws UtilityException{
-        if(splitBy == null){
-            throw new UtilityException("arg.null", "String splitBy");
-        }
-        else if(splitBy.isEmpty()){
-            throw new UtilityException("arg.empty", "String splitBy");
-        }
-        return StringUtils.stringToByteArray(getString(key), splitBy);
+    public final byte[] getByteArray(String key, String delimiter) throws UtilityException {
+        return StringUtils.stringToByteArray(getString(key), delimiter);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final byte[] getByteArray(String key, String splitBy, byte[] def) throws UtilityException{
-        if(splitBy == null){
-            throw new UtilityException("arg.null", "String splitBy");
+    public final byte[] getByteArray(String key, String delimiter, byte[] def) throws UtilityException {
+        if (containsKey(key)) {
+            return StringUtils.stringToByteArray(getString(key), delimiter);
         }
-        else if(splitBy.isEmpty()){
-            throw new UtilityException("arg.empty", "String splitBy");
-        }
-        if(containsKey(key)){
-            return StringUtils.stringToByteArray(getString(key), splitBy);
-        }
-        else{
-            setByteArray(key, splitBy, def);
+        else {
+            setByteArray(key, delimiter, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setByteArray(String key, String spacer, byte[] value) throws UtilityException{
-        setByteArray(key, spacer, value, (String[])null);
+    public final void setByteArray(String key, String delimiter, byte[] value) throws UtilityException {
+        setByteArray(key, delimiter, value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setByteArray(String key, String spacer, byte[] value, String... comment) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
-        else if(spacer == null){
-            throw new UtilityException("arg.null", "String spacer");
-        }
-        else if(spacer.isEmpty()){
-            throw new UtilityException("arg.empty", "String spacer");
-        }
-        else if(value == null){
-            throw new UtilityException("arg.null", "byte[] value");
-        }
-        else if(value.length < 1){
-            throw new UtilityException("arg.empty", "byte[] value");
-        }
-        String strValue = StringUtils.byteArrayToString(value, spacer);
-        if(strValue.equals(props.get(key))){
+    public final void setByteArray(String key, String delimiter, byte[] value, String... comment) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
+        String strValue = StringUtils.byteArrayToString(value, delimiter);
+        if (strValue.equals(props.get(key))) {
             return;
         }
         props.put(key, strValue);
@@ -676,59 +548,48 @@ public final class PropertiesFile extends AbstractPropertiesFile{
         this.hasChanged = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final short getShort(String key) throws UtilityException{
-        try{
+    public final short getShort(String key) throws UtilityException {
+        try {
             return Short.parseShort(getString(key));
         }
-        catch(NumberFormatException nfe){
+        catch (NumberFormatException nfe) {
             throw new UtilityException("prop.nan", key);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final short getShort(String key, short def) throws UtilityException{
-        if(containsKey(key)){
-            try{
+    public final short getShort(String key, short def) throws UtilityException {
+        if (containsKey(key)) {
+            try {
                 return Short.parseShort(getString(key));
             }
-            catch(NumberFormatException nfe){
+            catch (NumberFormatException nfe) {
                 throw new UtilityException("prop.nan", key);
             }
         }
-        else{
+        else {
             setShort(key, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setShort(String key, short value) throws UtilityException{
-        setShort(key, value, (String[])null);
+    public final void setShort(String key, short value) throws UtilityException {
+        setShort(key, value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setShort(String key, short value, String... comment) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
+    public final void setShort(String key, short value, String... comment) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
         String strValue = String.valueOf(value);
-        if(strValue.equals(props.get(key))){
+        if (strValue.equals(props.get(key))) {
             return;
         }
         props.put(key, strValue);
@@ -736,111 +597,68 @@ public final class PropertiesFile extends AbstractPropertiesFile{
         this.hasChanged = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final short[] getShortArray(String key) throws UtilityException{
+    public final short[] getShortArray(String key) throws UtilityException {
         return getShortArray(key, ",");
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final short[] getShortArray(String key, short[] def) throws UtilityException{
-        if(containsKey(key)){
+    public final short[] getShortArray(String key, short[] def) throws UtilityException {
+        if (containsKey(key)) {
             return getShortArray(key, ",");
         }
-        else{
+        else {
             setShortArray(key, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setShortArray(String key, short[] value) throws UtilityException{
-        setShortArray(key, ",", value, (String[])null);
+    public final void setShortArray(String key, short[] value) throws UtilityException {
+        setShortArray(key, ",", value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setShortArray(String key, short[] value, String... comment) throws UtilityException{
+    public final void setShortArray(String key, short[] value, String... comment) throws UtilityException {
         setShortArray(key, ",", value, comment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final short[] getShortArray(String key, String splitBy) throws UtilityException{
-        if(splitBy == null){
-            throw new UtilityException("arg.null", "String splitBy");
-        }
-        else if(splitBy.isEmpty()){
-            throw new UtilityException("arg.empty", "String splitBy");
-        }
-        return StringUtils.stringToShortArray(getString(key), splitBy);
+    public final short[] getShortArray(String key, String delimiter) throws UtilityException {
+        return StringUtils.stringToShortArray(getString(key), delimiter);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final short[] getShortArray(String key, String splitBy, short[] def) throws UtilityException{
-        if(splitBy == null){
-            throw new UtilityException("arg.null", "String splitBy");
+    public final short[] getShortArray(String key, String delimiter, short[] def) throws UtilityException {
+        if (containsKey(key)) {
+            return StringUtils.stringToShortArray(getString(key), delimiter);
         }
-        else if(splitBy.isEmpty()){
-            throw new UtilityException("arg.empty", "String splitBy");
-        }
-        if(containsKey(key)){
-            return StringUtils.stringToShortArray(getString(key), splitBy);
-        }
-        else{
-            setShortArray(key, splitBy, def);
+        else {
+            setShortArray(key, delimiter, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setShortArray(String key, String spacer, short[] value) throws UtilityException{
-        setShortArray(key, spacer, value, (String[])null);
+    public final void setShortArray(String key, String delimiter, short[] value) throws UtilityException {
+        setShortArray(key, delimiter, value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setShortArray(String key, String spacer, short[] value, String... comment) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
-        else if(spacer == null){
-            throw new UtilityException("arg.null", "String spacer");
-        }
-        else if(spacer.isEmpty()){
-            throw new UtilityException("arg.empty", "String spacer");
-        }
-        else if(value == null){
-            throw new UtilityException("arg.null", "short[] value");
-        }
-        else if(value.length < 1){
-            throw new UtilityException("arg.empty", "short[] value");
-        }
-        String strValue = StringUtils.shortArrayToString(value, spacer);
-        if(strValue.equals(props.get(key))){
+    public final void setShortArray(String key, String delimiter, short[] value, String... comment) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
+        String strValue = StringUtils.shortArrayToString(value, delimiter);
+        if (strValue.equals(props.get(key))) {
             return;
         }
         props.put(key, strValue);
@@ -848,59 +666,48 @@ public final class PropertiesFile extends AbstractPropertiesFile{
         this.hasChanged = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final int getInt(String key) throws UtilityException{
-        try{
+    public final int getInt(String key) throws UtilityException {
+        try {
             return Integer.parseInt(getString(key));
         }
-        catch(NumberFormatException nfe){
+        catch (NumberFormatException nfe) {
             throw new UtilityException("prop.nan", key);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final int getInt(String key, int def) throws UtilityException{
-        if(containsKey(key)){
-            try{
+    public final int getInt(String key, int def) throws UtilityException {
+        if (containsKey(key)) {
+            try {
                 return Integer.parseInt(getString(key));
             }
-            catch(NumberFormatException nfe){
+            catch (NumberFormatException nfe) {
                 throw new UtilityException("prop.nan", key);
             }
         }
-        else{
+        else {
             setInt(key, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setInt(String key, int value) throws UtilityException{
-        setInt(key, value, (String[])null);
+    public final void setInt(String key, int value) throws UtilityException {
+        setInt(key, value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setInt(String key, int value, String... comment) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
+    public final void setInt(String key, int value, String... comment) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
         String strValue = String.valueOf(value);
-        if(strValue.equals(props.get(key))){
+        if (strValue.equals(props.get(key))) {
             return;
         }
         props.put(key, strValue);
@@ -908,111 +715,68 @@ public final class PropertiesFile extends AbstractPropertiesFile{
         this.hasChanged = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final int[] getIntArray(String key) throws UtilityException{
+    public final int[] getIntArray(String key) throws UtilityException {
         return getIntArray(key, ",");
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final int[] getIntArray(String key, int[] def) throws UtilityException{
-        if(containsKey(key)){
+    public final int[] getIntArray(String key, int[] def) throws UtilityException {
+        if (containsKey(key)) {
             return getIntArray(key, ",");
         }
-        else{
+        else {
             setIntArray(key, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setIntArray(String key, int[] value) throws UtilityException{
-        setIntArray(key, ",", value, (String[])null);
+    public final void setIntArray(String key, int[] value) throws UtilityException {
+        setIntArray(key, ",", value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setIntArray(String key, int[] value, String... comment) throws UtilityException{
+    public final void setIntArray(String key, int[] value, String... comment) throws UtilityException {
         setIntArray(key, ",", value, comment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final int[] getIntArray(String key, String splitBy) throws UtilityException{
-        if(splitBy == null){
-            throw new UtilityException("arg.null", "String splitBy");
-        }
-        else if(splitBy.isEmpty()){
-            throw new UtilityException("arg.empty", "String splitBy");
-        }
-        return StringUtils.stringToIntArray(getString(key), splitBy);
+    public final int[] getIntArray(String key, String delimiter) throws UtilityException {
+        return StringUtils.stringToIntArray(getString(key), delimiter);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final int[] getIntArray(String key, String splitBy, int[] def) throws UtilityException{
-        if(splitBy == null){
-            throw new UtilityException("arg.null", "String splitBy");
+    public final int[] getIntArray(String key, String delimiter, int[] def) throws UtilityException {
+        if (containsKey(key)) {
+            return StringUtils.stringToIntArray(getString(key), delimiter);
         }
-        else if(splitBy.isEmpty()){
-            throw new UtilityException("arg.empty", "String splitBy");
-        }
-        if(containsKey(key)){
-            return StringUtils.stringToIntArray(getString(key), splitBy);
-        }
-        else{
-            setIntArray(key, splitBy, def);
+        else {
+            setIntArray(key, delimiter, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setIntArray(String key, String spacer, int[] value) throws UtilityException{
-        setIntArray(key, spacer, value, (String[])null);
+    public final void setIntArray(String key, String delimiter, int[] value) throws UtilityException {
+        setIntArray(key, delimiter, value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setIntArray(String key, String spacer, int[] value, String... comment) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
-        else if(spacer == null){
-            throw new UtilityException("arg.null", "String spacer");
-        }
-        else if(spacer.isEmpty()){
-            throw new UtilityException("arg.empty", "String spacer");
-        }
-        else if(value == null){
-            throw new UtilityException("arg.null", "int[] value");
-        }
-        else if(value.length == 0){
-            throw new UtilityException("arg.empty", "int[] value");
-        }
-        String strValue = StringUtils.intArrayToString(value, spacer);
-        if(strValue.equals(props.get(key))){
+    public final void setIntArray(String key, String delimiter, int[] value, String... comment) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
+        String strValue = StringUtils.intArrayToString(value, delimiter);
+        if (strValue.equals(props.get(key))) {
             return;
         }
         props.put(key, strValue);
@@ -1020,59 +784,48 @@ public final class PropertiesFile extends AbstractPropertiesFile{
         this.hasChanged = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final long getLong(String key) throws UtilityException{
-        try{
+    public final long getLong(String key) throws UtilityException {
+        try {
             return Long.parseLong(getString(key));
         }
-        catch(NumberFormatException nfe){
+        catch (NumberFormatException nfe) {
             throw new UtilityException("prop.nan", key);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final long getLong(String key, long def) throws UtilityException{
-        if(containsKey(key)){
-            try{
+    public final long getLong(String key, long def) throws UtilityException {
+        if (containsKey(key)) {
+            try {
                 return Long.parseLong(getString(key));
             }
-            catch(NumberFormatException nfe){
+            catch (NumberFormatException nfe) {
                 throw new UtilityException("prop.nan", key);
             }
         }
-        else{
+        else {
             setLong(key, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setLong(String key, long value) throws UtilityException{
-        setLong(key, value, (String[])null);
+    public final void setLong(String key, long value) throws UtilityException {
+        setLong(key, value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setLong(String key, long value, String... comment) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
+    public final void setLong(String key, long value, String... comment) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
         String strValue = String.valueOf(value);
-        if(strValue.equals(props.get(key))){
+        if (strValue.equals(props.get(key))) {
             return;
         }
         props.put(key, strValue);
@@ -1080,111 +833,71 @@ public final class PropertiesFile extends AbstractPropertiesFile{
         this.hasChanged = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final long[] getLongArray(String key) throws UtilityException{
+    public final long[] getLongArray(String key) throws UtilityException {
         return getLongArray(key, ",");
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final long[] getLongArray(String key, long[] def) throws UtilityException{
-        if(containsKey(key)){
+    public final long[] getLongArray(String key, long[] def) throws UtilityException {
+        if (containsKey(key)) {
             return getLongArray(key, ",");
         }
-        else{
+        else {
             setLongArray(key, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setLongArray(String key, long[] value) throws UtilityException{
-        setLongArray(key, ",", value, (String[])null);
+    public final void setLongArray(String key, long[] value) throws UtilityException {
+        setLongArray(key, ",", value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setLongArray(String key, long[] value, String... comment) throws UtilityException{
+    public final void setLongArray(String key, long[] value, String... comment) throws UtilityException {
         setLongArray(key, ",", value, comment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final long[] getLongArray(String key, String splitBy) throws UtilityException{
-        if(splitBy == null){
-            throw new UtilityException("arg.null", "String splitBy");
-        }
-        else if(splitBy.isEmpty()){
-            throw new UtilityException("arg.empty", "String splitBy");
-        }
-        return StringUtils.stringToLongArray(getString(key), splitBy);
+    public final long[] getLongArray(String key, String delimiter) throws UtilityException {
+        return StringUtils.stringToLongArray(getString(key), delimiter);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final long[] getLongArray(String key, String splitBy, long[] def) throws UtilityException{
-        if(splitBy == null){
-            throw new UtilityException("arg.null", "String splitBy");
+    public final long[] getLongArray(String key, String delimiter, long[] def) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
+        if (containsKey(key)) {
+            return StringUtils.stringToLongArray(getString(key), delimiter);
         }
-        else if(splitBy.isEmpty()){
-            throw new UtilityException("arg.empty", "String splitBy");
-        }
-        if(containsKey(key)){
-            return StringUtils.stringToLongArray(getString(key), splitBy);
-        }
-        else{
-            setLongArray(key, splitBy, def);
+        else {
+            setLongArray(key, delimiter, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setLongArray(String key, String spacer, long[] value) throws UtilityException{
-        setLongArray(key, spacer, value, (String[])null);
+    public final void setLongArray(String key, String delimiter, long[] value) throws UtilityException {
+        setLongArray(key, delimiter, value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setLongArray(String key, String spacer, long[] value, String... comment) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
-        else if(spacer == null){
-            throw new UtilityException("arg.null", "String spacer");
-        }
-        else if(spacer.isEmpty()){
-            throw new UtilityException("arg.empty", "String spacer");
-        }
-        else if(value == null){
-            throw new UtilityException("arg.null", "long[] value");
-        }
-        else if(value.length == 0){
-            throw new UtilityException("arg.empty", "long[] value");
-        }
-        String strValue = StringUtils.longArrayToString(value, spacer);
-        if(strValue.equals(props.get(key))){
+    public final void setLongArray(String key, String delimiter, long[] value, String... comment) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
+        String strValue = StringUtils.longArrayToString(value, delimiter);
+        if (strValue.equals(props.get(key))) {
             return;
         }
         props.put(key, strValue);
@@ -1192,59 +905,48 @@ public final class PropertiesFile extends AbstractPropertiesFile{
         this.hasChanged = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final float getFloat(String key) throws UtilityException{
-        try{
+    public final float getFloat(String key) throws UtilityException {
+        try {
             return Float.parseFloat(getString(key));
         }
-        catch(NumberFormatException nfe){
+        catch (NumberFormatException nfe) {
             throw new UtilityException("prop.nan", key);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final float getFloat(String key, float def) throws UtilityException{
-        if(containsKey(key)){
-            try{
+    public final float getFloat(String key, float def) throws UtilityException {
+        if (containsKey(key)) {
+            try {
                 return Float.parseFloat(getString(key));
             }
-            catch(NumberFormatException nfe){
+            catch (NumberFormatException nfe) {
                 throw new UtilityException("prop.nan", key);
             }
         }
-        else{
+        else {
             setFloat(key, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setFloat(String key, float value) throws UtilityException{
-        setFloat(key, value, (String[])null);
+    public final void setFloat(String key, float value) throws UtilityException {
+        setFloat(key, value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setFloat(String key, float value, String... comment) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
+    public final void setFloat(String key, float value, String... comment) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
         String strValue = String.valueOf(value);
-        if(strValue.equals(props.get(key))){
+        if (strValue.equals(props.get(key))) {
             return;
         }
         props.put(key, strValue);
@@ -1252,111 +954,68 @@ public final class PropertiesFile extends AbstractPropertiesFile{
         this.hasChanged = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final float[] getFloatArray(String key) throws UtilityException{
+    public final float[] getFloatArray(String key) throws UtilityException {
         return getFloatArray(key, ",");
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final float[] getFloatArray(String key, float[] def) throws UtilityException{
-        if(containsKey(key)){
+    public final float[] getFloatArray(String key, float[] def) throws UtilityException {
+        if (containsKey(key)) {
             return getFloatArray(key, ",");
         }
-        else{
+        else {
             setFloatArray(key, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setFloatArray(String key, float[] value) throws UtilityException{
-        setFloatArray(key, ",", value, (String[])null);
+    public final void setFloatArray(String key, float[] value) throws UtilityException {
+        setFloatArray(key, ",", value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setFloatArray(String key, float[] value, String... comment) throws UtilityException{
+    public final void setFloatArray(String key, float[] value, String... comment) throws UtilityException {
         setFloatArray(key, ",", value, comment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final float[] getFloatArray(String key, String splitBy) throws UtilityException{
-        if(splitBy == null){
-            throw new UtilityException("arg.null", "String splitBy");
-        }
-        else if(splitBy.isEmpty()){
-            throw new UtilityException("arg.empty", "String splitBy");
-        }
-        return StringUtils.stringToFloatArray(getString(key), splitBy);
+    public final float[] getFloatArray(String key, String delimiter) throws UtilityException {
+        return StringUtils.stringToFloatArray(getString(key), delimiter);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final float[] getFloatArray(String key, String splitBy, float[] def) throws UtilityException{
-        if(splitBy == null){
-            throw new UtilityException("arg.null", "String splitBy");
+    public final float[] getFloatArray(String key, String delimiter, float[] def) throws UtilityException {
+        if (containsKey(key)) {
+            return StringUtils.stringToFloatArray(getString(key), delimiter);
         }
-        else if(splitBy.isEmpty()){
-            throw new UtilityException("arg.empty", "String splitBy");
-        }
-        if(containsKey(key)){
-            return StringUtils.stringToFloatArray(getString(key), splitBy);
-        }
-        else{
-            setFloatArray(key, splitBy, def);
+        else {
+            setFloatArray(key, delimiter, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setFloatArray(String key, String spacer, float[] value) throws UtilityException{
-        setFloatArray(key, spacer, value, (String[])null);
+    public final void setFloatArray(String key, String delimiter, float[] value) throws UtilityException {
+        setFloatArray(key, delimiter, value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setFloatArray(String key, String spacer, float[] value, String... comment) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
-        else if(spacer == null){
-            throw new UtilityException("arg.null", "String spacer");
-        }
-        else if(spacer.isEmpty()){
-            throw new UtilityException("arg.empty", "String spacer");
-        }
-        else if(value == null){
-            throw new UtilityException("arg.null", "float[] value");
-        }
-        else if(value.length == 0){
-            throw new UtilityException("arg.empty", "float[] value");
-        }
-        String strValue = StringUtils.floatArrayToString(value, spacer);
-        if(strValue.equals(props.get(key))){
+    public final void setFloatArray(String key, String delimiter, float[] value, String... comment) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
+        String strValue = StringUtils.floatArrayToString(value, delimiter);
+        if (strValue.equals(props.get(key))) {
             return;
         }
         props.put(key, strValue);
@@ -1364,59 +1023,48 @@ public final class PropertiesFile extends AbstractPropertiesFile{
         this.hasChanged = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final double getDouble(String key) throws UtilityException{
-        try{
+    public final double getDouble(String key) throws UtilityException {
+        try {
             return Double.parseDouble(getString(key));
         }
-        catch(NumberFormatException nfe){
+        catch (NumberFormatException nfe) {
             throw new UtilityException("prop.nan");
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final double getDouble(String key, double def) throws UtilityException{
-        if(containsKey(key)){
-            try{
+    public final double getDouble(String key, double def) throws UtilityException {
+        if (containsKey(key)) {
+            try {
                 return Double.parseDouble(getString(key));
             }
-            catch(NumberFormatException nfe){
+            catch (NumberFormatException nfe) {
                 throw new UtilityException("prop.nan", key);
             }
         }
-        else{
+        else {
             setDouble(key, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setDouble(String key, double value) throws UtilityException{
-        setDouble(key, value, (String[])null);
+    public final void setDouble(String key, double value) throws UtilityException {
+        setDouble(key, value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setDouble(String key, double value, String... comment) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
+    public final void setDouble(String key, double value, String... comment) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
         String strValue = String.valueOf(value);
-        if(strValue.equals(props.get(key))){
+        if (strValue.equals(props.get(key))) {
             return;
         }
         props.put(key, strValue);
@@ -1424,111 +1072,68 @@ public final class PropertiesFile extends AbstractPropertiesFile{
         this.hasChanged = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final double[] getDoubleArray(String key) throws UtilityException{
+    public final double[] getDoubleArray(String key) throws UtilityException {
         return getDoubleArray(key, ",");
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final double[] getDoubleArray(String key, double[] def) throws UtilityException{
-        if(containsKey(key)){
+    public final double[] getDoubleArray(String key, double[] def) throws UtilityException {
+        if (containsKey(key)) {
             return getDoubleArray(key, ",");
         }
-        else{
+        else {
             setDoubleArray(key, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setDoubleArray(String key, double[] value) throws UtilityException{
-        setDoubleArray(key, ",", value, (String[])null);
+    public final void setDoubleArray(String key, double[] value) throws UtilityException {
+        setDoubleArray(key, ",", value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setDoubleArray(String key, double[] value, String... comment) throws UtilityException{
+    public final void setDoubleArray(String key, double[] value, String... comment) throws UtilityException {
         setDoubleArray(key, ",", value, comment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final double[] getDoubleArray(String key, String splitBy) throws UtilityException{
-        if(splitBy == null){
-            throw new UtilityException("arg.null", "String splitBy");
-        }
-        else if(splitBy.isEmpty()){
-            throw new UtilityException("arg.empty", "String splitBy");
-        }
-        return StringUtils.stringToDoubleArray(getString(key), splitBy);
+    public final double[] getDoubleArray(String key, String delimiter) throws UtilityException {
+        return StringUtils.stringToDoubleArray(getString(key), delimiter);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final double[] getDoubleArray(String key, String splitBy, double[] def) throws UtilityException{
-        if(splitBy == null){
-            throw new UtilityException("arg.null", "String splitBy");
+    public final double[] getDoubleArray(String key, String delimiter, double[] def) throws UtilityException {
+        if (containsKey(key)) {
+            return StringUtils.stringToDoubleArray(getString(key), delimiter);
         }
-        else if(splitBy.isEmpty()){
-            throw new UtilityException("arg.empty", "String splitBy");
-        }
-        if(containsKey(key)){
-            return StringUtils.stringToDoubleArray(getString(key), splitBy);
-        }
-        else{
-            setDoubleArray(key, splitBy, def);
+        else {
+            setDoubleArray(key, delimiter, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setDoubleArray(String key, String spacer, double[] value) throws UtilityException{
-        setDoubleArray(key, spacer, value, (String[])null);
+    public final void setDoubleArray(String key, String delimiter, double[] value) throws UtilityException {
+        setDoubleArray(key, delimiter, value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setDoubleArray(String key, String spacer, double[] value, String... comment) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
-        else if(spacer == null){
-            throw new UtilityException("arg.null", "String spacer");
-        }
-        else if(spacer.isEmpty()){
-            throw new UtilityException("arg.empty", "String spacer");
-        }
-        else if(value == null){
-            throw new UtilityException("arg.null", "double[] value");
-        }
-        else if(value.length == 0){
-            throw new UtilityException("arg.empty", "double[] value");
-        }
-        String strValue = StringUtils.doubleArrayToString(value, spacer);
-        if(strValue.equals(props.get(key))){
+    public final void setDoubleArray(String key, String delimiter, double[] value, String... comment) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
+        String strValue = StringUtils.doubleArrayToString(value, delimiter);
+        if (strValue.equals(props.get(key))) {
             return;
         }
         props.put(key, strValue);
@@ -1536,49 +1141,38 @@ public final class PropertiesFile extends AbstractPropertiesFile{
         this.hasChanged = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final boolean getBoolean(String key) throws UtilityException{
+    public final boolean getBoolean(String key) throws UtilityException {
         return BooleanUtils.parseBoolean(getString(key));
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final boolean getBoolean(String key, boolean def) throws UtilityException{
-        if(containsKey(key)){
+    public final boolean getBoolean(String key, boolean def) throws UtilityException {
+        if (containsKey(key)) {
             return BooleanUtils.parseBoolean(getString(key));
         }
-        else{
+        else {
             setBoolean(key, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setBoolean(String key, boolean value) throws UtilityException{
-        setBoolean(key, value, (String[])null);
+    public final void setBoolean(String key, boolean value) throws UtilityException {
+        setBoolean(key, value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setBoolean(String key, boolean value, String... comment) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
+    public final void setBoolean(String key, boolean value, String... comment) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
         String strValue = String.valueOf(value);
-        if(strValue.equals(props.get(key))){
+        if (strValue.equals(props.get(key))) {
             return;
         }
         props.put(key, strValue);
@@ -1586,111 +1180,68 @@ public final class PropertiesFile extends AbstractPropertiesFile{
         this.hasChanged = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final boolean[] getBooleanArray(String key) throws UtilityException{
+    public final boolean[] getBooleanArray(String key) throws UtilityException {
         return getBooleanArray(key, ",");
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final boolean[] getBooleanArray(String key, boolean[] def) throws UtilityException{
-        if(containsKey(key)){
+    public final boolean[] getBooleanArray(String key, boolean[] def) throws UtilityException {
+        if (containsKey(key)) {
             return getBooleanArray(key, ",");
         }
-        else{
+        else {
             setBooleanArray(key, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setBooleanArray(String key, boolean[] value) throws UtilityException{
-        setBooleanArray(key, ",", value, (String[])null);
+    public final void setBooleanArray(String key, boolean[] value) throws UtilityException {
+        setBooleanArray(key, ",", value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setBooleanArray(String key, boolean[] value, String... comment) throws UtilityException{
+    public final void setBooleanArray(String key, boolean[] value, String... comment) throws UtilityException {
         setBooleanArray(key, ",", value, comment);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final boolean[] getBooleanArray(String key, String splitBy) throws UtilityException{
-        if(splitBy == null){
-            throw new UtilityException("arg.null", "String splitBy");
-        }
-        else if(splitBy.isEmpty()){
-            throw new UtilityException("arg.empty", "String splitBy");
-        }
-        return StringUtils.stringToBooleanArray(getString(key), splitBy);
+    public final boolean[] getBooleanArray(String key, String delimiter) throws UtilityException {
+        return StringUtils.stringToBooleanArray(getString(key), delimiter);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final boolean[] getBooleanArray(String key, String splitBy, boolean[] def) throws UtilityException{
-        if(splitBy == null){
-            throw new UtilityException("arg.null", "String splitBy");
+    public final boolean[] getBooleanArray(String key, String delimiter, boolean[] def) throws UtilityException {
+        if (containsKey(key)) {
+            return StringUtils.stringToBooleanArray(getString(key), delimiter);
         }
-        else if(splitBy.isEmpty()){
-            throw new UtilityException("arg.empty", "String splitBy");
-        }
-        if(containsKey(key)){
-            return StringUtils.stringToBooleanArray(getString(key), splitBy);
-        }
-        else{
-            setBooleanArray(key, splitBy, def);
+        else {
+            setBooleanArray(key, delimiter, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setBooleanArray(String key, String spacer, boolean[] value) throws UtilityException{
-        setBooleanArray(key, spacer, value, (String[])null);
+    public final void setBooleanArray(String key, String delimiter, boolean[] value) throws UtilityException {
+        setBooleanArray(key, delimiter, value, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setBooleanArray(String key, String spacer, boolean[] value, String... comment) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
-        else if(spacer == null){
-            throw new UtilityException("arg.null", "String spacer");
-        }
-        else if(spacer.isEmpty()){
-            throw new UtilityException("arg.empty", "String spacer");
-        }
-        else if(value == null){
-            throw new UtilityException("arg.null", "boolean[] value");
-        }
-        else if(value.length == 0){
-            throw new UtilityException("arg.empty", "boolean[] value");
-        }
-        String strValue = StringUtils.booleanArrayToString(value, spacer);
-        if(strValue.equals(props.get(key))){
+    public final void setBooleanArray(String key, String delimiter, boolean[] value, String... comment) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
+        String strValue = StringUtils.booleanArrayToString(value, delimiter);
+        if (strValue.equals(props.get(key))) {
             return;
         }
         props.put(key, strValue);
@@ -1698,49 +1249,38 @@ public final class PropertiesFile extends AbstractPropertiesFile{
         this.hasChanged = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final char getCharacter(String key) throws UtilityException{
+    public final char getCharacter(String key) throws UtilityException {
         return getString(key).trim().charAt(0);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final char getCharacter(String key, char def) throws UtilityException{
-        if(containsKey(key)){
+    public final char getCharacter(String key, char def) throws UtilityException {
+        if (containsKey(key)) {
             return getString(key).trim().charAt(0);
         }
-        else{
+        else {
             setCharacter(key, def);
             return def;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setCharacter(String key, char ch) throws UtilityException{
-        setCharacter(key, ch, (String[])null);
+    public final void setCharacter(String key, char ch) throws UtilityException {
+        setCharacter(key, ch, (String[]) null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setCharacter(String key, char ch, String... comment) throws UtilityException{
-        if(key == null){
-            throw new UtilityException("arg.null", "String key");
-        }
-        else if(key.trim().isEmpty()){
-            throw new UtilityException("arg.empty", "String key");
-        }
+    public final void setCharacter(String key, char ch, String... comment) throws UtilityException {
+        notNull(key, "String key");
+        notEmpty(key, "String key");
+
         String strValue = String.valueOf(ch);
-        if(strValue.equals(props.get(key))){
+        if (strValue.equals(props.get(key))) {
             return;
         }
         props.put(key, strValue);
@@ -1748,205 +1288,176 @@ public final class PropertiesFile extends AbstractPropertiesFile{
         this.hasChanged = true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final Map<String, String> getPropertiesMap(){
+    public final Map<String, String> getPropertiesMap() {
         return Collections.unmodifiableMap(props);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void addComment(String key, String... comment){
-        if(containsKey(key)){
-            if(comment != null && comment.length > 0){
+    public final void addComment(String key, String... comment) {
+        if (containsKey(key)) {
+            if (comment != null && comment.length > 0) {
                 List<String> the_comments = comments.containsKey(key) ? comments.get(key) : new LinkedList<String>();
-                for(int i = 0; i < comment.length; i++){
-                    if(comment[i] == null){
+                for (int i = 0; i < comment.length; i++) {
+                    if (comment[i] == null) {
                         comment[i] = "";
                     }
-                    if(!comment[i].startsWith(";") && !comment[i].startsWith("#")){
+                    if (!comment[i].startsWith(";") && !comment[i].startsWith("#")) {
                         comment[i] = ";".concat(comment[i]);
                     }
                     the_comments.add(comment[i]);
                 }
-                if(!comments.containsKey(key)){ //Basicly, the list pointer should be enough to change the list in the map without re-adding
+                if (!comments.containsKey(key)) { //Basicly, the list pointer should be enough to change the list in the map without re-adding
                     comments.put(key, the_comments);
                 }
             }
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void setComments(String key, String... comment){
-        if(containsKey(key)){
-            if(comments.containsKey(key)){
+    public final void setComments(String key, String... comment) {
+        if (containsKey(key)) {
+            if (comments.containsKey(key)) {
                 comments.get(key).clear();
             }
             this.addComment(key, comment);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final String[] getComments(String key){
-        if(comments.containsKey(key)){
+    public final String[] getComments(String key) {
+        if (comments.containsKey(key)) {
             return comments.get(key).toArray(new String[0]);
         }
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final List<String> getCommentsAsList(String key){
-        if(comments.containsKey(key)){
+    public final List<String> getCommentsAsList(String key) {
+        if (comments.containsKey(key)) {
             return comments.get(key);
         }
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void removeComment(String key, String comment){
-        if(comments.containsKey(key)){
+    public final void removeComment(String key, String comment) {
+        if (comments.containsKey(key)) {
             comments.get(key).remove(comment);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void removeAllCommentsFromKey(String key){
-        if(comments.containsKey(key)){
+    public final void removeAllCommentsFromKey(String key) {
+        if (comments.containsKey(key)) {
             comments.remove(key);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void removeAllCommentsFromFile(){
+    public final void removeAllCommentsFromFile() {
         comments.clear();
         header.clear();
         footer.clear();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void addHeaderLines(String... lines){
-        if(lines != null && lines.length > 0){
-            for(String line : lines){
-                if(line == null){
+    public final void addHeaderLines(String... lines) {
+        if (lines != null && lines.length > 0) {
+            for (String line : lines) {
+                if (line == null) {
                     header.add(";# ");
                 }
-                else if(line.startsWith(";#")){
+                else if (line.startsWith(";#")) {
                     header.add(line);
                 }
-                else{
+                else {
                     header.add(";#".concat(line));
                 }
             }
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final LinkedList<String> getHeaderLines(){
+    public final LinkedList<String> getHeaderLines() {
         LinkedList<String> toRet = new LinkedList<String>(header);
         Collections.copy(header, toRet);
         return toRet;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void clearHeader(){
+    public final void clearHeader() {
         header.clear();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void addFooterLines(String... lines){
-        if(lines != null && lines.length > 0){
-            for(String line : lines){
-                if(line == null){
+    public final void addFooterLines(String... lines) {
+        if (lines != null && lines.length > 0) {
+            for (String line : lines) {
+                if (line == null) {
                     footer.add("#; ");
                 }
-                else if(line.startsWith("#;")){
+                else if (line.startsWith("#;")) {
                     footer.add(line);
                 }
-                else{
+                else {
                     header.add("#;".concat(line));
                 }
             }
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final LinkedList<String> getFooterLines(){
+    public final LinkedList<String> getFooterLines() {
         LinkedList<String> toRet = new LinkedList<String>(footer);
         Collections.copy(footer, toRet);
         return toRet;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final void clearFooter(){
+    public final void clearFooter() {
         footer.clear();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public final String getInlineComment(String key){
+    public final String getInlineComment(String key) {
         return inlineCom.get(key);
     }
 
     /**
      * Checks is an {@link Object} is equal to the {@code PropertiesFile}
-     * 
+     *
      * @return {@code true} if equal; {@code false} otherwise
+     *
      * @see Object#equals(Object)
      */
-    public final boolean equals(Object obj){
-        if(!(obj instanceof PropertiesFile)){
+    public final boolean equals(Object obj) {
+        if (!(obj instanceof PropertiesFile)) {
             return false;
         }
-        PropertiesFile that = (PropertiesFile)obj;
-        if(!this.filepath.equals(that.filepath)){
+        PropertiesFile that = (PropertiesFile) obj;
+        if (!this.filePath.equals(that.filePath)) {
             return false;
         }
-        if(this.propsFile != null && this.propsFile != that.propsFile){
+        if (this.propsFile != null && this.propsFile != that.propsFile) {
             return false;
         }
-        if(this.jar != null && this.jar != that.jar){
+        if (this.jar != null && this.jar != that.jar) {
             return false;
         }
         return true;
@@ -1954,25 +1465,27 @@ public final class PropertiesFile extends AbstractPropertiesFile{
 
     /**
      * Returns a string representation of the {@code PropertiesFile} as {@code PropertiesFile[FilePath=%s]}
-     * 
+     *
      * @return string representation of the {@code PropertiesFile}
+     *
      * @see Object#toString()
      */
     @Override
-    public final String toString(){
-        return String.format("PropertiesFile[FilePath=%s]", propsFile != null ? propsFile.getAbsolutePath() : jar.getName() + ":" + filepath);
+    public final String toString() {
+        return String.format("PropertiesFile[FilePath=%s]", propsFile != null ? propsFile.getAbsolutePath() : jar.getName() + ":" + filePath);
     }
 
     /**
      * Returns a hash code value for the {@code PropertiesFile}.
-     * 
+     *
      * @return hash
+     *
      * @see Object#hashCode()
      */
     @Override
-    public final int hashCode(){
+    public final int hashCode() {
         int hash = 9;
-        hash = 45 * hash + filepath.hashCode();
+        hash = 45 * hash + filePath.hashCode();
         hash = 54 * hash + (propsFile != null ? propsFile.hashCode() : 0);
         hash = 45 * hash + (jar != null ? jar.hashCode() : 0);
         return hash;
@@ -1980,10 +1493,10 @@ public final class PropertiesFile extends AbstractPropertiesFile{
 
     /**
      * Gets this class's version number
-     * 
+     *
      * @return the class version
      */
-    public static final float getClassVersion(){
+    public static final float getClassVersion() {
         return classVersion;
     }
 }

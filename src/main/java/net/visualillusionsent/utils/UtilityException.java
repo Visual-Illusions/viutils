@@ -23,23 +23,22 @@ import java.util.Map;
 
 /**
  * Utility Exception
- * <p>
+ * <p/>
  * Thrown when a used utility has improper arguments given to it or when something goes wrong<br>
  * use the {@link #getMessage()} or {@link #getLocalizedMessage()} method to retrieve the reason why the utility method failed
- * 
- * @since 1.0.0
- * @version 1.0
+ *
  * @author Jason (darkdiplomat)
+ * @version 1.0
+ * @since 1.0.0
  */
-public final class UtilityException extends RuntimeException{
+public final class UtilityException extends RuntimeException {
 
     private static final float classVersion = 1.0F;
     private static final Map<String, String> errors;
-    /**
-     * Serial Version
-     */
+    /** Serial Version */
     private static final long serialVersionUID = 042216122012L;
-    static{
+
+    static {
         HashMap<String, String> temp = new HashMap<String, String>();
         temp.put("arg.null", "'%s' cannot be null");
         temp.put("arg.empty", "'%s' cannot be empty");
@@ -53,43 +52,44 @@ public final class UtilityException extends RuntimeException{
         temp.put("prop.nan", "Property for KEY: %s was not a number.");
         temp.put("str.nan", "String Index: %s was not a number");
         temp.put("entry.missing", "JarFile does not contain Entry: %s");
-        temp.put("delay.negative", "Delay cannot be negative or zero");
+        temp.put("num.zeroOrLess", "%s cannot be negative or zero");
+        temp.put("num.negative", "%s cannot be negative");
         errors = Collections.unmodifiableMap(temp);
     }
 
     /**
      * Class Constructor
-     * <p>
+     * <p/>
      * Should not be constructed outside of VIUtils
-     * 
+     *
      * @param msg
-     *            the message of why the exception is being thrown
+     *         the message of why the exception is being thrown
      */
-    UtilityException(String msg){
+    UtilityException(String msg) {
         super(msg);
     }
 
-    UtilityException(String msg, Throwable thrown){
+    UtilityException(String msg, Throwable thrown) {
         super(msg, thrown);
     }
 
-    UtilityException(String error, String... form){
+    UtilityException(String error, String... form) {
         super(parseError(error, form));
     }
 
-    private final static String parseError(String error, String[] form){
-        if(errors.containsKey(error)){
-            return String.format(errors.get(error), (Object[])form);
+    private final static String parseError(String error, String[] form) {
+        if (errors.containsKey(error)) {
+            return String.format(errors.get(error), (Object[]) form);
         }
         return error;
     }
 
     /**
      * Gets this class's version number
-     * 
+     *
      * @return the class version
      */
-    public final static float getClassVersion(){
+    public final static float getClassVersion() {
         return classVersion;
     }
 }

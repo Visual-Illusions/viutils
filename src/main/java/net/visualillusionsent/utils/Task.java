@@ -22,52 +22,52 @@ import java.util.logging.Logger;
 
 /**
  * Wrapper used to combine {@link Runnable} and {@link Callable} objects given to the TaskManager
- * 
+ *
  * @author Jason (darkdiplomat)
  */
-final class Task{
+final class Task {
 
     /* The Runnable/Callable task */
     private final Object task;
 
     /**
      * Constructs a new Task from a {@link Runnable}
-     * 
+     *
      * @param runnable
-     *            the {@link Runnable} task to wrap
+     *         the {@link Runnable} task to wrap
      */
-    Task(Runnable runnable){
+    Task(Runnable runnable) {
         this.task = runnable;
     }
 
     /**
      * Constructs a new Task from a {@link Callable}
-     * 
+     *
      * @param callable
-     *            the {@link Callable} task to wrap
+     *         the {@link Callable} task to wrap
      */
-    Task(Callable<?> callable){
+    Task(Callable<?> callable) {
         this.task = callable;
     }
 
     /**
      * Prints out the error that was caused if any
-     * 
+     *
      * @param thrown
-     *            the {@link Throwable} retrieved from the {@link Future} object
+     *         the {@link Throwable} retrieved from the {@link java.util.concurrent.Future} object
      */
-    final void printError(Throwable thrown){
+    final void printError(Throwable thrown) {
         Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).severe("[VIUtils] Unhandled Exception thrown from Task: " + task.toString() + ". Check the viuitlslogs for more details");
         UtilsLogger.severe("Exception in Task: " + task.toString(), thrown);
     }
 
     @Override
-    public final boolean equals(Object obj){
+    public final boolean equals(Object obj) {
         return obj == this || task.equals(obj);
     }
 
     @Override
-    public final int hashCode(){
+    public final int hashCode() {
         return task.hashCode();
     }
 }
