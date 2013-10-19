@@ -33,12 +33,12 @@ import java.util.logging.Logger;
  * The directory should be set up the same as though it is inside the Jar file.
  *
  * @author Jason (darkdiplomat)
- * @version 1.3
+ * @version 1.4
  * @since 1.0.0
  */
 public abstract class LocaleHelper {
 
-    private static final float classVersion = 1.3F;
+    private static final float classVersion = 1.4F;
     /* languages.txt quick reference */
     private static final String langTXT = "languages.txt";
     /** Map of supported languages */
@@ -53,6 +53,8 @@ public abstract class LocaleHelper {
     protected final boolean external;
     /** Path to external files */
     protected final String extDir;
+    /** Set to true to enable debugging */
+    protected boolean debug_enabled = false;
 
     /** Constructs a default LocaleHelper that will look in the jar for the lang files */
     protected LocaleHelper() {
@@ -101,8 +103,10 @@ public abstract class LocaleHelper {
             }
         }
         catch (Exception e) {
-            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check the viutils logs.");
-            UtilsLogger.warning("Translate Error: ", e);
+            if (debug_enabled) {
+                Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check the viutils logs.");
+                UtilsLogger.warning("Translate Error: ", e);
+            }
         }
         return systemTranslate(key);
     }
@@ -122,8 +126,10 @@ public abstract class LocaleHelper {
             }
         }
         catch (Exception e) {
-            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check the viutils logs.");
-            UtilsLogger.warning("Translate Error: ", e);
+            if (debug_enabled) {
+                Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check the viutils logs.");
+                UtilsLogger.warning("Translate Error: ", e);
+            }
         }
         return defaultTranslate(key);
     }
@@ -143,8 +149,10 @@ public abstract class LocaleHelper {
             }
         }
         catch (Exception e) {
-            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check the viutils logs.");
-            UtilsLogger.warning("Translate Error: ", e);
+            if (debug_enabled) {
+                Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check the viutils logs.");
+                UtilsLogger.warning("Translate Error: ", e);
+            }
         }
         //May have forgot a translation and left a regular message, or something went wrong...
         return key;
@@ -160,8 +168,10 @@ public abstract class LocaleHelper {
             }
         }
         catch (Exception e) {
-            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check the viutils logs.");
-            UtilsLogger.warning("Translate Error", e);
+            if (debug_enabled) {
+                Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check the viutils logs.");
+                UtilsLogger.warning("Translate Error", e);
+            }
         }
         return systemTranslate(key, form);
     }
@@ -185,8 +195,10 @@ public abstract class LocaleHelper {
             }
         }
         catch (Exception e) {
-            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check the viutils logs.");
-            UtilsLogger.warning("Translate Error", e);
+            if (debug_enabled) {
+                Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check the viutils logs.");
+                UtilsLogger.warning("Translate Error", e);
+            }
         }
         return defaultTranslate(key, form);
     }
@@ -210,8 +222,10 @@ public abstract class LocaleHelper {
             }
         }
         catch (Exception e) {
-            Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check the viutils logs.");
-            UtilsLogger.warning("Translate Error: ", e);
+            if (debug_enabled) {
+                Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning("[VIUtils] Exception thrown from LocaleHelper, check the viutils logs.");
+                UtilsLogger.warning("Translate Error: ", e);
+            }
         }
         //May have forgot a translation and left a regular message
         return MessageFormat.format(key, form);
