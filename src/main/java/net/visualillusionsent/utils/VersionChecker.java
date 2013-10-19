@@ -34,12 +34,12 @@ import static net.visualillusionsent.utils.Verify.notNull;
  * There is an included versionchecker.php in the /resources/extras/ folder inside the jar.<br>
  *
  * @author Jason (darkdiplomat)
- * @version 1.1
+ * @version 1.2
  * @since 1.0.0
  */
 public final class VersionChecker {
 
-    private static float classVersion = 1.1F;
+    private static float classVersion = 1.2F;
     private final String programName, checkURL, user_agent, formatted_Post;
     private final boolean checkUnstable;
     private final ProgramStatus status;
@@ -297,21 +297,32 @@ public final class VersionChecker {
     /**
      * Gets the current version
      *
-     * @return currver
+     * @return current version
      */
     public final String getCurrentVersion() {
         return currver;
     }
 
     /**
-     * Gets a pre-generated update availible message
+     * Deprecated in 1.2.1 on Oct 19
+     * Will be removed after 1.2.1
      *
-     * @return update: An update is availible for: 'ProgramName' - v'Version'<br>
+     * @deprecated Use {@link #getUpdateAvailableMessage()} instead
+     */
+    @Deprecated
+    public final String getUpdateAvailibleMessage() { //TODO: Scheduled for Removal
+        return getUpdateAvailableMessage();
+    }
+
+    /**
+     * Gets a pre-generated update available message
+     *
+     * @return update: An update is available for: 'ProgramName' - v'Version'<br>
      *         latest: Current Version of: 'ProgramName' is installed
      */
-    public final String getUpdateAvailibleMessage() {
+    public final String getUpdateAvailableMessage() {
         if (!isLatest()) {
-            return "An update is availible for: '".concat(programName).concat("' - v").concat(currver);
+            return "An update is available for: '".concat(programName).concat("' - v").concat(currver);
         }
         else {
             return "Current Version of: '".concat(programName).concat("' is installed");
