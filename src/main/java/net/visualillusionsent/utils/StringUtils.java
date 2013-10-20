@@ -84,11 +84,12 @@ public final class StringUtils {
         notNull(args, "String[] args");
         //notNull(delimiter, "String delimiter"); Convert Null to the null char
         notEmpty(args, "String[] args");
-        //notEmpty(delimiter, "String delimiter"); NO; space is a valid delimiter
+        //notEmpty(delimiter, "String delimiter"); NO; Don't check empty, it may be used to create one long String of characters without delimiters
         notOutOfRange(startIndex, args.length, "startIndex greater than args.length");
         notOutOfRange(startIndex, endIndex, "startIndex greater than endIndex");
         notOutOfRangeEqual(endIndex, args.length, "endIndex greater than or equal to args.length");
 
+        // Replace null delimiter with null char
         if (delimiter == null) {
             delimiter = "\u0000";
         }
@@ -99,7 +100,7 @@ public final class StringUtils {
             sb.append(delimiter);
         }
         String preRet = sb.toString();
-        return preRet.substring(0, preRet.lastIndexOf(delimiter)); //Remove last spacer
+        return preRet.substring(0, delimiter.isEmpty() ? preRet.length() : preRet.lastIndexOf(delimiter)); //Remove last spacer
     }
 
     /**
