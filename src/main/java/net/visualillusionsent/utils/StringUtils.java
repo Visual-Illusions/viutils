@@ -42,7 +42,7 @@ public final class StringUtils {
      *
      * @param args
      *         the {@link String} array to be combined
-     * @param spacer
+     * @param delimiter
      *         the {@link String} to put between each element of the array
      * @param startIndex
      *         the index to start combining
@@ -52,10 +52,11 @@ public final class StringUtils {
      * @throws UtilityException
      *         <br>
      *         if startIndex is greater than or equal to args.length<br>
-     *         or if spacer is equal to null
+     *         or if startIndex is greater than or equal to endIndex<br>
+     *         or if endIndex is greater than or equal to args.length<br>
      */
-    public static final String joinString(String[] args, String spacer, int startIndex) throws UtilityException {
-        return joinString(args, spacer, startIndex, args.length - 1);
+    public static final String joinString(String[] args, String delimiter, int startIndex) throws UtilityException {
+        return joinString(args, delimiter, startIndex, args.length - 1);
     }
 
     /**
@@ -64,7 +65,8 @@ public final class StringUtils {
      * @param args
      *         the {@link String} array to be combined
      * @param delimiter
-     *         the {@link String} to put between each element of the array
+     *         the {@link String} to put between each element of the array<br/>
+     *         if delimiter is null, it will be treated as the null character (\u0000)
      * @param startIndex
      *         the index to start combining
      * @param endIndex
@@ -77,16 +79,19 @@ public final class StringUtils {
      *         if startIndex is greater than or equal to args.length<br>
      *         or if startIndex is greater than or equal to endIndex<br>
      *         or if endIndex is greater than or equal to args.length<br>
-     *         or if delimiter is null or empty
      */
     public static final String joinString(String[] args, String delimiter, int startIndex, int endIndex) throws UtilityException {
         notNull(args, "String[] args");
-        notNull(delimiter, "String delimiter");
+        //notNull(delimiter, "String delimiter"); Convert Null to the null char
         notEmpty(args, "String[] args");
-        notEmpty(delimiter, "String delimiter");
+        //notEmpty(delimiter, "String delimiter"); NO; space is a valid delimiter
         notOutOfRange(startIndex, args.length, "startIndex greater than args.length");
         notOutOfRange(startIndex, endIndex, "startIndex greater than endIndex");
         notOutOfRangeEqual(endIndex, args.length, "endIndex greater than or equal to args.length");
+
+        if (delimiter == null) {
+            delimiter = "\u0000";
+        }
 
         StringBuilder sb = new StringBuilder();
         for (int index = startIndex; index <= endIndex; index++) {
