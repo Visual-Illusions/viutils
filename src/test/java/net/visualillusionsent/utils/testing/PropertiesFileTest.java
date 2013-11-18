@@ -14,6 +14,11 @@ public class PropertiesFileTest {
     }
 
     @Test
+    public void awkardKeyTest() {
+        Assert.assertEquals("akward", cfg.getString("akward#key#test"));
+    }
+
+    @Test
     public void primativeTest() {
         Assert.assertEquals(0, cfg.getInt("integer_test"));
         Assert.assertEquals(123456789123456789L, cfg.getLong("long_test"));
@@ -34,5 +39,15 @@ public class PropertiesFileTest {
     public void inlineCommentTest() {
         Assert.assertEquals("value", cfg.getString("inLineComment"));
         Assert.assertEquals(" Comment", cfg.getInlineComment("inLineComment"));
+    }
+
+    @Test
+    public void filePathTest() {
+        Assert.assertTrue(cfg.getFilePath().contains("src/test/resources/test.cfg"));
+    }
+
+    @Test
+    public void fileNameTest() {
+        Assert.assertEquals("test.cfg", cfg.getFileName());
     }
 }

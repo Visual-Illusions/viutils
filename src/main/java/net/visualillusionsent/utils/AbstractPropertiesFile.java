@@ -33,7 +33,7 @@ import static net.visualillusionsent.utils.Verify.notNull;
  * Abstract Properties File
  *
  * @author Jason (darkdiplomat)
- * @version 1.0
+ * @version 1.1
  * @since 1.1.0
  */
 public abstract class AbstractPropertiesFile {
@@ -2036,4 +2036,38 @@ public abstract class AbstractPropertiesFile {
      * @return the inline comment or {@code null} if no comment
      */
     protected abstract String getInlineComment(String key);
+
+    /**
+     * Gets the File Path of the Properties File
+     *
+     * @return file path
+     */
+    public String getFilePath() {
+        if (propsFile != null) {
+            return propsFile.getAbsolutePath();
+        }
+        else if (jar != null) {
+            return new File(jar.getName()).getAbsolutePath();
+        }
+        else {
+            return null;
+        }
+    }
+
+    /**
+     * Gets the name of the underlining File
+     *
+     * @return the name of the file
+     */
+    public String getFileName() {
+        if (propsFile != null) {
+            return propsFile.getName();
+        }
+        else if (jar != null) {
+            return new File(jar.getName()).getName();
+        }
+        else {
+            return null;
+        }
+    }
 }
