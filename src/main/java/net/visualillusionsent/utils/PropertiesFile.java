@@ -18,7 +18,6 @@
 package net.visualillusionsent.utils;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,6 +25,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -47,12 +47,13 @@ import static net.visualillusionsent.utils.Verify.notNull;
  * If #! is needed as a property it can be escaped with \ ie: \#\!
  *
  * @author Jason (darkdiplomat)
- * @version 1.3
+ * @version 1.4
  * @since 1.0.0
  */
 public final class PropertiesFile extends AbstractPropertiesFile {
 
-    private static final float classVersion = 1.3F;
+    /* VIU 1.2.2 / 1.4 */
+    private static final float classVersion = 1.4F;
 
     /**
      * Creates or loads a PropertiesFile
@@ -241,7 +242,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         if (!hasChanged && !force) {
             return;
         }
-        BufferedWriter out = null;
+        PrintWriter out = null;
         try {
             if (propsFile.exists()) {
                 if (!propsFile.delete()) {
@@ -249,25 +250,21 @@ public final class PropertiesFile extends AbstractPropertiesFile {
                 }
             }
             propsFile = new File(filePath);
-            out = new BufferedWriter(new FileWriter(propsFile, true));
+            out = new PrintWriter(new FileWriter(propsFile, true));
             for (String headerLn : header) {
-                out.write(headerLn);
-                out.newLine();
+                out.println(headerLn);
             }
             for (String prop : props.keySet()) {
                 if (comments.containsKey(prop)) {
                     for (String comment : comments.get(prop)) {
-                        out.write(comment);
-                        out.newLine();
+                        out.println(comment);
                     }
                 }
                 String inLineC = inlineCom.get(prop);
-                out.write(prop.concat("=").concat(props.get(prop).replace("#!", "\\#\\!").concat(inLineC == null ? "" : " #!".concat(inLineC))));
-                out.newLine();
+                out.println(prop.concat("=").concat(props.get(prop).replace("#!", "\\#\\!").concat(inLineC == null ? "" : " #!".concat(inLineC))));
             }
             for (String footerLn : footer) {
-                out.write(footerLn);
-                out.newLine();
+                out.println(footerLn);
             }
         }
         catch (IOException ioe) {
@@ -276,11 +273,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
         finally {
             if (out != null) {
-                try {
-                    out.close();
-                }
-                catch (IOException e) {
-                }
+                out.close();
             }
         }
         this.hasChanged = false; // Changes stored

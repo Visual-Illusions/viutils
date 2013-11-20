@@ -37,10 +37,12 @@ import static net.visualillusionsent.utils.Verify.notNull;
  * An Unmodifiable Properties File implementation
  *
  * @author Jason (darkdiplomat)
- * @version 1.0
+ * @version 1.1
  * @since 1.1.0
  */
 public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
+    /* VIU 1.2.2 / 1.1 */
+    private static final float classVersion = 1.1F;
 
     public UnmodifiablePropertiesFile(String filePath) throws UtilityException {
         super(filePath);
@@ -1504,5 +1506,14 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      */
     public final String getInlineComment(String key) {
         return inlineCom.get(key);
+    }
+
+    /**
+     * Gets this class's version number
+     *
+     * @return the class version
+     */
+    public static final float getClassVersion() {
+        return classVersion;
     }
 }

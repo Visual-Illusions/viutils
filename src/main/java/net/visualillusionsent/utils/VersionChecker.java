@@ -241,9 +241,9 @@ public final class VersionChecker {
             currentVersion = (Float) currentVB[0];
             currentBuild = (Long) currentVB[1];
         }
-        isLatest = currentVersion == version && currentBuild == build && status == (ProgramStatus) currentVB[2];
+        isLatest = currentVersion == version && currentBuild == build && status == currentVB[2];
         if (!isLatest) {
-            currver = currentVersion + "." + currentBuild + "" + ((ProgramStatus) currentVB[2] != ProgramStatus.STABLE ? " " + (ProgramStatus) currentVB[2] : "");
+            currver = currentVersion + "." + currentBuild + "" + (currentVB[2] != ProgramStatus.STABLE ? " " + currentVB[2] : "");
         }
         else {
             currver = version + "." + build + (status != ProgramStatus.STABLE ? " " + status.toString() : "");
@@ -301,17 +301,6 @@ public final class VersionChecker {
      */
     public final String getCurrentVersion() {
         return currver;
-    }
-
-    /**
-     * Deprecated in 1.2.1 on Oct 19
-     * Will be removed after 1.2.1
-     *
-     * @deprecated Use {@link #getUpdateAvailableMessage()} instead
-     */
-    @Deprecated
-    public final String getUpdateAvailibleMessage() { //TODO: Scheduled for Removal
-        return getUpdateAvailableMessage();
     }
 
     /**
