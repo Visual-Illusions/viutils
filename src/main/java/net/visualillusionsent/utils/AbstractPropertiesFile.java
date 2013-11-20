@@ -174,6 +174,20 @@ public abstract class AbstractPropertiesFile {
     protected abstract boolean containsKey(String key) throws UtilityException;
 
     /**
+     * Checks if the PropertiesFile contains a key
+     *
+     * @param keys
+     *         the keys to check
+     *
+     * @return {@code true} if the PropertiesFile contains the keys, {@code false} otherwise
+     *
+     * @throws UtilityException
+     *         <br>
+     *         if a specified key is null or empty
+     */
+    protected abstract boolean containsKeys(String... keys) throws UtilityException;
+
+    /**
      * Removes a key and it's associated property and comments from the PropertiesFile
      *
      * @param key

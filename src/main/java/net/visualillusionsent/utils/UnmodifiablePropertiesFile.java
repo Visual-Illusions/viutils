@@ -221,6 +221,16 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
         return props.containsKey(key);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public final boolean containsKeys(String... keys) throws UtilityException {
+        boolean contains = true;
+        for (String key : keys) {
+            contains &= containsKey(key);
+        }
+        return contains;
+    }
+
     /**
      * Unsupported Operation with UnmodifiablePropertiesFiles
      *

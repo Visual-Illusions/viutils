@@ -297,6 +297,16 @@ public final class PropertiesFile extends AbstractPropertiesFile {
 
     /** {@inheritDoc} */
     @Override
+    public final boolean containsKeys(String... keys) throws UtilityException {
+        boolean contains = true;
+        for (String key : keys) {
+            contains &= containsKey(key);
+        }
+        return contains;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public final void removeKey(String key) throws UtilityException {
         notNull(key, "String key");
         notEmpty(key, "String key");
