@@ -1032,7 +1032,7 @@ public final class StringUtils {
      * @param delimiter
      *         the character(s) to space the booleans apart with
      *
-     * @return the joined double array as a String
+     * @return the joined boolean array as a String
      *
      * @throws UtilityException
      *         if doubles is null or empty<br>
@@ -1059,6 +1059,60 @@ public final class StringUtils {
         String[] arr = new String[booleans.length];
         for (int index = 0; index < booleans.length; index++) {
             arr[index] = String.valueOf(booleans[index]);
+        }
+        return arr;
+    }
+
+    /**
+     * Joins an Object array into a single {@link String} separated by a comma
+     *
+     * @param objects
+     *         the object array to be joined
+     *
+     * @return the joined object array as a String
+     *
+     * @throws UtilityException
+     *         if doubles is null or empty<br>
+     */
+    public static String objectArrayToString(Object[] objects) throws UtilityException {
+        return objectArrayToString(objects, ",");
+    }
+
+    /**
+     * Joins an Object array into a single {@link String} separated by specified character(s)
+     *
+     * @param objects
+     *         the object array to be joined
+     * @param delimiter
+     *         the character(s) to space the objects apart with
+     *
+     * @return the joined object array as a String
+     *
+     * @throws UtilityException
+     *         if doubles is null or empty<br>
+     *         or if spacer is null
+     */
+    public static String objectArrayToString(Object[] objects, String delimiter) throws UtilityException {
+        return joinString(objectArrayToStringArray(objects), delimiter, 0);
+    }
+
+    /**
+     * Converts the elements of the Object array to Strings
+     *
+     * @param objects
+     *         the object array to convert
+     *
+     * @return string array
+     *
+     * @throws UtilityException
+     */
+    public static String[] objectArrayToStringArray(Object[] objects) throws UtilityException {
+        notNull(objects, "Object[] objects");
+        notEmpty(objects, "Object[] objects");
+
+        String[] arr = new String[objects.length];
+        for (int index = 0; index < objects.length; index++) {
+            arr[index] = objects[index].toString();
         }
         return arr;
     }
