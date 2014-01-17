@@ -56,9 +56,9 @@
     </ciManagement>
     <distributionManagement>
         <repository>
-            <id>vi-repo</id>
+            <id>vi-repo2</id>
             <name>Visual Illusions Repository</name>
-            <url>ftp://repo.visualillusionsent.net/</url>
+            <url>http://repo2.visualillusionsent.net/repository/public/</url>
         </repository>
         <snapshotRepository>
             <id>vi-snapshot-repo</id>
