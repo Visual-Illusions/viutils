@@ -1,7 +1,7 @@
 /*
  * This file is part of VIUtils.
  *
- * Copyright © 2012-2013 Visual Illusions Entertainment
+ * Copyright © 2012-2014 Visual Illusions Entertainment
  *
  * VIUtils is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -126,7 +126,7 @@ public final class VersionChecker {
      * @param currentTime
      *
      * @return inputLine
-     *         PHP Script output line of versions/builds
+     * PHP Script output line of versions/builds
      */
     private final String getInput(long currentTime) {
         BufferedReader in = null;
@@ -307,7 +307,7 @@ public final class VersionChecker {
      * Gets a pre-generated update available message
      *
      * @return update: An update is available for: 'ProgramName' - v'Version'<br>
-     *         latest: Current Version of: 'ProgramName' is installed
+     * latest: Current Version of: 'ProgramName' is installed
      */
     public final String getUpdateAvailableMessage() {
         if (!isLatest()) {

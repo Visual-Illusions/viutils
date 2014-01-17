@@ -1,7 +1,7 @@
 /*
  * This file is part of VIUtils.
  *
- * Copyright © 2012-2013 Visual Illusions Entertainment
+ * Copyright © 2012-2014 Visual Illusions Entertainment
  *
  * VIUtils is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -41,7 +41,7 @@ import static net.visualillusionsent.utils.Verify.notNull;
  * @since 1.1.0
  */
 public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
-    /* VIU 1.2.2 / 1.1 */
+    /* VIU 1.3.0 / 1.1 */
     private static final float classVersion = 1.1F;
 
     public UnmodifiablePropertiesFile(String filePath) throws UtilityException {

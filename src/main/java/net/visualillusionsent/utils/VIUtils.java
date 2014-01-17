@@ -1,7 +1,7 @@
 /*
  * This file is part of VIUtils.
  *
- * Copyright © 2012-2013 Visual Illusions Entertainment
+ * Copyright © 2012-2014 Visual Illusions Entertainment
  *
  * VIUtils is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,10 +23,10 @@ package net.visualillusionsent.utils;
  * Use this class to check the VIUtils version
  *
  * @author Jason (darkdiplomat)
- * @version 1.2.2
+ * @version 1.3.0
  * @since 1.0.4
  */
 public final class VIUtils {
 
-    public static final String VIUTILS_VERSION = "1.2.2";
+    public static final String VIUTILS_VERSION = "1.3.0";
 }
