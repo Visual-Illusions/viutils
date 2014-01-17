@@ -60,11 +60,6 @@
             <name>Visual Illusions Repository</name>
             <url>http://repo2.visualillusionsent.net/repository/public/</url>
         </repository>
-        <snapshotRepository>
-            <id>vi-snapshot-repo</id>
-            <name>Visual Illusions Repository</name>
-            <url>ftp://repo.visualillusionsent.net/</url>
-        </snapshotRepository>
     </distributionManagement>
     <!-- testing -->
     <dependencies>
