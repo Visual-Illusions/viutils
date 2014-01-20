@@ -1,5 +1,5 @@
 /*
- * This file is part of ${name}.
+ * This file is part of VIUtils.
  *
  * Copyright © 2012-2014 Visual Illusions Entertainment
  *
