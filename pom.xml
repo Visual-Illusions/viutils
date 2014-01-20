@@ -9,14 +9,16 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.build.timestamp.format>dd MMMM yyyy HH:mm z</maven.build.timestamp.format>
+        <program.version>1.3.0</program.version>
+        <program.status>SNAPSHOT</program.status>
     </properties>
     <name>VIUtils</name>
     <description>Visual Illusions Entertainment Java Utilities Library</description>
-    <url>http://visualillusionsent.net</url>
+    <url>http://wiki.visualillusionsent.net/VIUtils</url>
     <inceptionYear>2012</inceptionYear>
     <organization>
         <name>Visual Illusions Entertainment</name>
-        <url>http://wiki.visualillusionsent.net/VIUtils</url>
+        <url>http://visualillusionsent.net/</url>
     </organization>
     <licenses>
         <license>
@@ -52,7 +54,7 @@
     </issueManagement>
     <ciManagement>
         <system>Jenkins</system>
-        <url>http://ci.visualillusionsent.net</url>
+        <url>http://ci.visualillusionsent.net/job/VIUtils/</url>
     </ciManagement>
     <distributionManagement>
         <repository>
@@ -72,6 +74,12 @@
     </dependencies>
     <build>
         <defaultGoal>clean install</defaultGoal>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>com.mycila.maven-license-plugin</groupId>
@@ -143,6 +151,7 @@
                             <Sealed>true</Sealed>
                             <Build-By>${user.name}</Build-By>
                             <Built>${maven.build.timestamp}</Built>
+                            <Main-Class>net.visualillusionsent.utils.StatusCheck</Main-Class>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -167,12 +176,5 @@
                 </configuration>
             </plugin>
         </plugins>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ftp</artifactId>
-                <version>2.4</version>
-            </extension>
-        </extensions>
     </build>
 </project>

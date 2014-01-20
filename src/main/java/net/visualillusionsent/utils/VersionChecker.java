@@ -36,7 +36,9 @@ import static net.visualillusionsent.utils.Verify.notNull;
  * @author Jason (darkdiplomat)
  * @version 1.2
  * @since 1.0.0
+ * @deprecated Being replaced by {@link net.visualillusionsent.utils.ProgramChecker}
  */
+@Deprecated
 public final class VersionChecker {
 
     private static float classVersion = 1.2F;

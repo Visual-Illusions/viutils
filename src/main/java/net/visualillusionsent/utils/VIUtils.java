@@ -28,5 +28,37 @@ package net.visualillusionsent.utils;
  */
 public final class VIUtils {
 
+    static {
+        String tempVer = "1.x.x";
+        ProgramStatus tempStatus = ProgramStatus.UNKNOWN;
+        try {
+            PropertiesFile cfg = new PropertiesFile(JarUtils.getJarPath(VIUtils.class), "viutils/viutils.cfg");
+            tempVer = cfg.getString("version");
+            tempStatus = ProgramStatus.fromString(cfg.getString("status"));
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        VERSION = tempVer;
+        STATUS = tempStatus;
+    }
+
+    /**
+     * The version of this VIUtils
+     */
+    public static final String VERSION;
+
+    /**
+     * The version of this VIUtils
+     *
+     * @deprecated Being replaced by {@link #VERSION}
+     */
+    @Deprecated
     public static final String VIUTILS_VERSION = "1.3.0";
+
+    /**
+     * The {@link net.visualillusionsent.utils.ProgramStatus} of this VIUtils
+     */
+    public static final ProgramStatus STATUS;
 }

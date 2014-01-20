@@ -24,17 +24,18 @@ package net.visualillusionsent.utils;
  * Can be used externally as a helpful way to state the same thing.
  *
  * @author Jason (darkdiplomat)
- * @version 1.0
+ * @version 1.1
  * @since 1.0.0
  */
 public enum ProgramStatus {
     UNKNOWN, //
     ALPHA, //
     BETA, //
+    SNAPSHOT, //
     RELEASE_CANDIDATE, //
     STABLE;
 
-    private static final float classVersion = 1.0F;
+    private static final float classVersion = 1.1F;
 
     /** {@inheritDoc} */
     public final String toString() {
@@ -43,6 +44,26 @@ public enum ProgramStatus {
         }
         else {
             return name();
+        }
+    }
+
+    /**
+     * Safer replacement for {@link #valueOf(String)}
+     *
+     * @param status
+     *         the name of the {@code ProgramStatus}
+     *
+     * @return the matching {@code ProgramStatus} if found; {@link #UNKNOWN} if not found
+     */
+    public static ProgramStatus fromString(String status) {
+        if (status.toUpperCase().equals("RELEASE CANDIDATE")) {
+            return valueOf("RELEASE_CANDIDATE");
+        }
+        try {
+            return valueOf(status.toUpperCase());
+        }
+        catch (IllegalArgumentException iaex) {
+            return UNKNOWN;
         }
     }
 

@@ -52,7 +52,7 @@ import static net.visualillusionsent.utils.Verify.notNull;
  */
 public final class PropertiesFile extends AbstractPropertiesFile {
 
-    /* VIU 1.2.2 / 1.4 */
+    /* VIU 1.3.0 / 1.4 */
     private static final float classVersion = 1.4F;
 
     /**

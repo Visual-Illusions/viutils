@@ -1,7 +1,7 @@
 <?php
 /* versionchecker.php v1.1
 
-  Copyright 2012-2013 Visual Illusions Entertainment.
+  Copyright 2012-2014 Visual Illusions Entertainment.
   
   This file is part of VIUtils.
 

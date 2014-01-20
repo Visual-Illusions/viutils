@@ -5,7 +5,7 @@
 VIUtils is designed to be used with Java 6 or higher
 and contains a many Utility functions and methods for use in Java Programs.
 
-**DateUtils** provides methods for converting timestamps into formated Strings
+**DateUtils** provides methods for converting timestamps into formatted Strings
 
 **FileUtils** provides methods for removing a line from a File
 
@@ -22,13 +22,13 @@ converting numbers to Strings or Strings to numbers, and padding a String
 
 **TaskManager** provides a Thread Pool and methods for managing Tasks either delayed or meant to be continuous
 
-**VersionChecker** provides a version checker with included versionchecker.php
+**ProgramChecker** provides a version checker with included programchecker.php
 
 ## JavaDocs ##
-Offical JavaDocs can be found @ http://docs.visualillusionsent.net/VIUtils/
+Official JavaDocs can be found @ http://docs.visualillusionsent.net/VIUtils/
 
 ## License ##
-###### &copy; 2012-2013 [Visual Illusions Entertainment](http://visualillusionsent.net/ "visualillusions") ######
+###### &copy; 2012-2014 [Visual Illusions Entertainment](http://visualillusionsent.net/ "visualillusions") ######
 
 VIUtils is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
