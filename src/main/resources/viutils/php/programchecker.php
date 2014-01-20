@@ -28,8 +28,8 @@ function main($program){
        Acceptable Statuses: STABLE, RELEASE CANDIDATE, SNAPSHOT, BETA, ALPHA
        Examples:
        $programs = array(
-                    'VIUtils' => array( 'VERSION' => array('MAJOR' => '1', 'MINOR' => '3', 'MICRO' => '0'), 'STATUS' => 'SNAPSHOT'),
-                    'VIBotX' => array( 'VERSION' => array('MAJOR' => '0', 'MINOR' => '1', 'MICRO' => '0'), 'STATUS' => 'ALPHA')
+                    'VIUtils' => array( 'VERSION' => array('MAJOR' => '1', 'MINOR' => '3', 'REVISION' => '0'), 'STATUS' => 'SNAPSHOT'),
+                    'VIBotX' => array( 'VERSION' => array('MAJOR' => '0', 'MINOR' => '1', 'REVISION' => '0'), 'STATUS' => 'SNAPSHOT')
                 );
     */
     

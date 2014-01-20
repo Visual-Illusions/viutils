@@ -1,5 +1,5 @@
 /*
- * This file is part of VIUtils.
+ * This file is part of ${name}.
  *
  * Copyright © 2012-2014 Visual Illusions Entertainment
  *
@@ -8,11 +8,11 @@
  * the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
- * VIUtils is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with VIUtils.
+ * You should have received a copy of the GNU General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/lgpl.html.
  */
 package net.visualillusionsent.utils;
@@ -24,6 +24,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Jason (darkdiplomat)
@@ -33,7 +34,7 @@ public final class ProgramChecker {
     private static final float classVersion = 1.0F;
     private static final String progNamePreForm = "program=%s",
             versionForm = "%d.%d.%d",
-            userAgentPreForm = MessageFormat.format("Java/{2} ({3} {4}; {5}; %s/%s;) ProgramChecker/{1} VIUtils/{0}",
+            userAgentPreForm = MessageFormat.format("Java/{2} ({3} {4}; {5}; %s/%s;) ProgramChecker/{1,number,0.0} VIUtils/{0}",
                     VIUtils.VERSION,
                     classVersion,
                     SystemUtils.JAVA_VERSION,
@@ -53,13 +54,14 @@ public final class ProgramChecker {
     private Status checkResponse = Status.ERROR;
     private String errorMsg = "ERROR: No query made yet";
     private int connTimeOut = 500;
+    private long queryInterval = TimeUnit.MINUTES.toMillis(5);
 
-    public ProgramChecker(String progName, long verMajor, long verMinor, long verMicro, URL extURL, ProgramStatus status) {
+    public ProgramChecker(String progName, long verMajor, long verMinor, long verRev, URL extURL, ProgramStatus status) {
         this.progName = progName;
-        this.version = new long[]{ verMajor, verMinor, verMicro };
+        this.version = new long[]{ verMajor, verMinor, verRev };
         this.extURL = extURL;
         this.status = status;
-        this.userAgent = String.format(userAgentPreForm, progName, String.format(versionForm, verMajor, verMinor, verMicro));
+        this.userAgent = String.format(userAgentPreForm, progName, String.format(versionForm, verMajor, verMinor, verRev));
         this.postOut = String.format(progNamePreForm, progName);
     }
 
@@ -93,6 +95,13 @@ public final class ProgramChecker {
         this.connTimeOut = timeOut;
         if (connTimeOut < 0) {
             connTimeOut = 0;
+        }
+    }
+
+    public final void setQueryInterval(long interval) {
+        this.queryInterval = interval;
+        if (this.queryInterval < TimeUnit.MINUTES.toMillis(1)) {
+            queryInterval = TimeUnit.MINUTES.toMillis(1);
         }
     }
 
@@ -146,8 +155,8 @@ public final class ProgramChecker {
     private void parseInput(String input) {
         /* {"VERSION":{"MAJOR":"#","MINOR":"#","MICRO":"#"},"STATUS":"$"} */
 
-        if (input.matches("\\{\"VERSION\":\\{\"MAJOR\":\"\\d+\",\"MINOR\":\"\\d+\",\"MICRO\":\"\\d+\"\\},\"STATUS\":\"\\w+\"\\}")) {
-            long versionMajor, versionMinor, versionMicro;
+        if (input.matches("\\{\"VERSION\":\\{\"MAJOR\":\"\\d+\",\"MINOR\":\"\\d+\",\"REVISION\":\"\\d+\"\\},\"STATUS\":\"\\w+\"\\}")) {
+            long versionMajor, versionMinor, versionRev;
             ProgramStatus status;
 
             StringTokenizer tokenizer = new StringTokenizer(input, "{\":,}");
@@ -157,8 +166,8 @@ public final class ProgramChecker {
                 versionMajor = Long.parseLong(tokenizer.nextToken()); // DIGIT for MAJOR
                 tokenizer.nextToken(); // MINOR
                 versionMinor = Long.parseLong(tokenizer.nextToken()); // DIGIT for MINOR
-                tokenizer.nextToken(); // MICRO
-                versionMicro = Long.parseLong(tokenizer.nextToken()); // DIGIT for MICRO
+                tokenizer.nextToken(); // REVISION
+                versionRev = Long.parseLong(tokenizer.nextToken()); // DIGIT for REVISION
                 tokenizer.nextToken(); // STATUS
                 status = ProgramStatus.fromString(tokenizer.nextToken()); // STATUS name
             }
@@ -169,7 +178,7 @@ public final class ProgramChecker {
                 return;
             }
 
-            this.latestReported = new Long[]{ versionMajor, versionMinor, versionMicro };
+            this.latestReported = new Long[]{ versionMajor, versionMinor, versionRev };
             this.checkResponse = Status.UPDATE; // Assume an UPDATE is required
 
             if (this.version[0] > versionMajor) {
@@ -180,10 +189,10 @@ public final class ProgramChecker {
                     this.checkResponse = Status.LATEST;
                 }
                 else if (this.version[1] == versionMinor) {
-                    if (this.version[2] > versionMicro) {
+                    if (this.version[2] > versionRev) {
                         this.checkResponse = Status.LATEST;
                     }
-                    else if (this.version[2] == versionMicro) {
+                    else if (this.version[2] == versionRev) {
                         if (this.status.ordinal() >= status.ordinal()) {
                             this.checkResponse = Status.LATEST;
                         }
@@ -200,7 +209,7 @@ public final class ProgramChecker {
 
     public Status isLatest() {
         long currentTime = System.currentTimeMillis();
-        if ((lastCheck + 600000) <= currentTime) {
+        if ((lastCheck + queryInterval) <= currentTime) {
             lastCheck = currentTime;
             String response = getInput();
             if (response.startsWith("ERROR:") || response.startsWith("Fatal")) {

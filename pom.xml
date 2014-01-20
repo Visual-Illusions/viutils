@@ -14,7 +14,7 @@
     </properties>
     <name>VIUtils</name>
     <description>Visual Illusions Entertainment Java Utilities Library</description>
-    <url>http://wiki.visualillusionsent.net/VIUtils</url>
+    <url>http://wiki.visualillusionsent.net/view/VIUtils</url>
     <inceptionYear>2012</inceptionYear>
     <organization>
         <name>Visual Illusions Entertainment</name>
@@ -81,6 +81,25 @@
             </resource>
         </resources>
         <plugins>
+            <!-- Timestamp for year -->
+            <plugin>
+                <groupId>com.keyboardsamurais.maven</groupId>
+                <artifactId>maven-timestamp-plugin</artifactId>
+                <version>1.0</version>
+                <configuration>
+                    <propertyName>current.year</propertyName>
+                    <timestampPattern>yyyy</timestampPattern>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>pre-clean</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- License Headers -->
             <plugin>
                 <groupId>com.mycila.maven-license-plugin</groupId>
                 <artifactId>maven-license-plugin</artifactId>
@@ -97,7 +116,7 @@
                     <quiet>false</quiet>
                     <encoding>UTF-8</encoding>
                     <strictCheck>true</strictCheck>
-                    <header>${basedir}/HEADER_LGPL.txt</header>
+                    <header>${project.basedir}/HEADER.txt</header>
                     <keywords>
                         <keyword>${project.name}</keyword>
                         <keyword>license</keyword>
@@ -106,24 +125,11 @@
                         <java>SLASHSTAR_STYLE</java>
                     </mapping>
                     <properties>
-                        <name>${project.name}</name>
-                        <copyright>Copyright © ${project.inceptionYear}-2014 Visual Illusions Entertainment</copyright>
+                        <copy.years>${project.inceptionYear}-${current.year}</copy.years>
                     </properties>
                     <includes>
                         <include>src/main/java/**</include>
                     </includes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.7</version>
-                <configuration>
-                    <linksource>true</linksource>
-                    <doctitle>${project.name} ${project.version}</doctitle>
-                    <header>Generated: ${maven.build.timestamp}</header>
-                    <footer>
-                        <![CDATA[Licensed under the <a href="http://www.gnu.org/licenses/lgpl.html">GNU Lesser General Public License v3</a>]]></footer>
                 </configuration>
             </plugin>
             <!-- Compile plugin -->
@@ -145,7 +151,7 @@
                         <addMavenDescriptor>false</addMavenDescriptor>
                         <manifest>
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultImplementationEntries>false</addDefaultImplementationEntries>
                         </manifest>
                         <manifestEntries>
                             <Sealed>true</Sealed>
@@ -177,4 +183,49 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>docs-sources</id>
+            <build>
+                <plugins>
+                    <!-- Source plugin -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- JavaDoc -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.7</version>
+                        <configuration>
+                            <linksource>true</linksource>
+                            <doctitle>${project.name} ${project.version}</doctitle>
+                            <header>Generated: ${maven.build.timestamp}</header>
+                            <footer>
+                                <![CDATA[Licensed under the <a href="http://www.gnu.org/licenses/lgpl.html">GNU Lesser General Public License v3</a>]]>
+                            </footer>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
