@@ -2,7 +2,7 @@
 #### Visual Illusions Java Utilities Library ####
 
 ## About ##
-VIUtils is designed to be used with Java 6 or higher
+VIUtils is designed to be used with Java 6 or higher<br/>
 and contains a many Utility functions and methods for use in Java Programs.
 
 **DateUtils** provides methods for converting timestamps into formatted Strings
@@ -30,16 +30,14 @@ Official JavaDocs can be found @ http://docs.visualillusionsent.net/VIUtils/
 ## License ##
 ###### &copy; 2012-2014 [Visual Illusions Entertainment](http://visualillusionsent.net/ "visualillusions") ######
 
-VIUtils is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
+VIUtils is free software: you can redistribute it and/or modify<br/>
+it under the terms of the GNU Lesser General Public License as published by<br/>
+the Free Software Foundation, either version 3 of the License, or<br/>
 (at your option) any later version.
 
-VIUtils is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
-without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+VIUtils is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;<br/>
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.<br/>
 See the GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public License along with VIUtils.
+You should have received a copy of the GNU Lesser General Public License along with VIUtils.<br/>
 If not, see [http://www.gnu.org/licenses/lgpl.html](http://www.gnu.org/licenses/lgpl.html "lgpl")
-
-![LGPL](http://visualillusionsent.net/img/lgplv3logo.png)
