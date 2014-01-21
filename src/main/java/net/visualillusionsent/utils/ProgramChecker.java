@@ -56,22 +56,21 @@ public final class ProgramChecker {
     private int connTimeOut = 500;
     private long queryInterval = TimeUnit.MINUTES.toMillis(5);
 
-    public ProgramChecker(String progName, long verMajor, long verMinor, long verRev, URL extURL, ProgramStatus status) {
+    public ProgramChecker(String progName, long[] version, URL extURL, ProgramStatus status) {
         this.progName = progName;
-        this.version = new long[]{ verMajor, verMinor, verRev };
+        this.version = version;
         this.extURL = extURL;
         this.status = status;
-        this.userAgent = String.format(userAgentPreForm, progName, String.format(versionForm, verMajor, verMinor, verRev));
+        this.userAgent = String.format(userAgentPreForm, progName, String.format(versionForm, version[0], version[1], version[2]));
         this.postOut = String.format(progNamePreForm, progName);
     }
 
+    public ProgramChecker(String progName, long verMajor, long verMinor, long verRev, URL extURL, ProgramStatus status) {
+        this(progName, new long[]{ verMajor, verMinor, verRev }, extURL, status);
+    }
+
     public ProgramChecker(String progName, String version, String extURL, String status) throws Exception {
-        this.progName = progName;
-        this.version = parseVersionString(version);
-        this.extURL = new URL(extURL);
-        this.status = ProgramStatus.fromString(status);
-        this.userAgent = String.format(userAgentPreForm, progName, String.format(versionForm, this.version[0], this.version[1], this.version[2]));
-        this.postOut = String.format(progNamePreForm, progName);
+        this(progName, parseVersionString(version), new URL(extURL), ProgramStatus.fromString(status));
     }
 
     private static long[] parseVersionString(String version) {
