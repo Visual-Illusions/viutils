@@ -155,8 +155,8 @@ public final class JarUtils {
      * @throws ClassNotFoundException
      *         if the jar doesn't appear on the class-path and subsequently unable to load/find classes
      */
-    public static Class[] getAllClassesExtending(JarFile jarFile, Class<?> sCls) throws ClassNotFoundException {
-        ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
+    public static <T> Class<? extends T>[] getAllClassesExtending(JarFile jarFile, Class<T> sCls) throws ClassNotFoundException {
+        ArrayList<Class<? extends T>> classes = new ArrayList<Class<? extends T>>();
         Enumeration<JarEntry> entries = jarFile.entries();
         while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
@@ -164,7 +164,7 @@ public final class JarUtils {
             if (entName.endsWith(".class")) {
                 Class<?> cls = Class.forName(entName.substring(0, entName.length() - 6));
                 if (sCls.isAssignableFrom(cls)) {
-                    classes.add(cls);
+                    classes.add(cls.asSubclass(sCls));
                 }
             }
         }
@@ -213,8 +213,8 @@ public final class JarUtils {
      * @throws ClassNotFoundException
      *         if the jar doesn't appear on the class-path and subsequently unable to load/find classes
      */
-    public static Class[] getClassesInPackageExtending(JarFile jarFile, String packageName, Class<?> sCls) throws ClassNotFoundException {
-        ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
+    public static <T> Class<? extends T>[] getClassesInPackageExtending(JarFile jarFile, String packageName, Class<T> sCls) throws ClassNotFoundException {
+        ArrayList<Class<? extends T>> classes = new ArrayList<Class<? extends T>>();
         Enumeration<JarEntry> entries = jarFile.entries();
         while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
@@ -222,7 +222,7 @@ public final class JarUtils {
             if (entName.matches(packageName + ".(\\w+).class")) {
                 Class<?> cls = Class.forName(entName.substring(0, entName.length() - 6));
                 if (sCls.isAssignableFrom(cls)) {
-                    classes.add(cls);
+                    classes.add(cls.asSubclass(sCls));
                 }
             }
         }
