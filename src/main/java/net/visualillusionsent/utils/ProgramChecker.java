@@ -27,7 +27,14 @@ import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Program Checker
+ * <p/>
+ * Used to check if software is the latest version<br>
+ * There is an included programchecker.php in the /viutils/php/ folder inside the jar.<br>
+ *
  * @author Jason (darkdiplomat)
+ * @version 1.0
+ * @since 1.3.0
  */
 public final class ProgramChecker {
 
@@ -56,6 +63,18 @@ public final class ProgramChecker {
     private int connTimeOut = 500;
     private long queryInterval = TimeUnit.MINUTES.toMillis(5);
 
+    /**
+     * Creates a new ProgramChecker
+     *
+     * @param progName
+     *         the name of the Program being version checked
+     * @param version
+     *         the version of the Program being version checked
+     * @param extURL
+     *         the {@link URL} path of the programchecker.php script
+     * @param status
+     *         the {@link net.visualillusionsent.utils.ProgramStatus} of the Program
+     */
     public ProgramChecker(String progName, long[] version, URL extURL, ProgramStatus status) {
         this.progName = progName;
         this.version = version;
@@ -65,10 +84,39 @@ public final class ProgramChecker {
         this.postOut = String.format(progNamePreForm, progName);
     }
 
+    /**
+     * Creates a new ProgramChecker
+     *
+     * @param progName
+     *         the name of the Program being version checked
+     * @param verMajor
+     *         the Major version digit of the Program
+     * @param verMinor
+     *         the Minor version digit of the Program
+     * @param verRev
+     *         the Revision version digit of the Program
+     * @param extURL
+     *         the {@link URL} path of the programchecker.php script
+     * @param status
+     *         the {@link net.visualillusionsent.utils.ProgramStatus} of the Program
+     */
     public ProgramChecker(String progName, long verMajor, long verMinor, long verRev, URL extURL, ProgramStatus status) {
         this(progName, new long[]{ verMajor, verMinor, verRev }, extURL, status);
     }
 
+    /**
+     * @param progName
+     *         the name of the Program being version checked
+     * @param version
+     *         the version of the Program
+     * @param extURL
+     *         the URL path of the programchecker.php script
+     * @param status
+     *         the ProgramStatus of the Program
+     *
+     * @throws Exception
+     *         if the version is not a number, or the URL is invalid, or on some other failure
+     */
     public ProgramChecker(String progName, String version, String extURL, String status) throws Exception {
         this(progName, parseVersionString(version), new URL(extURL), ProgramStatus.fromString(status));
     }
@@ -84,12 +132,21 @@ public final class ProgramChecker {
         return temp;
     }
 
+    /**
+     * The reported Status
+     */
     public enum Status {
         LATEST,
         UPDATE,
         ERROR;
     }
 
+    /**
+     * Sets the Connection Timeout in milliseconds
+     *
+     * @param timeOut
+     *         the time in milliseconds for a connection timeout
+     */
     public final void setConnectionTimeOut(int timeOut) {
         this.connTimeOut = timeOut;
         if (connTimeOut < 0) {
@@ -97,6 +154,13 @@ public final class ProgramChecker {
         }
     }
 
+    /**
+     * Sets the time in minutes between actual queries of the external script.<br/>
+     * If set below 1, will default back to 1
+     *
+     * @param interval
+     *         the time in minutes between queries
+     */
     public final void setQueryInterval(long interval) {
         this.queryInterval = interval;
         if (this.queryInterval < TimeUnit.MINUTES.toMillis(1)) {
@@ -206,7 +270,12 @@ public final class ProgramChecker {
     }
 
 
-    public Status isLatest() {
+    /**
+     * Checks the status
+     *
+     * @return {@link net.visualillusionsent.utils.ProgramChecker.Status}
+     */
+    public Status checkStatus() {
         long currentTime = System.currentTimeMillis();
         if ((lastCheck + queryInterval) <= currentTime) {
             lastCheck = currentTime;
@@ -258,7 +327,7 @@ public final class ProgramChecker {
      * Status == ERROR: {error message}
      */
     public final String getStatusMessage() {
-        Status status = isLatest();
+        Status status = checkStatus();
         switch (status) {
             case UPDATE:
                 return "An update is available for: '".concat(progName).concat("' - v").concat(getVersionReported()).concat(" ".concat(checkStatus.toString()));
