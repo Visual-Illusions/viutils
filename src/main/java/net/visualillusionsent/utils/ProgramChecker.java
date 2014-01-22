@@ -25,6 +25,8 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Program Checker
@@ -49,6 +51,8 @@ public final class ProgramChecker {
                     SystemUtils.OS_VERSION,
                     SystemUtils.OS_ARCHITECTURE
             );
+    /* {"VERSION":{"MAJOR":"#","MINOR":"#","MICRO":"#"},"STATUS":"$"} or {"VERSION":{"MAJOR":#,"MINOR":#,"MICRO":#},"STATUS":"$"} */
+    private static final Pattern inputPattern = Pattern.compile("\\{\"VERSION\":\\{\"MAJOR\":(\"\\d+\"|\\d+),\"MINOR\":(\"\\d+\"|\\d+),\"REVISION\":(\"\\d+\"|\\d+)\\},\"STATUS\":\"(\\w+)\"\\}");
 
     private final String progName, userAgent, postOut;
     private final URL extURL;
@@ -216,23 +220,16 @@ public final class ProgramChecker {
     }
 
     private void parseInput(String input) {
-        /* {"VERSION":{"MAJOR":"#","MINOR":"#","MICRO":"#"},"STATUS":"$"} */
-
-        if (input.matches("\\{\"VERSION\":\\{\"MAJOR\":\"\\d+\",\"MINOR\":\"\\d+\",\"REVISION\":\"\\d+\"\\},\"STATUS\":\"\\w+\"\\}")) {
+        Matcher matcher = inputPattern.matcher(input);
+        if (matcher.matches()) {
             long versionMajor, versionMinor, versionRev;
             ProgramStatus status;
 
-            StringTokenizer tokenizer = new StringTokenizer(input, "{\":,}");
             try {
-                tokenizer.nextToken(); // VERSION
-                tokenizer.nextToken(); // MAJOR
-                versionMajor = Long.parseLong(tokenizer.nextToken()); // DIGIT for MAJOR
-                tokenizer.nextToken(); // MINOR
-                versionMinor = Long.parseLong(tokenizer.nextToken()); // DIGIT for MINOR
-                tokenizer.nextToken(); // REVISION
-                versionRev = Long.parseLong(tokenizer.nextToken()); // DIGIT for REVISION
-                tokenizer.nextToken(); // STATUS
-                status = ProgramStatus.fromString(tokenizer.nextToken()); // STATUS name
+                versionMajor = Long.parseLong(matcher.group(1).replace("\"", "")); // DIGIT for MAJOR, remove any quotes that may be present
+                versionMinor = Long.parseLong(matcher.group(2).replace("\"", "")); // DIGIT for MINOR, remove any quotes that may be present
+                versionRev = Long.parseLong(matcher.group(3).replace("\"", "")); // DIGIT for REVISION, remove any quotes that may be present
+                status = ProgramStatus.fromString(matcher.group(4)); // STATUS name
             }
             catch (NumberFormatException nfex) {
                 //This probably won't happen given the regex works as intended
