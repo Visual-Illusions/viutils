@@ -95,6 +95,38 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public PropertiesFile(File file) throws UtilityException {
+        super(file);
+        this.props = new LinkedHashMap<String, String>();
+        this.comments = new LinkedHashMap<String, List<String>>();
+        this.inlineCom = new LinkedHashMap<String, String>();
+        this.header = new LinkedList<String>();
+        this.footer = new LinkedList<String>();
+        if (propsFile.exists()) {
+            try {
+                load(new FileInputStream(propsFile));
+            }
+            catch (FileNotFoundException e) {
+                throw new UtilityException("file.err.ioe", filePath);
+            }
+        }
+        else {
+            filePath = FileUtils.normalizePath(filePath);
+            if (filePath.contains(File.separator)) {
+                File temp = new File(filePath.substring(0, filePath.lastIndexOf(File.separator)));
+                if (!temp.exists()) {
+                    if (!temp.mkdirs()) {
+                        throw new UtilityException("Failed to make directory path for FilePath: ".concat(filePath));
+                    }
+                    save(true);
+                }
+            }
+        }
+    }
+
+    /**
      * Loads a PropertiesFile stored inside a Jar file
      *
      * @param jarPath

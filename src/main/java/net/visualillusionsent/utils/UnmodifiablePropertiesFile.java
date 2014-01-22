@@ -18,6 +18,7 @@
 package net.visualillusionsent.utils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -44,6 +45,9 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
     /* VIU 1.3.0 / 1.1 */
     private static final float classVersion = 1.1F;
 
+    /**
+     * {@inheritDoc}
+     */
     public UnmodifiablePropertiesFile(String filePath) throws UtilityException {
         super(filePath);
         if (propsFile.exists()) {
@@ -56,6 +60,24 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public UnmodifiablePropertiesFile(File file) throws UtilityException {
+        super(file);
+        if (propsFile.exists()) {
+            try {
+                load(new FileInputStream(propsFile));
+            }
+            catch (FileNotFoundException e) {
+                throw new UtilityException("file.err.ioe", filePath);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public UnmodifiablePropertiesFile(String jarPath, String entry) throws UtilityException {
         super(jarPath, entry);
         JarEntry ent = jar.getJarEntry(entry);

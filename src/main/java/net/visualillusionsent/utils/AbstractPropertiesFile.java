@@ -33,7 +33,7 @@ import static net.visualillusionsent.utils.Verify.notNull;
  * Abstract Properties File
  *
  * @author Jason (darkdiplomat)
- * @version 1.1
+ * @version 1.2
  * @since 1.1.0
  */
 public abstract class AbstractPropertiesFile {
@@ -45,7 +45,7 @@ public abstract class AbstractPropertiesFile {
     protected Map<String, List<String>> comments;
     protected Map<String, String> inlineCom;
     protected List<String> header;
-    protected List<String> footer = new LinkedList<String>();
+    protected List<String> footer;
     protected boolean hasChanged;
 
     /**
@@ -64,6 +64,23 @@ public abstract class AbstractPropertiesFile {
 
         this.filePath = filePath;
         propsFile = new File(filePath);
+    }
+
+    /**
+     * Creates or loads a Properties File
+     *
+     * @param file
+     *         the file to read as a PropertiesFile
+     *
+     * @throws UtilityException
+     *         <br>
+     *         if there was an error with either reading or writing the properties file
+     */
+    public AbstractPropertiesFile(File file) throws UtilityException {
+        notNull(file, "File file");
+        
+        this.filePath = file.getAbsolutePath();
+        propsFile = file;
     }
 
     /**
