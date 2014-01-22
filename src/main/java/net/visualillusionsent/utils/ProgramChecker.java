@@ -35,12 +35,12 @@ import java.util.regex.Pattern;
  * There is an included programchecker.php in the /viutils/php/ folder inside the jar.<br>
  *
  * @author Jason (darkdiplomat)
- * @version 1.0
+ * @version 1.1
  * @since 1.3.0
  */
 public final class ProgramChecker {
 
-    private static final float classVersion = 1.0F;
+    private static final float classVersion = 1.1F;
     private static final String progNamePreForm = "program=%s",
             versionForm = "%d.%d.%d",
             userAgentPreForm = MessageFormat.format("Java/{2} ({3} {4}; {5}; %s/%s;) ProgramChecker/{1,number,0.0} VIUtils/{0}",
@@ -214,8 +214,9 @@ public final class ProgramChecker {
         httpConn.setReadTimeout(connTimeOut);
         httpConn.setRequestMethod("POST");
         httpConn.setRequestProperty("User-Agent", userAgent);
+        httpConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        httpConn.setRequestProperty("Content-Language", "en-US");
         httpConn.setDoOutput(true);
-
         return httpConn;
     }
 
@@ -272,7 +273,7 @@ public final class ProgramChecker {
      *
      * @return {@link net.visualillusionsent.utils.ProgramChecker.Status}
      */
-    public Status checkStatus() {
+    public final Status checkStatus() {
         long currentTime = System.currentTimeMillis();
         if ((lastCheck + queryInterval) <= currentTime) {
             lastCheck = currentTime;
@@ -340,7 +341,7 @@ public final class ProgramChecker {
      *
      * @return the class version
      */
-    public final static float getClassVersion() {
+    public static float getClassVersion() {
         return classVersion;
     }
 }
