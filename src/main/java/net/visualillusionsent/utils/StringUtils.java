@@ -26,12 +26,13 @@ import static net.visualillusionsent.utils.Verify.notOutOfRangeEqual;
  * Provides static methods to help with {@link String} manipulations
  *
  * @author Jason (darkdiplomat)
- * @version 1.2
+ * @version 1.3
  * @since 1.0.0
  */
 public final class StringUtils {
 
-    private static final float classVersion = 1.2F;
+    /* 1.3 / 1.3.1 */
+    private static final float classVersion = 1.3F;
 
     /** This class should never be constructed */
     private StringUtils() {
@@ -262,7 +263,7 @@ public final class StringUtils {
     public static byte[] stringToByteArray(String str, String delimiter) throws UtilityException {
         notNull(str, "String str");
         notNull(delimiter, "String delimiter");
-        notEmpty(str, "String str");
+        //notEmpty(str, "String str"); // Empty array is alright
         notEmpty(delimiter, "String delimiter");
 
         return stringArrayToByteArray(str.split(delimiter));
@@ -280,7 +281,7 @@ public final class StringUtils {
      */
     public static byte[] stringArrayToByteArray(String[] strings) throws UtilityException {
         notNull(strings, "String[] strArray");
-        notEmpty(strings, "String[] strArray");
+        //notEmpty(strings, "String[] strArray"); // Empty ok
 
         byte[] toRet = new byte[strings.length];
         for (int index = 0; index < strings.length; index++) {
@@ -340,7 +341,7 @@ public final class StringUtils {
      */
     public static String[] byteArrayToStringArray(byte[] bytes) throws UtilityException {
         notNull(bytes, "byte[] bytes");
-        notEmpty(bytes, "byte[] bytes");
+        // notEmpty(bytes, "byte[] bytes"); //Empty ok
 
         String[] arr = new String[bytes.length];
         for (int index = 0; index < bytes.length; index++) {
@@ -383,7 +384,7 @@ public final class StringUtils {
     public static short[] stringToShortArray(String str, String delimiter) throws UtilityException {
         notNull(str, "String str");
         notNull(delimiter, "String delimiter");
-        notEmpty(str, "String str");
+        //notEmpty(str, "String str"); // Empty array is alright
         notEmpty(delimiter, "String delimiter");
 
         return stringArrayToShortArray(str.split(delimiter));
@@ -402,7 +403,7 @@ public final class StringUtils {
      */
     public static short[] stringArrayToShortArray(String[] strings) throws UtilityException {
         notNull(strings, "String[] strArray");
-        notEmpty(strings, "String[] strArray");
+        // notEmpty(strings, "String[] strArray"); //Empty ok
 
         short[] toRet = new short[strings.length];
         for (int index = 0; index < strings.length; index++) {
@@ -462,7 +463,7 @@ public final class StringUtils {
      */
     public static String[] shortArrayToStringArray(short[] shorts) throws UtilityException {
         notNull(shorts, "short[] shorts");
-        notEmpty(shorts, "short[] shorts");
+        // notEmpty(shorts, "short[] shorts"); //Empty ok
 
         String[] arr = new String[shorts.length];
         for (int index = 0; index < shorts.length; index++) {
@@ -505,7 +506,7 @@ public final class StringUtils {
     public static int[] stringToIntArray(String str, String delimiter) throws UtilityException {
         notNull(str, "String str");
         notNull(delimiter, "String delimiter");
-        notEmpty(str, "String str");
+        //notEmpty(str, "String str"); // Empty array is alright
         notEmpty(delimiter, "String delimiter");
 
         return stringArrayToIntArray(str.split(delimiter));
@@ -524,7 +525,7 @@ public final class StringUtils {
      */
     public static int[] stringArrayToIntArray(String[] strings) throws UtilityException {
         notNull(strings, "String[] strings");
-        notEmpty(strings, "String[] strings");
+        // notEmpty(strings, "String[] strings"); //Empty ok
 
         int[] toRet = new int[strings.length];
         for (int index = 0; index < strings.length; index++) {
@@ -583,7 +584,7 @@ public final class StringUtils {
      */
     public static String[] intArrayToStringArray(int[] integers) throws UtilityException {
         notNull(integers, "int[] integers");
-        notEmpty(integers, "int[] integers");
+        // notEmpty(integers, "int[] integers"); //Empty ok
 
         String[] arr = new String[integers.length];
         for (int index = 0; index < integers.length; index++) {
@@ -624,7 +625,7 @@ public final class StringUtils {
     public static long[] stringToLongArray(String str, String delimiter) throws UtilityException {
         notNull(str, "String str");
         notNull(delimiter, "String delimiter");
-        notEmpty(str, "String str");
+        //notEmpty(str, "String str"); // Empty array is alright
         notEmpty(delimiter, "String delimiter");
 
         return stringArrayToLongArray(str.split(delimiter));
@@ -701,7 +702,7 @@ public final class StringUtils {
      */
     public static String[] longArrayToStringArray(long[] longs) throws UtilityException {
         notNull(longs, "long[] longs");
-        notEmpty(longs, "long[] longs");
+        // notEmpty(longs, "long[] longs"); //Empty ok
 
         String[] arr = new String[longs.length];
         for (int index = 0; index < longs.length; index++) {
@@ -742,7 +743,7 @@ public final class StringUtils {
     public static float[] stringToFloatArray(String str, String delimiter) throws UtilityException {
         notNull(str, "String str");
         notNull(delimiter, "String delimiter");
-        notEmpty(str, "String str");
+        //notEmpty(str, "String str"); // Empty array is alright
         notNull(delimiter, "String delimiter");
 
         return stringArrayToFloatArray(str.split(delimiter));
@@ -760,7 +761,7 @@ public final class StringUtils {
      */
     public static float[] stringArrayToFloatArray(String[] strings) throws UtilityException {
         notNull(strings, "Strings[] strings");
-        notEmpty(strings, "String[] strings");
+        // notEmpty(strings, "String[] strings"); //Empty ok
 
         float[] toRet = new float[strings.length];
         for (int index = 0; index < strings.length; index++) {
@@ -819,7 +820,7 @@ public final class StringUtils {
      */
     public static String[] floatArrayToStringArray(float[] floats) throws UtilityException {
         notNull(floats, "float[] floats");
-        notEmpty(floats, "float[] floats");
+        // notEmpty(floats, "float[] floats"); //Empty ok
 
         String[] arr = new String[floats.length];
         for (int index = 0; index < floats.length; index++) {
@@ -862,7 +863,7 @@ public final class StringUtils {
     public static double[] stringToDoubleArray(String str, String delimiter) throws UtilityException {
         notNull(str, "String str");
         notNull(delimiter, "String delimiter");
-        notEmpty(str, "String str");
+        //notEmpty(str, "String str"); // Empty array is alright
         notEmpty(delimiter, "String delimiter");
 
         return stringArrayToDoubleArray(str.split(delimiter));
@@ -880,7 +881,7 @@ public final class StringUtils {
      */
     public static double[] stringArrayToDoubleArray(String[] strings) throws UtilityException {
         notNull(strings, "String[] strings");
-        notEmpty(strings, "String[] strings");
+        //notEmpty(strings, "String[] strings"); //Empty ok
 
         double[] toRet = new double[strings.length];
         for (int index = 0; index < strings.length; index++) {
@@ -939,7 +940,7 @@ public final class StringUtils {
      */
     public static String[] doubleArrayToStringArray(double[] doubles) throws UtilityException {
         notNull(doubles, "double[] doubles");
-        notEmpty(doubles, "double[] doubles");
+        // notEmpty(doubles, "double[] doubles"); //Empty ok
 
         String[] arr = new String[doubles.length];
         for (int index = 0; index < doubles.length; index++) {
@@ -982,7 +983,7 @@ public final class StringUtils {
     public static boolean[] stringToBooleanArray(String str, String delimiter) throws UtilityException {
         notNull(str, "String str");
         notNull(delimiter, "String delimiter");
-        notEmpty(str, "String str");
+        //notEmpty(str, "String str"); // Empty array is alright
         notEmpty(delimiter, "String delimiter");
 
         return stringArrayToBooleanArray(str.split(delimiter));
@@ -1000,7 +1001,7 @@ public final class StringUtils {
      */
     public static boolean[] stringArrayToBooleanArray(String[] strings) throws UtilityException {
         notNull(strings, "String[] strings");
-        notEmpty(strings, "String[] strings");
+        // notEmpty(strings, "String[] strings"); //Empty ok
 
         boolean[] toRet = new boolean[strings.length];
         for (int index = 0; index < strings.length; index++) {
@@ -1054,7 +1055,7 @@ public final class StringUtils {
      */
     public static String[] booleanArrayToStringArray(boolean[] booleans) throws UtilityException {
         notNull(booleans, "boolean[] booleans");
-        notEmpty(booleans, "boolean[] booleans");
+        // notEmpty(booleans, "boolean[] booleans"); //Empty ok
 
         String[] arr = new String[booleans.length];
         for (int index = 0; index < booleans.length; index++) {
@@ -1108,7 +1109,7 @@ public final class StringUtils {
      */
     public static String[] objectArrayToStringArray(Object[] objects) throws UtilityException {
         notNull(objects, "Object[] objects");
-        notEmpty(objects, "Object[] objects");
+        // notEmpty(objects, "Object[] objects"); //Empty ok
 
         String[] arr = new String[objects.length];
         for (int index = 0; index < objects.length; index++) {

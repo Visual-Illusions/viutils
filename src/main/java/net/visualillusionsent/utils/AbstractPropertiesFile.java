@@ -78,7 +78,10 @@ public abstract class AbstractPropertiesFile {
      */
     public AbstractPropertiesFile(File file) throws UtilityException {
         notNull(file, "File file");
-        
+        if (!file.exists() || file.isDirectory()) {
+            throw new UtilityException("File for properties is non-existent or a directory");
+        }
+
         this.filePath = file.getAbsolutePath();
         propsFile = file;
     }
