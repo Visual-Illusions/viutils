@@ -17,16 +17,18 @@
  */
 package net.visualillusionsent.utils;
 
+import java.util.Locale;
+
 /**
  * Provides static fields and methods to help with getting System information
  *
  * @author Jason (darkdiplomat)
- * @version 1.0
+ * @version 1.1
  * @since 1.0.0
  */
 public final class SystemUtils {
 
-    private static final float classVersion = 1.0F;
+    private static final float classVersion = 1.1F;
 
     /** This class should never be externally constructed */
     private SystemUtils() {
@@ -85,15 +87,15 @@ public final class SystemUtils {
     /** The System Language */
     public static final String SYSTEM_LANGUAGE = System.getProperty("user.language");
     /** The System Locale */
-    public static final String SYSTEM_LOCALE = SYSTEM_LANGUAGE.concat("_").concat(SYSTEM_COUNTRY);
+    public static final String SYSTEM_LOCALE = Locale.getDefault().toString();
 
     /**
      * Tells if the OS is a Windows based OS
      *
      * @return {@code true} if Windows; {@code false} otherwise
      */
-    public static final boolean isWindows() {
-        return (OPERATING_SYSTEM.toLowerCase().indexOf("win") >= 0);
+    public static boolean isWindows() {
+        return (OPERATING_SYSTEM.toLowerCase().contains("win"));
     }
 
     /**
@@ -101,8 +103,8 @@ public final class SystemUtils {
      *
      * @return {@code true} if MacOS; {@code false} otherwise
      */
-    public static final boolean isMac() {
-        return (OPERATING_SYSTEM.toLowerCase().indexOf("mac") >= 0);
+    public static boolean isMac() {
+        return (OPERATING_SYSTEM.toLowerCase().contains("mac"));
     }
 
     /**
@@ -110,8 +112,8 @@ public final class SystemUtils {
      *
      * @return {@code true} if Unix; {@code false} otherwise
      */
-    public static final boolean isUnix() {
-        return (OPERATING_SYSTEM.toLowerCase().indexOf("nix") >= 0 || OPERATING_SYSTEM.toLowerCase().indexOf("nux") >= 0 || OPERATING_SYSTEM.toLowerCase().indexOf("aix") > 0);
+    public static boolean isUnix() {
+        return (OPERATING_SYSTEM.toLowerCase().contains("nix") || OPERATING_SYSTEM.toLowerCase().contains("nux") || OPERATING_SYSTEM.toLowerCase().contains("aix"));
     }
 
     /**
@@ -119,8 +121,8 @@ public final class SystemUtils {
      *
      * @return {@code true} if Solaris; {@code false} otherwise
      */
-    public static final boolean isSolaris() {
-        return (OPERATING_SYSTEM.toLowerCase().indexOf("sunos") >= 0);
+    public static boolean isSolaris() {
+        return (OPERATING_SYSTEM.toLowerCase().contains("sunos"));
     }
 
     /**
@@ -128,7 +130,7 @@ public final class SystemUtils {
      *
      * @return the class version
      */
-    public final static float getClassVersion() {
+    public static float getClassVersion() {
         return classVersion;
     }
 }
