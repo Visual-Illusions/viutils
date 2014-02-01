@@ -33,7 +33,7 @@ import static net.visualillusionsent.utils.Verify.notNull;
  * Abstract Properties File
  *
  * @author Jason (darkdiplomat)
- * @version 1.2
+ * @version 1.3
  * @since 1.1.0
  */
 public abstract class AbstractPropertiesFile {
@@ -42,6 +42,8 @@ public abstract class AbstractPropertiesFile {
     protected String filePath;
     protected JarFile jar;
     protected Map<String, String> props;
+    protected Map<String, Number> numberCache;
+    protected Map<String, Boolean> booleanCache;
     protected Map<String, List<String>> comments;
     protected Map<String, String> inlineCom;
     protected List<String> header;

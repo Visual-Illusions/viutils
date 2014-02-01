@@ -38,12 +38,12 @@ import static net.visualillusionsent.utils.Verify.notNull;
  * An Unmodifiable Properties File implementation
  *
  * @author Jason (darkdiplomat)
- * @version 1.1
+ * @version 1.2
  * @since 1.1.0
  */
 public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
-    /* VIU 1.3.0 / 1.1 */
-    private static final float classVersion = 1.1F;
+    /* VIU 1.3.1 / 1.2 */
+    private static final float classVersion = 1.2F;
 
     /**
      * {@inheritDoc}
@@ -174,6 +174,8 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
         this.comments = Collections.unmodifiableMap(tempCom);
         this.header = Collections.unmodifiableList(tempHead);
         this.footer = Collections.unmodifiableList(tempFoot);
+        this.booleanCache = new HashMap<String, Boolean>();
+        this.numberCache = new HashMap<String, Number>();
     }
 
     /** {@inheritDoc} */
@@ -401,8 +403,13 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
     /** {@inheritDoc} */
     @Override
     public final byte getByte(String key) throws UtilityException {
+        if (numberCache.containsKey(key)) {
+            return numberCache.get(key).byteValue();
+        }
         try {
-            return Byte.parseByte(getString(key));
+            byte value = Byte.parseByte(getString(key));
+            numberCache.put(key, value);
+            return value;
         }
         catch (NumberFormatException nfe) {
             throw new UtilityException("prop.nan", key);
@@ -413,12 +420,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
     @Override
     public final byte getByte(String key, byte def) throws UtilityException {
         if (containsKey(key)) {
-            try {
-                return Byte.parseByte(getString(key));
-            }
-            catch (NumberFormatException nfe) {
-                throw new UtilityException("prop.nan", key);
-            }
+            return getByte(key);
         }
         else {
             return def;
@@ -534,8 +536,13 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
     /** {@inheritDoc} */
     @Override
     public final short getShort(String key) throws UtilityException {
+        if (numberCache.containsKey(key)) {
+            return numberCache.get(key).shortValue();
+        }
         try {
-            return Short.parseShort(getString(key));
+            short value = Short.parseShort(getString(key));
+            numberCache.put(key, value);
+            return value;
         }
         catch (NumberFormatException nfe) {
             throw new UtilityException("prop.nan", key);
@@ -546,12 +553,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
     @Override
     public final short getShort(String key, short def) throws UtilityException {
         if (containsKey(key)) {
-            try {
-                return Short.parseShort(getString(key));
-            }
-            catch (NumberFormatException nfe) {
-                throw new UtilityException("prop.nan", key);
-            }
+            return getShort(key);
         }
         else {
             return def;
@@ -667,8 +669,13 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
     /** {@inheritDoc} */
     @Override
     public final int getInt(String key) throws UtilityException {
+        if (numberCache.containsKey(key)) {
+            return numberCache.get(key).intValue();
+        }
         try {
-            return Integer.parseInt(getString(key));
+            int value = Integer.parseInt(getString(key));
+            numberCache.put(key, value);
+            return value;
         }
         catch (NumberFormatException nfe) {
             throw new UtilityException("prop.nan", key);
@@ -679,12 +686,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
     @Override
     public final int getInt(String key, int def) throws UtilityException {
         if (containsKey(key)) {
-            try {
-                return Integer.parseInt(getString(key));
-            }
-            catch (NumberFormatException nfe) {
-                throw new UtilityException("prop.nan", key);
-            }
+            return getInt(key);
         }
         else {
             return def;
@@ -800,8 +802,13 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
     /** {@inheritDoc} */
     @Override
     public final long getLong(String key) throws UtilityException {
+        if (numberCache.containsKey(key)) {
+            return numberCache.get(key).longValue();
+        }
         try {
-            return Long.parseLong(getString(key));
+            long value = Long.parseLong(getString(key));
+            numberCache.put(key, value);
+            return value;
         }
         catch (NumberFormatException nfe) {
             throw new UtilityException("prop.nan", key);
@@ -812,12 +819,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
     @Override
     public final long getLong(String key, long def) throws UtilityException {
         if (containsKey(key)) {
-            try {
-                return Long.parseLong(getString(key));
-            }
-            catch (NumberFormatException nfe) {
-                throw new UtilityException("prop.nan", key);
-            }
+            return getLong(key);
         }
         else {
             return def;
@@ -933,8 +935,13 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
     /** {@inheritDoc} */
     @Override
     public final float getFloat(String key) throws UtilityException {
+        if (numberCache.containsKey(key)) {
+            return numberCache.get(key).floatValue();
+        }
         try {
-            return Float.parseFloat(getString(key));
+            float value = Float.parseFloat(getString(key));
+            numberCache.put(key, value);
+            return value;
         }
         catch (NumberFormatException nfe) {
             throw new UtilityException("prop.nan", key);
@@ -945,12 +952,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
     @Override
     public final float getFloat(String key, float def) throws UtilityException {
         if (containsKey(key)) {
-            try {
-                return Float.parseFloat(getString(key));
-            }
-            catch (NumberFormatException nfe) {
-                throw new UtilityException("prop.nan", key);
-            }
+            return getFloat(key);
         }
         else {
             return def;
@@ -1066,8 +1068,13 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
     /** {@inheritDoc} */
     @Override
     public final double getDouble(String key) throws UtilityException {
+        if (numberCache.containsKey(key)) {
+            return numberCache.get(key).doubleValue();
+        }
         try {
-            return Double.parseDouble(getString(key));
+            double value = Double.parseDouble(getString(key));
+            numberCache.put(key, value);
+            return value;
         }
         catch (NumberFormatException nfe) {
             throw new UtilityException("prop.nan");
@@ -1199,14 +1206,19 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
     /** {@inheritDoc} */
     @Override
     public final boolean getBoolean(String key) throws UtilityException {
-        return BooleanUtils.parseBoolean(getString(key));
+        if (booleanCache.containsKey(key)) {
+            return booleanCache.get(key);
+        }
+        boolean value = BooleanUtils.parseBoolean(getString(key));
+        booleanCache.put(key, value);
+        return value;
     }
 
     /** {@inheritDoc} */
     @Override
     public final boolean getBoolean(String key, boolean def) throws UtilityException {
         if (containsKey(key)) {
-            return BooleanUtils.parseBoolean(getString(key));
+            return getBoolean(key);
         }
         else {
             return def;
@@ -1399,7 +1411,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      */
     public final String[] getComments(String key) {
         if (comments.containsKey(key)) {
-            return comments.get(key).toArray(new String[0]);
+            return comments.get(key).toArray(new String[comments.get(key).size()]);
         }
         return null;
     }

@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,13 +48,13 @@ import static net.visualillusionsent.utils.Verify.notNull;
  * If #! is needed as a property it can be escaped with \ ie: \#\!
  *
  * @author Jason (darkdiplomat)
- * @version 1.4
+ * @version 1.5
  * @since 1.0.0
  */
 public final class PropertiesFile extends AbstractPropertiesFile {
 
-    /* VIU 1.3.0 / 1.4 */
-    private static final float classVersion = 1.4F;
+    /* VIU 1.3.1 / 1.5 */
+    private static final float classVersion = 1.5F;
 
     /**
      * Creates or loads a PropertiesFile
@@ -68,6 +69,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     public PropertiesFile(String filePath) throws UtilityException {
         super(filePath);
         this.props = new LinkedHashMap<String, String>();
+        this.booleanCache = new HashMap<String, Boolean>();
+        this.numberCache = new HashMap<String, Number>();
         this.comments = new LinkedHashMap<String, List<String>>();
         this.inlineCom = new LinkedHashMap<String, String>();
         this.header = new LinkedList<String>();
@@ -100,6 +103,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     public PropertiesFile(File file) throws UtilityException {
         super(file);
         this.props = new LinkedHashMap<String, String>();
+        this.booleanCache = new HashMap<String, Boolean>();
+        this.numberCache = new HashMap<String, Number>();
         this.comments = new LinkedHashMap<String, List<String>>();
         this.inlineCom = new LinkedHashMap<String, String>();
         this.header = new LinkedList<String>();
@@ -145,6 +150,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         super(jarPath, entry);
         JarEntry ent = jar.getJarEntry(entry);
         this.props = new LinkedHashMap<String, String>();
+        this.booleanCache = new HashMap<String, Boolean>();
+        this.numberCache = new HashMap<String, Number>();
         this.comments = new LinkedHashMap<String, List<String>>();
         this.inlineCom = new LinkedHashMap<String, String>();
         this.header = new LinkedList<String>();
@@ -230,6 +237,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     public final void reload() throws UtilityException {
         props.clear();
         comments.clear();
+        booleanCache.clear();
+        numberCache.clear();
         if (jar != null) {
             JarEntry ent = jar.getJarEntry(filePath);
             if (ent == null) {
@@ -388,6 +397,12 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         if (value.equals(props.get(key))) {
             return;
         }
+        if (numberCache.containsKey(key)) {
+            numberCache.remove(key); // Don't bother checking if the value was suppose to be a number
+        }
+        if (booleanCache.containsKey(key)) {
+            booleanCache.remove(key); // Don't bother checking if the value was suppose to be a number
+        }
         props.put(key, value);
         addComment(key, comment);
         this.hasChanged = true;
@@ -468,8 +483,13 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     /** {@inheritDoc} */
     @Override
     public final byte getByte(String key) throws UtilityException {
+        if (numberCache.containsKey(key)) { // Caching check
+            return numberCache.get(key).byteValue();
+        }
         try {
-            return Byte.parseByte(getString(key));
+            byte value = Byte.parseByte(getString(key)); // parse
+            numberCache.put(key, value); // Cache
+            return value;
         }
         catch (NumberFormatException nfe) {
             throw new UtilityException("prop.nan", key);
@@ -480,12 +500,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final byte getByte(String key, byte def) throws UtilityException {
         if (containsKey(key)) {
-            try {
-                return Byte.parseByte(getString(key));
-            }
-            catch (NumberFormatException nfe) {
-                throw new UtilityException("prop.nan", key);
-            }
+            return getByte(key);
         }
         else {
             setByte(key, def);
@@ -509,7 +524,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         if (strVal.equals(props.get(key))) {
             return;
         }
-        props.put(key, String.valueOf(value));
+        numberCache.put(key, value);
+        props.put(key, strVal);
         addComment(key, comment);
         this.hasChanged = true;
     }
@@ -586,8 +602,13 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     /** {@inheritDoc} */
     @Override
     public final short getShort(String key) throws UtilityException {
+        if (numberCache.containsKey(key)) {
+            return numberCache.get(key).shortValue();
+        }
         try {
-            return Short.parseShort(getString(key));
+            short value = Short.parseShort(getString(key));
+            numberCache.put(key, value);
+            return value;
         }
         catch (NumberFormatException nfe) {
             throw new UtilityException("prop.nan", key);
@@ -598,12 +619,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final short getShort(String key, short def) throws UtilityException {
         if (containsKey(key)) {
-            try {
-                return Short.parseShort(getString(key));
-            }
-            catch (NumberFormatException nfe) {
-                throw new UtilityException("prop.nan", key);
-            }
+            return getShort(key);
         }
         else {
             setShort(key, def);
@@ -627,6 +643,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         if (strValue.equals(props.get(key))) {
             return;
         }
+        numberCache.put(key, value);
         props.put(key, strValue);
         addComment(key, comment);
         this.hasChanged = true;
@@ -704,8 +721,13 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     /** {@inheritDoc} */
     @Override
     public final int getInt(String key) throws UtilityException {
+        if (numberCache.containsKey(key)) {
+            return numberCache.get(key).intValue();
+        }
         try {
-            return Integer.parseInt(getString(key));
+            int value = Integer.parseInt(getString(key));
+            numberCache.put(key, value);
+            return value;
         }
         catch (NumberFormatException nfe) {
             throw new UtilityException("prop.nan", key);
@@ -716,12 +738,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final int getInt(String key, int def) throws UtilityException {
         if (containsKey(key)) {
-            try {
-                return Integer.parseInt(getString(key));
-            }
-            catch (NumberFormatException nfe) {
-                throw new UtilityException("prop.nan", key);
-            }
+            return getInt(key);
         }
         else {
             setInt(key, def);
@@ -745,6 +762,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         if (strValue.equals(props.get(key))) {
             return;
         }
+        numberCache.put(key, value);
         props.put(key, strValue);
         addComment(key, comment);
         this.hasChanged = true;
@@ -822,8 +840,13 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     /** {@inheritDoc} */
     @Override
     public final long getLong(String key) throws UtilityException {
+        if (numberCache.containsKey(key)) {
+            return numberCache.get(key).longValue();
+        }
         try {
-            return Long.parseLong(getString(key));
+            long value = Long.parseLong(getString(key));
+            numberCache.put(key, value);
+            return value;
         }
         catch (NumberFormatException nfe) {
             throw new UtilityException("prop.nan", key);
@@ -834,12 +857,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final long getLong(String key, long def) throws UtilityException {
         if (containsKey(key)) {
-            try {
-                return Long.parseLong(getString(key));
-            }
-            catch (NumberFormatException nfe) {
-                throw new UtilityException("prop.nan", key);
-            }
+            return getLong(key);
         }
         else {
             setLong(key, def);
@@ -863,6 +881,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         if (strValue.equals(props.get(key))) {
             return;
         }
+        numberCache.put(key, value);
         props.put(key, strValue);
         addComment(key, comment);
         this.hasChanged = true;
@@ -943,8 +962,13 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     /** {@inheritDoc} */
     @Override
     public final float getFloat(String key) throws UtilityException {
+        if (numberCache.containsKey(key)) {
+            return numberCache.get(key).floatValue();
+        }
         try {
-            return Float.parseFloat(getString(key));
+            float value = Float.parseFloat(getString(key));
+            numberCache.put(key, value);
+            return value;
         }
         catch (NumberFormatException nfe) {
             throw new UtilityException("prop.nan", key);
@@ -955,12 +979,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final float getFloat(String key, float def) throws UtilityException {
         if (containsKey(key)) {
-            try {
-                return Float.parseFloat(getString(key));
-            }
-            catch (NumberFormatException nfe) {
-                throw new UtilityException("prop.nan", key);
-            }
+            return getFloat(key);
         }
         else {
             setFloat(key, def);
@@ -984,6 +1003,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         if (strValue.equals(props.get(key))) {
             return;
         }
+        numberCache.put(key, value);
         props.put(key, strValue);
         addComment(key, comment);
         this.hasChanged = true;
@@ -1061,8 +1081,13 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     /** {@inheritDoc} */
     @Override
     public final double getDouble(String key) throws UtilityException {
+        if (numberCache.containsKey(key)) {
+            return numberCache.get(key).doubleValue();
+        }
         try {
-            return Double.parseDouble(getString(key));
+            double value = Double.parseDouble(getString(key));
+            numberCache.put(key, value);
+            return value;
         }
         catch (NumberFormatException nfe) {
             throw new UtilityException("prop.nan");
@@ -1073,12 +1098,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final double getDouble(String key, double def) throws UtilityException {
         if (containsKey(key)) {
-            try {
-                return Double.parseDouble(getString(key));
-            }
-            catch (NumberFormatException nfe) {
-                throw new UtilityException("prop.nan", key);
-            }
+            return getDouble(key);
         }
         else {
             setDouble(key, def);
@@ -1102,6 +1122,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         if (strValue.equals(props.get(key))) {
             return;
         }
+        numberCache.put(key, value);
         props.put(key, strValue);
         addComment(key, comment);
         this.hasChanged = true;
@@ -1179,14 +1200,19 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     /** {@inheritDoc} */
     @Override
     public final boolean getBoolean(String key) throws UtilityException {
-        return BooleanUtils.parseBoolean(getString(key));
+        if (booleanCache.containsKey(key)) {
+            return booleanCache.get(key).booleanValue();
+        }
+        boolean value = BooleanUtils.parseBoolean(getString(key));
+        booleanCache.put(key, value);
+        return value;
     }
 
     /** {@inheritDoc} */
     @Override
     public final boolean getBoolean(String key, boolean def) throws UtilityException {
         if (containsKey(key)) {
-            return BooleanUtils.parseBoolean(getString(key));
+            return getBoolean(key);
         }
         else {
             setBoolean(key, def);
@@ -1210,6 +1236,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         if (strValue.equals(props.get(key))) {
             return;
         }
+        booleanCache.put(key, value);
         props.put(key, strValue);
         addComment(key, comment);
         this.hasChanged = true;
@@ -1366,7 +1393,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final String[] getComments(String key) {
         if (comments.containsKey(key)) {
-            return comments.get(key).toArray(new String[0]);
+            return comments.get(key).toArray(new String[comments.get(key).size()]);
         }
         return null;
     }
