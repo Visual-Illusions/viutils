@@ -17,89 +17,273 @@
  */
 package net.visualillusionsent.utils;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.jar.JarEntry;
+
 /**
  * Verify
  * <p/>
  * Provides methods to help with verifying input
- * <p/>
- * Currently internal use only
  *
  * @author Jason (darkdiplomat)
- * @version 1.0
+ * @version 1.1
  * @since 1.2.0
  */
-final class Verify {
+public final class Verify {
 
-    private static final float classVersion = 1.0F;
+    private static final float classVersion = 1.1F;
+    private static final Map<String, String> errors;
 
-    static final void notNull(Object obj, String arg) throws UtilityException {
+    static {
+        HashMap<String, String> temp = new HashMap<String, String>();
+        temp.put("arg.null", "'%s' cannot be null");
+        temp.put("arg.empty", "'%s' cannot be empty");
+        temp.put("file.err.ioe", "An IOException occurred in File: %s");
+        temp.put("file.err.exist", "%s is not an existing file");
+        temp.put("file.err.read", "Could not read File: %s");
+        temp.put("file.err.write", "Could not write to File: %s");
+        temp.put("file.err.path", "%s path equals %s path");
+        temp.put("file.err.dir", "%s is a Directory, not a file");
+        temp.put("dir.err.file", "%s is a File, not a Directory");
+        temp.put("key.missing", "Property for KEY: %s was not found.");
+        temp.put("prop.nan", "Property for KEY: %s was not a number.");
+        temp.put("str.nan", "String Index: %s was not a number");
+        temp.put("entry.missing", "JarFile does not contain Entry: %s");
+        temp.put("num.zeroOrLess", "%s cannot be negative or zero");
+        temp.put("num.negative", "%s cannot be negative");
+        errors = Collections.unmodifiableMap(temp);
+    }
+
+    public enum FileAction {
+        EXISTS, //
+        ISFILE, //
+        NOTFILE, //
+        ISDIRECTORY, //
+        NOTDIRECTORY, //
+        READ, //
+        WRITE, //
+        EXECUTE, //
+    }
+
+    /**
+     * Checks an {@link Object} for null
+     *
+     * @param obj
+     *         the object to check
+     * @param arg
+     *         the argument name to pass with the exception message
+     *
+     * @throws NullPointerException
+     *         if the object is null
+     */
+    public static void notNull(Object obj, String arg) throws NullPointerException {
         if (obj == null)
-            throw new UtilityException("arg.null", arg);
+            throw new NullPointerException(parse("arg.null", arg));
     }
 
-    static final void notEmpty(String str, String arg) throws UtilityException {
+    /**
+     * Checks if a {@link String} is empty
+     *
+     * @param str
+     *         the {@link String} to check
+     * @param arg
+     *         the argument name to pass with the exception message
+     *
+     * @throws IllegalArgumentException
+     *         if the {@link String} is empty
+     */
+    public static void notEmpty(String str, String arg) throws IllegalArgumentException {
         if (str.trim().isEmpty())
-            throw new UtilityException("arg.empty", arg);
+            throw new IllegalArgumentException(parse("arg.empty", arg));
     }
 
-    static final void notEmpty(Object[] objArray, String arg) throws UtilityException {
+    /**
+     * Checks if a {@code Object[]} is empty
+     *
+     * @param objArray
+     *         the {@code Object[]} to check
+     * @param arg
+     *         the argument name to pass with the exception message
+     *
+     * @throws IllegalArgumentException
+     *         if the {@code Object[]} is empty
+     */
+    public static void notEmpty(Object[] objArray, String arg) throws IllegalArgumentException {
         if (objArray.length <= 0)
-            throw new UtilityException("arg.empty", arg);
+            throw new IllegalArgumentException(parse("arg.empty", arg));
     }
 
-    static final void notEmpty(byte[] byteArray, String arg) throws UtilityException {
+    /**
+     * Checks if a {@code byte[]} is empty
+     *
+     * @param byteArray
+     *         the {@code byte[]} to check
+     * @param arg
+     *         the argument name to pass with the exception message
+     *
+     * @throws IllegalArgumentException
+     *         if the {@code byte[]} is empty
+     */
+    public static void notEmpty(byte[] byteArray, String arg) throws IllegalArgumentException {
         if (byteArray.length <= 0)
-            throw new UtilityException("arg.empty", arg);
+            throw new IllegalArgumentException(parse("arg.empty", arg));
     }
 
-    static final void notEmpty(short[] shortArray, String arg) throws UtilityException {
+    /**
+     * Checks if a {@code short[]} is empty
+     *
+     * @param shortArray
+     *         the {@code short[]} to check
+     * @param arg
+     *         the argument name to pass with the exception message
+     *
+     * @throws IllegalArgumentException
+     *         if the {@code short[]} is empty
+     */
+    public static void notEmpty(short[] shortArray, String arg) throws IllegalArgumentException {
         if (shortArray.length <= 0)
-            throw new UtilityException("arg.empty", arg);
+            throw new IllegalArgumentException(parse("arg.empty", arg));
     }
 
-    static final void notEmpty(int[] intArray, String arg) throws UtilityException {
+    /**
+     * Checks if a {@code int[]} is empty
+     *
+     * @param intArray
+     *         the {@code int[]} to check
+     * @param arg
+     *         the argument name to pass with the exception message
+     *
+     * @throws IllegalArgumentException
+     *         if the {@code int[]} is empty
+     */
+    public static void notEmpty(int[] intArray, String arg) throws IllegalArgumentException {
         if (intArray.length <= 0)
-            throw new UtilityException("arg.empty", arg);
+            throw new IllegalArgumentException(parse("arg.empty", arg));
     }
 
-    static final void notEmpty(long[] longArray, String arg) throws UtilityException {
+    /**
+     * Checks if a {@code long[]} is empty
+     *
+     * @param longArray
+     *         the {@code long[]} to check
+     * @param arg
+     *         the argument name to pass with the exception message
+     *
+     * @throws IllegalArgumentException
+     *         if the {@code long[]} is empty
+     */
+    public static void notEmpty(long[] longArray, String arg) throws IllegalArgumentException {
         if (longArray.length <= 0)
-            throw new UtilityException("arg.empty", arg);
+            throw new IllegalArgumentException(parse("arg.empty", arg));
     }
 
-    static final void notEmpty(float[] floatArray, String arg) throws UtilityException {
+    /**
+     * Checks if a {@code float[]} is empty
+     *
+     * @param floatArray
+     *         the {@code float[]} to check
+     * @param arg
+     *         the argument name to pass with the exception message
+     *
+     * @throws IllegalArgumentException
+     *         if the {@code float[]} is empty
+     */
+    public static void notEmpty(float[] floatArray, String arg) throws IllegalArgumentException {
         if (floatArray.length <= 0)
-            throw new UtilityException("arg.empty", arg);
+            throw new IllegalArgumentException(parse("arg.empty", arg));
     }
 
-    static final void notEmpty(double[] doubleArray, String arg) throws UtilityException {
+    /**
+     * Checks if a {@code double[]} is empty
+     *
+     * @param doubleArray
+     *         the {@code double[]} to check
+     * @param arg
+     *         the argument name to pass with the exception message
+     *
+     * @throws IllegalArgumentException
+     *         if the {@code double[]} is empty
+     */
+    public static void notEmpty(double[] doubleArray, String arg) throws IllegalArgumentException {
         if (doubleArray.length <= 0)
-            throw new UtilityException("arg.empty", arg);
+            throw new IllegalArgumentException(parse("arg.empty", arg));
     }
 
-    static final void notEmpty(boolean[] booleanArray, String arg) throws UtilityException {
+    /**
+     * Checks if a {@code boolean[]} is empty
+     *
+     * @param booleanArray
+     *         the {@code boolean[]} to check
+     * @param arg
+     *         the argument name to pass with the exception message
+     *
+     * @throws IllegalArgumentException
+     *         if the {@code boolean[]} is empty
+     */
+    public static void notEmpty(boolean[] booleanArray, String arg) throws IllegalArgumentException {
         if (booleanArray.length <= 0)
-            throw new UtilityException("arg.empty", arg);
+            throw new IllegalArgumentException(parse("arg.empty", arg));
     }
 
-    static final void notNegativeOrZero(Number number, String arg) {
+    public static void notNegativeOrZero(Number number, String arg) throws IllegalArgumentException {
         if (number.doubleValue() <= 0)
-            throw new UtilityException("num.zeroOrLess", arg);
+            throw new IllegalArgumentException(parse("num.zeroOrLess", arg));
     }
 
-    static final void notNegative(Number number, String arg) {
+    public static void notNegative(Number number, String arg) throws IllegalArgumentException {
         if (number.doubleValue() < 0)
-            throw new UtilityException("num.negative", arg);
+            throw new IllegalArgumentException(parse("num.negative", arg));
     }
 
-    static final void notOutOfRange(long check, long range, String msg) {
+    public static void notOutOfRange(long check, long range, String msg) throws IllegalArgumentException {
         if (check > range)
-            throw new UtilityException(msg);
+            throw new IllegalArgumentException(msg);
     }
 
-    static final void notOutOfRangeEqual(long check, long range, String msg) {
+    public static void notOutOfRangeEqual(long check, long range, String msg) throws IllegalArgumentException {
         if (check >= range)
-            throw new UtilityException(msg);
+            throw new IllegalArgumentException(msg);
+    }
+
+    public static void entryExists(JarEntry entry, String arg) {
+        if (entry == null)
+            throw new MissingJarEntryException(parse("entry.missing", arg));
+    }
+
+    public static void fileCheck(File file, FileAction action) {
+        switch (action) {
+            case EXISTS:
+                if (!file.exists())
+                    throw new IllegalArgumentException(parse("file.err.exist", file.getName()));
+            case ISFILE:
+                if (!file.isFile())
+                    throw new IllegalArgumentException(parse("file.err.dir", file.getName()));
+            case NOTFILE:
+                if (file.isFile())
+                    throw new IllegalArgumentException(parse("dir.err.file", file.getName()));
+            case ISDIRECTORY:
+                if (!file.isDirectory())
+                    throw new IllegalArgumentException(parse("dir.err.file", file.getName()));
+            case NOTDIRECTORY:
+                if (file.isDirectory())
+                    throw new IllegalArgumentException(parse("file.err.dir", file.getName()));
+            case READ:
+                if (!file.canRead())
+                    throw new IllegalArgumentException(parse("file.err.read", file.getName()));
+            case WRITE:
+                if (!file.canWrite())
+                    throw new IllegalArgumentException(parse("file.err.write", file.getName()));
+        }
+    }
+
+    public static String parse(String error, String... form) {
+        if (errors.containsKey(error)) {
+            return String.format(errors.get(error), (Object[]) form);
+        }
+        return error;
     }
 
     /**

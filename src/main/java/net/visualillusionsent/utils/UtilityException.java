@@ -30,7 +30,9 @@ import java.util.Map;
  * @author Jason (darkdiplomat)
  * @version 1.0
  * @since 1.0.0
+ * @deprecated being phased out
  */
+@Deprecated
 public final class UtilityException extends RuntimeException {
 
     private static final float classVersion = 1.0F;

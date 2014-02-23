@@ -30,6 +30,12 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import static net.visualillusionsent.utils.Verify.FileAction.EXISTS;
+import static net.visualillusionsent.utils.Verify.FileAction.ISFILE;
+import static net.visualillusionsent.utils.Verify.FileAction.NOTDIRECTORY;
+import static net.visualillusionsent.utils.Verify.FileAction.READ;
+import static net.visualillusionsent.utils.Verify.FileAction.WRITE;
+import static net.visualillusionsent.utils.Verify.fileCheck;
 import static net.visualillusionsent.utils.Verify.notEmpty;
 import static net.visualillusionsent.utils.Verify.notNull;
 
@@ -37,15 +43,36 @@ import static net.visualillusionsent.utils.Verify.notNull;
  * Provides static methods to help with {@link File} manipulations
  *
  * @author Jason (darkdiplomat)
- * @version 1.2
+ * @version 1.3
  * @since 1.0
  */
 public final class FileUtils {
-
-    private static final float classVersion = 1.2F;
+    /* 1.3 @ VIUtils 1.4.0 */
+    private static final float classVersion = 1.3F;
 
     /** This class should never be externally constructed */
     private FileUtils() {
+    }
+
+    public enum FileSignatures {
+        JAVA_CLASS((byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE),
+        JAVA_PACK200((byte) 0xCA, (byte) 0xFE, (byte) 0xD0, (byte) 0x0D),
+        PNG((byte) 0x89, (byte) 0x50, (byte) 0x4E, (byte) 0x47, (byte) 0x0D, (byte) 0x0A, (byte) 0x1A, (byte) 0x0A),
+        ICO((byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x00),
+        GIF_87A((byte) 0x47, (byte) 0x49, (byte) 0x46, (byte) 0x38, (byte) 0x37, (byte) 0x61),
+        GIF_89A((byte) 0x47, (byte) 0x49, (byte) 0x46, (byte) 0x38, (byte) 0x39, (byte) 0x61),
+        JPEG((byte) 0xFF, (byte) 0xD8, (byte) 0xFF),;
+
+        private final byte[] signature;
+
+        private FileSignatures(byte... signature) {
+            this.signature = signature;
+        }
+
+        public byte[] getSignature() {
+            return signature;
+        }
+
     }
 
     /**
@@ -56,15 +83,17 @@ public final class FileUtils {
      * @param line
      *         the line to be removed
      *
-     * @throws UtilityException
-     *         <br>
-     *         if filePath is null or empty
+     * @throws java.lang.NullPointerException
+     *         if {@code filePath} or {@code line} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code filePath} or {@code line} is empty
+     * @throws java.io.IOException
+     *         if a read/write error occurs
      * @see #removeLines(File, String...)
      */
-    public static final void removeLine(String filePath, String line) throws UtilityException {
+    public static void removeLine(String filePath, String line) throws IOException, NullPointerException, IllegalArgumentException {
         notNull(filePath, "String filePath");
         notEmpty(filePath, "String filePath");
-
         removeLines(new File(filePath), line);
     }
 
@@ -75,16 +104,20 @@ public final class FileUtils {
      *         the path to the {@link File} to have a line removed
      * @param lines
      *         the lines to be removed
+     *         * @throws java.lang.NullPointerException
+     *         if filePath is null or lines are null
      *
-     * @throws UtilityException
-     *         <br>
-     *         if filepath is null or empty
+     * @throws java.lang.NullPointerException
+     *         if {@code filePath} or {@code lines} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code filePath} or {@code lines} is empty
+     * @throws java.io.IOException
+     *         if a read/write error occurs
      * @see #removeLines(File, String...)
      */
-    public static final void removeLines(String filePath, String... lines) throws UtilityException {
+    public static void removeLines(String filePath, String... lines) throws IOException, NullPointerException, IllegalArgumentException {
         notNull(filePath, "String filePath");
         notEmpty(filePath, "String filePath");
-
         removeLines(new File(filePath), lines);
     }
 
@@ -96,10 +129,15 @@ public final class FileUtils {
      * @param line
      *         the line to be removed
      *
-     * @throws UtilityException
+     * @throws java.lang.NullPointerException
+     *         if {@code file} or {@code line} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code line} is empty
+     * @throws java.io.IOException
+     *         if a read/write error occurs
      * @see #removeLines(File, String...)
      */
-    public static final void removeLine(File file, String line) throws UtilityException {
+    public static void removeLine(File file, String line) throws IOException, NullPointerException, IllegalArgumentException {
         removeLines(file, line);
     }
 
@@ -111,30 +149,22 @@ public final class FileUtils {
      * @param lines
      *         the lines to be removed
      *
-     * @throws UtilityException
-     *         <br>
-     *         if the {@link File} is null or does not exist<br>
-     *         if the {@link File} can not be read<br>
-     *         if the {@link File} can not be written to<br>
-     *         if lines are null or an empty array<br>
-     *         if some other IOException occurs
+     * @throws java.lang.NullPointerException
+     *         if {@code file} or {@code lines} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code lines} is empty
+     * @throws java.io.IOException
+     *         if a read/write error occurs
      */
-    public static final void removeLines(File file, String... lines) throws UtilityException {
+    public static void removeLines(File file, String... lines) throws IOException, NullPointerException, IllegalArgumentException {
         notNull(file, "File file");
         notNull(lines, "String... lines");
         notEmpty(lines, "String... lines");
+        fileCheck(file, EXISTS);
+        fileCheck(file, READ);
+        fileCheck(file, WRITE);
 
-        if (!file.isFile()) {
-            throw new UtilityException("file.err.exist", file.getName());
-        }
-        else if (!file.canRead()) {
-            throw new UtilityException("file.err.read", file.getName());
-        }
-        else if (!file.canWrite()) {
-            throw new UtilityException("file.err.write", file.getName());
-        }
-
-        UtilityException ue = null;
+        IOException ioexThrown = null;
         BufferedReader bReader = null;
         PrintWriter pWriter = null;
         try {
@@ -153,19 +183,22 @@ public final class FileUtils {
                 pWriter.flush();
             }
         }
-        catch (IOException ex) {
-            ue = new UtilityException("file.ioe", file.getName());
+        catch (IOException ioex) {
+            ioexThrown = ioex;
         }
         finally {
-            pWriter.close();
+            if (pWriter != null)
+                pWriter.close();
             try {
-                bReader.close();
+                if (bReader != null)
+                    bReader.close();
             }
             catch (IOException e) {
+                //IGNORED
             }
-            if (ue != null) {
-                throw ue;
-            }
+        }
+        if (ioexThrown != null) {
+            throw ioexThrown;
         }
     }
 
@@ -177,13 +210,15 @@ public final class FileUtils {
      * @param clone
      *         the file path to clone to
      *
-     * @throws UtilityException
-     *         <br>
-     *         if toClone is null or empty<br>
-     *         if clone is null or empty<br>
+     * @throws java.io.IOException
+     *         if a read/write error occurs
+     * @throws java.lang.NullPointerException
+     *         if {@code toClone} or {@code clone} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code toClone} is not a file, if {@code clone} is a directory, or if {@code toClone}'s path is equal to {@code clone}'s path
      * @see #cloneFile(File, File)
      */
-    public static final void cloneFile(String toClone, String clone) throws UtilityException {
+    public static void cloneFile(String toClone, String clone) throws IOException, NullPointerException, IllegalArgumentException {
         notNull(toClone, "String toClone");
         notNull(clone, "String clone");
         notEmpty(toClone, "String toClone");
@@ -200,13 +235,15 @@ public final class FileUtils {
      * @param clone
      *         the file path to clone to
      *
-     * @throws UtilityException
-     *         <br>
-     *         if toClone is null<br>
-     *         if clone is null or empty
+     * @throws java.io.IOException
+     *         if a read/write error occurs
+     * @throws java.lang.NullPointerException
+     *         if {@code toClone} or {@code clone} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code toClone} is not a file, if {@code clone} is a directory, or if {@code toClone}'s path is equal to {@code clone}'s path
      * @see #cloneFile(File, File)
      */
-    public static final void cloneFile(File toClone, String clone) throws UtilityException {
+    public static void cloneFile(File toClone, String clone) throws IOException, NullPointerException, IllegalArgumentException {
         notNull(toClone, "File toClone");
         notNull(clone, "String clone");
         notEmpty(clone, "String clone");
@@ -222,33 +259,28 @@ public final class FileUtils {
      * @param clone
      *         the {@link File} to clone to
      *
-     * @throws UtilityException
-     *         <br>
-     *         if toClone is null, does not exist, is not a file, or can not be read<br>
-     *         if clone is null, path matches toClone, or is a directory<br>
-     *         if some other IOException occurs
+     * @throws java.lang.NullPointerException
+     *         if {@code toClone} or {@code clone} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code toClone} is not a file, if {@code clone} is a directory, or if {@code toClone}'s path is equal to {@code clone}'s path
+     * @throws java.io.IOException
+     *         if a read/write error occurs
      */
-    public static final void cloneFile(File toClone, File clone) throws UtilityException {
+    public static void cloneFile(File toClone, File clone) throws IOException, NullPointerException, IllegalArgumentException {
         notNull(toClone, "File toClone");
         notNull(clone, "File clone");
+        fileCheck(clone, NOTDIRECTORY); // If its a Directory, Error
+        fileCheck(toClone, ISFILE); // If its not a file, Error
+        fileCheck(toClone, READ); // If can't read, Error
 
-        if (clone.isDirectory()) {
-            throw new UtilityException("file.err.dir", clone.getName());
-        }
-        else if (toClone.getPath().equals(clone.getPath())) {
+        if (toClone.getPath().equals(clone.getPath())) {
             throw new UtilityException("file.err.path", toClone.getName(), clone.getName());
-        }
-        else if (!toClone.isFile()) {
-            throw new UtilityException("file.err.exist", toClone.getName());
-        }
-        else if (!toClone.canRead()) {
-            throw new UtilityException("file.err.read", toClone.getName());
         }
         else if (toClone.getAbsolutePath().equals(clone.getAbsolutePath())) {
             throw new UtilityException("file.err.path", toClone.getName(), clone.getName());
         }
 
-        UtilityException ue = null;
+        IOException ioexThrown = null;
         FileInputStream instream = null;
         FileOutputStream outstream = null;
         try {
@@ -258,18 +290,22 @@ public final class FileUtils {
             outstream.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         }
         catch (IOException ex) {
-            ue = new UtilityException("file.err.ioe", clone.getName());
+            ioexThrown = ex;
         }
         finally {
             try {
-                instream.close();
-                outstream.close();
+                if (instream != null)
+                    instream.close();
+                if (outstream != null)
+                    outstream.close();
             }
             catch (IOException e) {
+                // IGNORED
             }
-            if (ue != null) {
-                throw ue;
-            }
+
+        }
+        if (ioexThrown != null) {
+            throw ioexThrown;
         }
     }
 
@@ -283,11 +319,10 @@ public final class FileUtils {
      * @param pathTo
      *         the path to clone the file to
      *
-     * @throws UtilityException
-     *         <br>
-     *         if an IOException occurs
+     * @throws java.io.IOException
+     *         if a read/write error occurs
      */
-    public static final void cloneFileFromJar(String jarPath, String fileToMove, String pathTo) throws UtilityException {
+    public static void cloneFileFromJar(String jarPath, String fileToMove, String pathTo) throws IOException, NullPointerException, IllegalArgumentException {
         notNull(jarPath, "String jarPath");
         notNull(fileToMove, "String fileToMove");
         notNull(pathTo, "String pathTo");
@@ -297,20 +332,18 @@ public final class FileUtils {
 
         JarFile jar = null;
         FileOutputStream out = null;
-        UtilityException toThrow = null;
+        IOException exThrown = null;
         try {
             jar = new JarFile(jarPath);
             JarEntry entry = jar.getJarEntry(fileToMove);
+
             InputStream in = jar.getInputStream(entry);
             out = new FileOutputStream(pathTo);
             ReadableByteChannel rbc = Channels.newChannel(in);
             out.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         }
-        catch (IOException e) {
-            toThrow = new UtilityException("Exception occurred while moving file from Jar...", e);
-        }
-        catch (NullPointerException npe) {
-            toThrow = new UtilityException("The Jar did not contain the file to be moved...", npe);
+        catch (IOException ioex) {
+            exThrown = ioex;
         }
         finally {
             try {
@@ -322,10 +355,11 @@ public final class FileUtils {
                 }
             }
             catch (IOException e) {
+                // IGNORED
             }
-            if (toThrow != null) {
-                throw toThrow;
-            }
+        }
+        if (exThrown != null) {
+            throw exThrown;
         }
     }
 

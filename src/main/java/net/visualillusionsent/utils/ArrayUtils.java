@@ -21,15 +21,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 
+import static net.visualillusionsent.utils.Verify.notNull;
+
 /**
  * Array Utilities
  *
  * @author Jason (darkdiplomat)
  * @author Chris (damagefilter)
- * @version 1.0
+ * @version 1.1
  * @since 1.3.0
  */
 public final class ArrayUtils {
+    /* 1.1 @ VIUtils 1.4.0 */
+    private static final float classVersion = 1.1F;
 
     /* Permission Granted!
      * Logs: irc.esper.net - Channel #vi-dev
@@ -47,7 +51,10 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the 2 given ones
      */
-    public static <T> T[] arrayMerge(T[] first, T[] second) {
+    public static <T> T[] arrayMerge(T[] first, T[] second) throws NullPointerException {
+        notNull(first, "T[] first");
+        notNull(second, "T[] second");
+
         T[] result = Arrays.copyOf(first, first.length + second.length);
         System.arraycopy(second, 0, result, first.length, second.length);
         return result;
@@ -65,7 +72,10 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the given 2 arrays, minus duplicate entries
      */
-    public static <T> T[] safeArrayMerge(T[] first, T[] second, T[] template) {
+    public static <T> T[] safeArrayMerge(T[] first, T[] second, T[] template) throws NullPointerException {
+        notNull(first, "T[] first");
+        notNull(second, "T[] second");
+
         LinkedHashSet<T> res = new LinkedHashSet<T>(); //Using a LinkedHashSet so as to not disorder the Array element positions
         Collections.addAll(res, first);
         Collections.addAll(res, second);
@@ -84,7 +94,10 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the 2 given ones
      */
-    public static byte[] arrayMerge(byte[] first, byte[] second) {
+    public static byte[] arrayMerge(byte[] first, byte[] second) throws NullPointerException {
+        notNull(first, "byte[] first");
+        notNull(second, "byte[] second");
+
         byte[] result = Arrays.copyOf(first, first.length + second.length);
         System.arraycopy(second, 0, result, first.length, second.length);
         return result;
@@ -100,7 +113,10 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the 2 given ones
      */
-    public static short[] arrayMerge(short[] first, short[] second) {
+    public static short[] arrayMerge(short[] first, short[] second) throws NullPointerException {
+        notNull(first, "short[] first");
+        notNull(second, "short[] second");
+
         short[] result = Arrays.copyOf(first, first.length + second.length);
         System.arraycopy(second, 0, result, first.length, second.length);
         return result;
@@ -116,7 +132,10 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the 2 given ones
      */
-    public static int[] arrayMerge(int[] first, int[] second) {
+    public static int[] arrayMerge(int[] first, int[] second) throws NullPointerException {
+        notNull(first, "int[] first");
+        notNull(second, "int[] second");
+
         int[] result = Arrays.copyOf(first, first.length + second.length);
         System.arraycopy(second, 0, result, first.length, second.length);
         return result;
@@ -132,7 +151,10 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the 2 given ones
      */
-    public static long[] arrayMerge(long[] first, long[] second) {
+    public static long[] arrayMerge(long[] first, long[] second) throws NullPointerException {
+        notNull(first, "long[] first");
+        notNull(second, "long[] second");
+
         long[] result = Arrays.copyOf(first, first.length + second.length);
         System.arraycopy(second, 0, result, first.length, second.length);
         return result;
@@ -148,7 +170,10 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the 2 given ones
      */
-    public static float[] arrayMerge(float[] first, float[] second) {
+    public static float[] arrayMerge(float[] first, float[] second) throws NullPointerException {
+        notNull(first, "float[] first");
+        notNull(second, "float[] second");
+
         float[] result = Arrays.copyOf(first, first.length + second.length);
         System.arraycopy(second, 0, result, first.length, second.length);
         return result;
@@ -164,7 +189,10 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the 2 given ones
      */
-    public static double[] arrayMerge(double[] first, double[] second) {
+    public static double[] arrayMerge(double[] first, double[] second) throws NullPointerException {
+        notNull(first, "double[] first");
+        notNull(second, "double[] second");
+
         double[] result = Arrays.copyOf(first, first.length + second.length);
         System.arraycopy(second, 0, result, first.length, second.length);
         return result;
@@ -180,7 +208,10 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the 2 given ones
      */
-    public static char[] arrayMerge(char[] first, char[] second) {
+    public static char[] arrayMerge(char[] first, char[] second) throws NullPointerException {
+        notNull(first, "char[] first");
+        notNull(second, "char[] second");
+
         char[] result = Arrays.copyOf(first, first.length + second.length);
         System.arraycopy(second, 0, result, first.length, second.length);
         return result;
@@ -196,10 +227,192 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the 2 given ones
      */
-    public static boolean[] arrayMerge(boolean[] first, boolean[] second) {
+    public static boolean[] arrayMerge(boolean[] first, boolean[] second) throws NullPointerException {
+        notNull(first, "boolean[] first");
+        notNull(second, "boolean[] second");
+
         boolean[] result = Arrays.copyOf(first, first.length + second.length);
         System.arraycopy(second, 0, result, first.length, second.length);
         return result;
     }
     /* END Primitive Arrays */
+
+    public static Byte[] toBoxed(byte[] value) {
+        notNull(value, "byte[] value");
+
+        Byte[] working = new Byte[value.length];
+        for (int index = 0; index < value.length; index++) {
+            working[index] = value[index];
+        }
+        return working;
+    }
+
+    public static Short[] toBoxed(short[] value) {
+        notNull(value, "short[] value");
+
+        Short[] working = new Short[value.length];
+        for (int index = 0; index < value.length; index++) {
+            working[index] = value[index];
+        }
+        return working;
+    }
+
+    public static Integer[] toBoxed(int[] value) {
+        notNull(value, "int[] value");
+
+        Integer[] working = new Integer[value.length];
+        for (int index = 0; index < value.length; index++) {
+            working[index] = value[index];
+        }
+        return working;
+    }
+
+    public static Long[] toBoxed(long[] value) {
+        notNull(value, "long[] value");
+
+        Long[] working = new Long[value.length];
+        for (int index = 0; index < value.length; index++) {
+            working[index] = value[index];
+        }
+        return working;
+    }
+
+    public static Float[] toBoxed(float[] value) {
+        notNull(value, "float[] value");
+
+        Float[] working = new Float[value.length];
+        for (int index = 0; index < value.length; index++) {
+            working[index] = value[index];
+        }
+        return working;
+    }
+
+    public static Double[] toBoxed(double[] value) {
+        notNull(value, "double[] value");
+
+        Double[] working = new Double[value.length];
+        for (int index = 0; index < value.length; index++) {
+            working[index] = value[index];
+        }
+        return working;
+    }
+
+    public static Boolean[] toBoxed(boolean[] value) {
+        notNull(value, "boolean[] value");
+
+        Boolean[] working = new Boolean[value.length];
+        for (int index = 0; index < value.length; index++) {
+            working[index] = value[index];
+        }
+        return working;
+    }
+
+    public static Character[] toBoxed(char[] value) {
+        notNull(value, "char[] value");
+
+        Character[] working = new Character[value.length];
+        for (int index = 0; index < value.length; index++) {
+            working[index] = value[index];
+        }
+        return working;
+    }
+
+    public static byte[] toPrimative(Byte[] value) {
+        notNull(value, "Byte[] value");
+
+        byte[] working = new byte[value.length];
+        for (int index = 0; index < value.length; index++) {
+            working[index] = value[index];
+        }
+        return working;
+    }
+
+    public static short[] toPrimative(Short[] value) {
+        notNull(value, "Short[] value");
+
+        short[] working = new short[value.length];
+        for (int index = 0; index < value.length; index++) {
+            working[index] = value[index];
+        }
+        return working;
+    }
+
+    public static int[] toPrimative(Integer[] value) {
+        notNull(value, "Integer[] value");
+
+        int[] working = new int[value.length];
+        for (int index = 0; index < value.length; index++) {
+            working[index] = value[index];
+        }
+        return working;
+    }
+
+    public static long[] toPrimative(Long[] value) {
+        notNull(value, "Long[] value");
+
+        long[] working = new long[value.length];
+        for (int index = 0; index < value.length; index++) {
+            working[index] = value[index];
+        }
+        return working;
+    }
+
+    public static float[] toPrimative(Float[] value) {
+        notNull(value, "Float[] value");
+
+        float[] working = new float[value.length];
+        for (int index = 0; index < value.length; index++) {
+            working[index] = value[index];
+        }
+        return working;
+    }
+
+    public static double[] toPrimative(Double[] value) {
+        notNull(value, "Double[] value");
+
+        double[] working = new double[value.length];
+        for (int index = 0; index < value.length; index++) {
+            working[index] = value[index];
+        }
+        return working;
+    }
+
+    public static boolean[] toPrimative(Boolean[] value) {
+        notNull(value, "Boolean[] value");
+
+        boolean[] working = new boolean[value.length];
+        for (int index = 0; index < value.length; index++) {
+            working[index] = value[index];
+        }
+        return working;
+    }
+
+    public static char[] toPrimative(Character[] value) {
+        notNull(value, "Double[] value");
+
+        char[] working = new char[value.length];
+        for (int index = 0; index < value.length; index++) {
+            working[index] = value[index];
+        }
+        return working;
+    }
+
+    /**
+     * Checks if an {@code array} contains a {@code value}
+     *
+     * @param array
+     *         the {@code array} to check
+     * @param value
+     *         the {@code value} to check
+     *
+     * @return {@code true} if the {@code array} contains the {@code value}
+     */
+    public static <T> boolean contains(final T[] array, final T value) {
+        for (final T element : array) {
+            if (element == value || value != null && value.equals(element)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

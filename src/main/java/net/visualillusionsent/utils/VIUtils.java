@@ -23,7 +23,7 @@ package net.visualillusionsent.utils;
  * Use this class to check the VIUtils version
  *
  * @author Jason (darkdiplomat)
- * @version 1.3.0
+ * @version 1.4.0
  * @since 1.0.4
  */
 public final class VIUtils {
@@ -55,7 +55,7 @@ public final class VIUtils {
      * @deprecated Being replaced by {@link #VERSION}
      */
     @Deprecated
-    public static final String VIUTILS_VERSION = "1.3.0";
+    public static final String VIUTILS_VERSION = "1.4.0";
 
     /**
      * The {@link net.visualillusionsent.utils.ProgramStatus} of this VIUtils

@@ -42,13 +42,13 @@ import static net.visualillusionsent.utils.Verify.notNull;
  * Creates a Thread Pool for handling executing delayed and continuous tasks
  *
  * @author Jason (darkdiplomat)
- * @version 1.2
+ * @version 1.3
  * @since 1.0.0
  */
 public final class TaskManager {
 
     /** Class Version */
-    private static final float classVersion = 1.2F;
+    private static final float classVersion = 1.3F; /* VIUtils 1.3.1 | 1.3 */
     /** The ThreadPool object */
     private static final ScheduledThreadPoolExecutor threadPool;
     /** The Map of Tasks */
@@ -56,8 +56,8 @@ public final class TaskManager {
 
     static {
         threadPool = new ScheduledThreadPoolExecutor(8); // Set the max number of core idle threads
-        threadPool.setKeepAliveTime(2, MINUTES); // How long to keep idle threads alive
-        threadPool.allowCoreThreadTimeOut(false); // Don't allow the core threads to time out
+        threadPool.setKeepAliveTime(10, SECONDS); // How long to keep idle threads alive
+        threadPool.allowCoreThreadTimeOut(true); // Allow the core threads to time out
         threadPool.setContinueExistingPeriodicTasksAfterShutdownPolicy(false); //Don't execute anything after shutdown
         threadPool.setExecuteExistingDelayedTasksAfterShutdownPolicy(false); //Don't execute anything after shutdown
         tasks = new ConcurrentHashMap<Task, ScheduledFuture<?>>(); // Create the map for Task tracking
@@ -81,7 +81,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final void executeTask(Runnable task) throws UtilityException, RejectedExecutionException {
+    public static void executeTask(Runnable task) throws UtilityException, RejectedExecutionException {
         notNull(task, "Runnable task");
 
         threadPool.execute(task); //wrap runnable for exception logging
@@ -102,7 +102,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final Future<?> submitTask(Runnable task) throws UtilityException, RejectedExecutionException {
+    public static Future<?> submitTask(Runnable task) throws UtilityException, RejectedExecutionException {
         notNull(task, "Runnable task");
 
         return threadPool.submit(task);
@@ -123,7 +123,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final <V> Future<V> submitTask(Callable<V> task) throws UtilityException, RejectedExecutionException {
+    public static <V> Future<V> submitTask(Callable<V> task) throws UtilityException, RejectedExecutionException {
         notNull(task, "Callable task");
 
         return threadPool.submit(task);
@@ -147,7 +147,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final ScheduledFuture<?> scheduleDelayedTaskInMicros(Runnable task, long delay) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleDelayedTaskInMicros(Runnable task, long delay) throws UtilityException, RejectedExecutionException {
         return scheduleDelayedTask(task, delay, MICROSECONDS);
     }
 
@@ -169,7 +169,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final <V> ScheduledFuture<V> scheduleDelayedTaskInMicros(Callable<V> task, long delay) throws UtilityException, RejectedExecutionException {
+    public static <V> ScheduledFuture<V> scheduleDelayedTaskInMicros(Callable<V> task, long delay) throws UtilityException, RejectedExecutionException {
         return scheduleDelayedTask(task, delay, MICROSECONDS);
     }
 
@@ -191,7 +191,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final ScheduledFuture<?> scheduleDelayedTaskInMillis(Runnable task, long delay) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleDelayedTaskInMillis(Runnable task, long delay) throws UtilityException, RejectedExecutionException {
         return scheduleDelayedTask(task, delay, MILLISECONDS);
     }
 
@@ -213,7 +213,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final <V> ScheduledFuture<V> scheduleDelayedTaskInMillis(Callable<V> task, long delay) throws UtilityException, RejectedExecutionException {
+    public static <V> ScheduledFuture<V> scheduleDelayedTaskInMillis(Callable<V> task, long delay) throws UtilityException, RejectedExecutionException {
         return scheduleDelayedTask(task, delay, MILLISECONDS);
     }
 
@@ -235,7 +235,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final ScheduledFuture<?> scheduleDelayedTaskInSeconds(Runnable task, long delay) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleDelayedTaskInSeconds(Runnable task, long delay) throws UtilityException, RejectedExecutionException {
         return scheduleDelayedTask(task, delay, SECONDS);
     }
 
@@ -257,7 +257,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final <V> ScheduledFuture<V> scheduleDelayedTaskInSeconds(Callable<V> task, long delay) throws UtilityException, RejectedExecutionException {
+    public static <V> ScheduledFuture<V> scheduleDelayedTaskInSeconds(Callable<V> task, long delay) throws UtilityException, RejectedExecutionException {
         return scheduleDelayedTask(task, delay, SECONDS);
     }
 
@@ -279,7 +279,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final ScheduledFuture<?> scheduleDelayedTaskInMinutes(Runnable task, long delay) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleDelayedTaskInMinutes(Runnable task, long delay) throws UtilityException, RejectedExecutionException {
         return scheduleDelayedTask(task, delay, MINUTES);
     }
 
@@ -301,7 +301,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final <V> ScheduledFuture<V> scheduleDelayedTaskInMinutes(Callable<V> task, long delay) throws UtilityException, RejectedExecutionException {
+    public static <V> ScheduledFuture<V> scheduleDelayedTaskInMinutes(Callable<V> task, long delay) throws UtilityException, RejectedExecutionException {
         return scheduleDelayedTask(task, delay, MINUTES);
     }
 
@@ -323,7 +323,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final ScheduledFuture<?> scheduleDelayedTaskInHours(Runnable task, long delay) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleDelayedTaskInHours(Runnable task, long delay) throws UtilityException, RejectedExecutionException {
         return scheduleDelayedTask(task, delay, HOURS);
     }
 
@@ -345,7 +345,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final <V> ScheduledFuture<V> scheduleDelayedTaskInHours(Callable<V> task, long delay) throws UtilityException, RejectedExecutionException {
+    public static <V> ScheduledFuture<V> scheduleDelayedTaskInHours(Callable<V> task, long delay) throws UtilityException, RejectedExecutionException {
         return scheduleDelayedTask(task, delay, HOURS);
     }
 
@@ -370,7 +370,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final ScheduledFuture<?> scheduleDelayedTask(Runnable task, long delay, TimeUnit timeUnit) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleDelayedTask(Runnable task, long delay, TimeUnit timeUnit) throws UtilityException, RejectedExecutionException {
         notNull(task, "Runnable task");
         notNegativeOrZero(delay, "Delay");
         notNull(timeUnit, "TimeUnit timeUnit");
@@ -401,7 +401,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final <V> ScheduledFuture<V> scheduleDelayedTask(Callable<V> task, long delay, TimeUnit timeUnit) throws UtilityException, RejectedExecutionException {
+    public static <V> ScheduledFuture<V> scheduleDelayedTask(Callable<V> task, long delay, TimeUnit timeUnit) throws UtilityException, RejectedExecutionException {
         notNull(task, "Callable task");
         notNegativeOrZero(delay, "Delay");
         notNull(timeUnit, "TimeUnit timeUnit");
@@ -431,7 +431,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final ScheduledFuture<?> scheduleContinuedTaskInMicros(Runnable task, long initialDelay, long delay) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleContinuedTaskInMicros(Runnable task, long initialDelay, long delay) throws UtilityException, RejectedExecutionException {
         return scheduleContinuedTask(task, initialDelay, delay, MICROSECONDS);
     }
 
@@ -455,7 +455,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final ScheduledFuture<?> scheduleContinuedTaskInMillis(Runnable task, long initialDelay, long delay) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleContinuedTaskInMillis(Runnable task, long initialDelay, long delay) throws UtilityException, RejectedExecutionException {
         return scheduleContinuedTask(task, initialDelay, delay, MILLISECONDS);
     }
 
@@ -479,7 +479,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final ScheduledFuture<?> scheduleContinuedTaskInSeconds(Runnable task, long initialDelay, long delay) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleContinuedTaskInSeconds(Runnable task, long initialDelay, long delay) throws UtilityException, RejectedExecutionException {
         return scheduleContinuedTask(task, initialDelay, delay, SECONDS);
     }
 
@@ -503,7 +503,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final ScheduledFuture<?> scheduleContinuedTaskInMinutes(Runnable task, long initialDelay, long delay) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleContinuedTaskInMinutes(Runnable task, long initialDelay, long delay) throws UtilityException, RejectedExecutionException {
         return scheduleContinuedTask(task, initialDelay, delay, MINUTES);
     }
 
@@ -529,7 +529,7 @@ public final class TaskManager {
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static final ScheduledFuture<?> scheduleContinuedTask(Runnable task, long initialDelay, long delay, TimeUnit timeUnit) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleContinuedTask(Runnable task, long initialDelay, long delay, TimeUnit timeUnit) throws UtilityException, RejectedExecutionException {
         notNull(task, "Runnable task");
         notNegativeOrZero(initialDelay, "long initialDelay");
 
@@ -546,7 +546,7 @@ public final class TaskManager {
      *
      * @return {@code true} if successfully removed, {@code false} if already stopped or non-existent
      */
-    public static final boolean removeTask(Runnable task) {
+    public static boolean removeTask(Runnable task) {
         boolean check = false;
         if (tasks.containsKey(task)) {
             check = tasks.get(task).cancel(true);
@@ -569,7 +569,7 @@ public final class TaskManager {
      *
      * @return {@code true} if successfully removed, {@code false} if already stopped or non-existent
      */
-    public static final boolean removeTask(Callable<?> task) {
+    public static boolean removeTask(Callable<?> task) {
         boolean check = false;
         if (tasks.containsKey(task)) {
             check = tasks.get(task).cancel(true);
@@ -618,7 +618,7 @@ public final class TaskManager {
      *
      * @return the class version
      */
-    public final static float getClassVersion() {
+    public static float getClassVersion() {
         return classVersion;
     }
 }

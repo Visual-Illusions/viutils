@@ -35,6 +35,7 @@ public enum ProgramStatus {
     RELEASE_CANDIDATE, //
     STABLE;
 
+    /* 1.1 @ VIUtils 1.4.0 */
     private static final float classVersion = 1.1F;
 
     /** {@inheritDoc} */
@@ -72,7 +73,7 @@ public enum ProgramStatus {
      *
      * @return the class version
      */
-    public static final float getClassVersion() {
+    public static float getClassVersion() {
         return classVersion;
     }
 }

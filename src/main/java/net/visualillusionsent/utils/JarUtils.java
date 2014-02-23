@@ -30,11 +30,13 @@ import java.util.jar.Manifest;
  * Jar File Utilities
  *
  * @author Jason (darkdiplomat)
- * @version 1.1
+ * @version 1.2
  * @since 1.1.0
  */
 public final class JarUtils {
-    private static final float classVersion = 1.1F;
+
+    /* 1.2 @ VIUtils 1.4.0 */
+    private static final float classVersion = 1.2F;
 
     /**
      * Returns the path to the Jar File that the given class if from
@@ -50,6 +52,7 @@ public final class JarUtils {
             return codeSource.getLocation().toURI().getPath();
         }
         catch (URISyntaxException e) {
+            // IGNORED
         }
         return null;
     }
@@ -190,7 +193,7 @@ public final class JarUtils {
         while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
             String entName = entry.getName().replace("/", ".");
-            if (entName.matches(packageName + ".(\\w+).class")) {
+            if (entName.startsWith(packageName) && entName.endsWith(".class")) {
                 Class<?> cls = Class.forName(entName.substring(0, entName.length() - 6));
                 classes.add(cls);
             }
@@ -219,7 +222,7 @@ public final class JarUtils {
         while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
             String entName = entry.getName().replace("/", ".");
-            if (entName.matches(packageName + ".(\\w+).class")) {
+            if (entName.startsWith(packageName) && entName.endsWith(".class")) {
                 Class<?> cls = Class.forName(entName.substring(0, entName.length() - 6));
                 if (sCls.isAssignableFrom(cls)) {
                     classes.add(cls.asSubclass(sCls));
@@ -234,7 +237,7 @@ public final class JarUtils {
      *
      * @return the class version
      */
-    public static final float getClassVersion() {
+    public static float getClassVersion() {
         return classVersion;
     }
 }

@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
  */
 public final class ProgramChecker {
 
+    /* 1.1 @ VIUtils 1.4.0 */
     private static final float classVersion = 1.1F;
     private static final String progNamePreForm = "program=%s",
             versionForm = "%d.%d.%d",
@@ -142,7 +143,7 @@ public final class ProgramChecker {
     public enum Status {
         LATEST,
         UPDATE,
-        ERROR;
+        ERROR,
     }
 
     /**

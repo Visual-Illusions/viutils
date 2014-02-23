@@ -38,6 +38,7 @@ import java.util.logging.Logger;
  */
 public abstract class LocaleHelper {
 
+    /* 1.4 @ VIUtils 1.4.0 */
     private static final float classVersion = 1.4F;
     /* languages.txt quick reference */
     private static final String langTXT = "languages.txt";
@@ -234,16 +235,15 @@ public abstract class LocaleHelper {
     /**
      * Reloads the language files.
      *
-     * @throws UtilityException
      * @see PropertiesFile#reload
      */
-    public final void reloadLangFiles() throws UtilityException {
+    public final void reloadLangFiles() {
         for (UnmodifiablePropertiesFile upf : langs.values()) {
             upf.reload();
         }
     }
 
-    private final void loadLang(String locale) {
+    private void loadLang(String locale) {
         if (langs.containsKey(utils_lang.getString(locale))) {
             // Save memory, reuse pointers
             UnmodifiablePropertiesFile temp = langs.get(utils_lang.getString(locale));
@@ -264,7 +264,7 @@ public abstract class LocaleHelper {
      *
      * @return the class version
      */
-    public static final float getClassVersion() {
+    public static float getClassVersion() {
         return classVersion;
     }
 }

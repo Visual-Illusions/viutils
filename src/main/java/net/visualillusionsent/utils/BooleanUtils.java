@@ -32,7 +32,7 @@ import static net.visualillusionsent.utils.Verify.notNull;
  * @since 1.0.4
  */
 public final class BooleanUtils {
-
+    /* 1.2 @ VIUtils 1.4.0 */
     private static final float classVersion = 1.2F;
     private static final ConcurrentHashMap<String, Boolean> boolMatch = new ConcurrentHashMap<String, Boolean>();
 
@@ -59,8 +59,13 @@ public final class BooleanUtils {
      *         the boolean value to be assigned
      *
      * @return {@code null} if added, {@link Boolean} value if the key already had something associated.
+     *
+     * @throws java.lang.NullPointerException
+     *         if key is null
+     * @throws java.lang.IllegalArgumentException
+     *         if key is empty
      */
-    public static Boolean registerBoolean(final String key, final boolean value) throws UtilityException {
+    public static Boolean registerBoolean(final String key, final boolean value) throws IllegalArgumentException, NullPointerException {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -74,8 +79,13 @@ public final class BooleanUtils {
      *         the key to parse
      *
      * @return {@code boolean value} associated with the key, or {@code false} if a value isn't associated.
+     *
+     * @throws java.lang.NullPointerException
+     *         if key is null
+     * @throws java.lang.IllegalArgumentException
+     *         if key is empty
      */
-    public static boolean parseBoolean(String key) {
+    public static boolean parseBoolean(final String key) throws NullPointerException, IllegalArgumentException {
         notNull(key, "String key");
         notEmpty(key, "String key");
 

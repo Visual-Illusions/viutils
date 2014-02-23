@@ -63,7 +63,10 @@ final class Task {
 
     @Override
     public final boolean equals(Object obj) {
-        return obj == this || task.equals(obj);
+        if (obj instanceof Task) {
+            return obj == this;
+        }
+        return task.equals(obj);
     }
 
     @Override

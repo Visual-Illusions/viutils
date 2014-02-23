@@ -268,6 +268,11 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
+    @Override
+    protected final void removeKeys(String... keys) {
+        throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
+    }
+
     /** {@inheritDoc} */
     @Override
     public final String getString(String key) throws UtilityException {

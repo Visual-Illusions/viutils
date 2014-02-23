@@ -31,7 +31,7 @@ import static net.visualillusionsent.utils.Verify.notOutOfRangeEqual;
  */
 public final class StringUtils {
 
-    /* 1.3 / 1.3.1 */
+    /* 1.3 / 1.4.0 */
     private static final float classVersion = 1.3F;
 
     /** This class should never be constructed */

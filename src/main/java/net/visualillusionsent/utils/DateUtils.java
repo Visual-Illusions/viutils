@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import static net.visualillusionsent.utils.Verify.notEmpty;
 import static net.visualillusionsent.utils.Verify.notNegative;
@@ -32,12 +33,13 @@ import static net.visualillusionsent.utils.Verify.notNull;
  * Provides static methods to help with {@link Date} manipulations
  *
  * @author Jason (darkdiplomat)
- * @version 1.0
+ * @version 1.1
  * @since 1.0.0
  */
 public final class DateUtils {
 
-    private static final float classVersion = 1.0F;
+    /* 1.1 @ VIUtils 1.4.0 */
+    private static final float classVersion = 1.1F;
     /** Date Format as dd-MMM-yyyy */
     private static final DateFormat date_form = new SimpleDateFormat("dd-MMM-yyyy");
     /** Date Format as HH:mm:ss */
@@ -59,11 +61,10 @@ public final class DateUtils {
      *
      * @return date as a string formatted as dd-MMM-yyyy
      *
-     * @throws UtilityException
-     *         <br>
-     *         if time is less than 0
+     * @throws java.lang.IllegalArgumentException
+     *         if time is negative
      */
-    public static final String longToDate(long time) throws UtilityException {
+    public static String longToDate(long time) throws IllegalArgumentException {
         return longToDate(time, TimeZone.getDefault());
     }
 
@@ -77,11 +78,10 @@ public final class DateUtils {
      *
      * @return date as a string formatted as dd-MMM-yyyy
      *
-     * @throws UtilityException
-     *         <br>
-     *         if time is less than 0
+     * @throws java.lang.IllegalArgumentException
+     *         if time is negative
      */
-    public static final String longToDate(long time, TimeZone zone) throws UtilityException {
+    public static String longToDate(long time, TimeZone zone) throws IllegalArgumentException {
         notNegative(time, "Time");
 
         if (zone != null && zone != TimeZone.getDefault()) {
@@ -98,11 +98,10 @@ public final class DateUtils {
      *
      * @return time as a string formatted as HH:mm:ss
      *
-     * @throws UtilityException
-     *         <br>
-     *         if time is less than 0
+     * @throws java.lang.IllegalArgumentException
+     *         if time is negative
      */
-    public static final String longToTime(long time) throws UtilityException {
+    public static String longToTime(long time) throws IllegalArgumentException {
         return longToTime(time, TimeZone.getDefault());
     }
 
@@ -114,11 +113,10 @@ public final class DateUtils {
      *
      * @return time as a string formatted as HH:mm:ss
      *
-     * @throws UtilityException
-     *         <br>
-     *         if time is less than 0
+     * @throws java.lang.IllegalArgumentException
+     *         if time is negative
      */
-    public static final String longToTime(long time, TimeZone zone) throws UtilityException {
+    public static String longToTime(long time, TimeZone zone) throws IllegalArgumentException {
         notNegative(time, "Time");
 
         if (zone != null && zone != TimeZone.getDefault()) {
@@ -135,11 +133,10 @@ public final class DateUtils {
      *
      * @return date and time as a string formatted as dd-MMM-yyyy HH:mm:ss
      *
-     * @throws UtilityException
-     *         <br>
-     *         if time is less than 0
+     * @throws java.lang.IllegalArgumentException
+     *         if time is negative
      */
-    public static final String longToDateTime(long time) throws UtilityException {
+    public static String longToDateTime(long time) throws IllegalArgumentException {
         return longToDateTime(time, TimeZone.getDefault());
     }
 
@@ -153,11 +150,10 @@ public final class DateUtils {
      *
      * @return date and time as a string formatted as dd-MMM-yyyy HH:mm:ss
      *
-     * @throws UtilityException
-     *         <br>
-     *         if time is less than 0
+     * @throws java.lang.IllegalArgumentException
+     *         if time is negative
      */
-    public static final String longToDateTime(long time, TimeZone zone) throws UtilityException {
+    public static String longToDateTime(long time, TimeZone zone) throws IllegalArgumentException {
         notNegative(time, "Time");
 
         if (zone != null && zone != TimeZone.getDefault()) {
@@ -173,12 +169,8 @@ public final class DateUtils {
      *         the time in milliseconds
      *
      * @return date and time as a string formatted as HH:mm:ss dd-MMM-yyyy
-     *
-     * @throws UtilityException
-     *         <br>
-     *         if time is less than 0
      */
-    public static final String longToTimeDate(long time) throws UtilityException {
+    public static String longToTimeDate(long time) throws IllegalArgumentException {
         return longToTimeDate(time, TimeZone.getDefault());
     }
 
@@ -192,11 +184,10 @@ public final class DateUtils {
      *
      * @return date and time as a string formatted as HH:mm:ss dd-MMM-yyyy
      *
-     * @throws UtilityException
-     *         <br>
-     *         if time is less than 0
+     * @throws java.lang.IllegalArgumentException
+     *         if time is negative
      */
-    public static final String longToTimeDate(long time, TimeZone zone) throws UtilityException {
+    public static String longToTimeDate(long time, TimeZone zone) throws IllegalArgumentException {
         notNegative(time, "Time");
 
         if (zone != null && zone != TimeZone.getDefault()) {
@@ -215,12 +206,12 @@ public final class DateUtils {
      *
      * @return date and time as a string formatted as specified
      *
-     * @throws UtilityException
-     *         <br>
-     *         if time is less than 0<br>
-     *         if the format is invalid or {@code null}
+     * @throws java.lang.IllegalArgumentException
+     *         if time is negative or if format is empty
+     * @throws java.lang.NullPointerException
+     *         if format is null
      */
-    public static final String longToFormatedDateTime(long time, String format) throws UtilityException {
+    public static String longToFormatedDateTime(long time, String format) throws NullPointerException, IllegalArgumentException {
         notNegative(time, "Time");
         notNull(format, "String format");
         notEmpty(format, "String format");
@@ -228,14 +219,7 @@ public final class DateUtils {
         //Create a Date object from the time given
         Date date = new Date(time);
         //Create DateFormat object and verify the format is valid
-        DateFormat form;
-        try {
-            form = new SimpleDateFormat(format);
-        }
-        catch (IllegalArgumentException iae) {
-            //Invalid format throws an UtilityException
-            throw new UtilityException("Invalid format syntax");
-        }
+        DateFormat form = new SimpleDateFormat(format);
         //Format it and return
         return form.format(date);
     }
@@ -248,9 +232,12 @@ public final class DateUtils {
      *
      * @return {@link Date} parsed from the date parameter
      *
-     * @throws UtilityException
+     * @throws java.lang.IllegalArgumentException
+     *         if date is empty or date is unable to be parsed
+     * @throws java.lang.NullPointerException
+     *         if date is null
      */
-    public static final Date getDateFromString(String date) throws UtilityException {
+    public static Date getDateFromString(String date) throws NullPointerException, IllegalArgumentException {
         notNull(date, "String date");
         notEmpty(date, "String date");
 
@@ -259,12 +246,12 @@ public final class DateUtils {
             theDate = datetime_form.parse(date);
         }
         catch (ParseException pe) {
-            throw new UtilityException(pe.getMessage());
+            throw new IllegalArgumentException(pe.getMessage());
         }
         return theDate;
     }
 
-    private final static Calendar parseCal(long time, TimeZone to) {
+    private static Calendar parseCal(long time, TimeZone to) {
         Calendar calendar = Calendar.getInstance();
         TimeZone fromTimeZone = calendar.getTimeZone();
         TimeZone toTimeZone = to != null ? to : TimeZone.getTimeZone("GMT");
@@ -301,7 +288,7 @@ public final class DateUtils {
      *
      * @return the String representation of the time until
      */
-    public static String getTimeUntil(long time, long delay) {
+    public static String getTimeUntil(final long time, final long delay) {
         long correctedTime = (time + delay) - getUnixTimestamp();
         if (correctedTime <= 0) {
             return "ERR Time";
@@ -310,66 +297,79 @@ public final class DateUtils {
     }
 
     /**
-     * Gets a readable string for the days/hours/minutes/seconds until a period of time
+     * Gets a readable English {@code String} for the days/hours/minutes/seconds until a period of time
      *
      * @param time
      *         the Unix-TimeStamp of (or amount of seconds until) the future time expiration
      *
      * @return the String representation of the time until
      */
-    public static String getTimeUntil(long time) {
+    public static String getTimeUntil(final long time) {
         if (time <= 0) {
             return "ERR Time";
         }
         // How many days left?
         StringBuilder stringTimeLeft = new StringBuilder();
-        if (time >= 60 * 60 * 24) {
-            int days = (int) Math.floor(time / (60 * 60 * 24));
-            time -= 60 * 60 * 24 * days;
-            if (days == 1) {
-                stringTimeLeft.append(Integer.toString(days)).append(" day, ");
-            }
-            else {
-                stringTimeLeft.append(Integer.toString(days)).append(" days, ");
-            }
+        int[] until = getTimeUntilArray(time);
+        if (until[0] > 0) {
+            stringTimeLeft.append(Integer.toString(until[0])).append(until[0] == 1 ? " day" : " days");
         }
-        if (time >= 60 * 60) {
-            int hours = (int) Math.floor(time / (60 * 60));
-            time -= 60 * 60 * hours;
-            if (hours == 1) {
-                stringTimeLeft.append(Integer.toString(hours)).append(" hour, ");
-            }
-            else {
-                stringTimeLeft.append(Integer.toString(hours)).append(" hours, ");
-            }
-        }
-        if (time >= 60) {
-            int minutes = (int) Math.floor(time / (60));
-            time -= 60 * minutes;
-            if (minutes == 1) {
-                stringTimeLeft.append(Integer.toString(minutes)).append(" minute ");
-            }
-            else {
-                stringTimeLeft.append(Integer.toString(minutes)).append(" minutes ");
-            }
-        }
-        else {
-            // Lets remove the last comma, since it will look bad with 2 days, 3 hours, and 14 seconds.
+        if (until[1] > 0) {
             if (stringTimeLeft.length() != 0) {
-                stringTimeLeft.deleteCharAt(stringTimeLeft.length() - 1);
+                stringTimeLeft.append(until[2] > 0 || until[3] > 0 ? ", " : " and ");
             }
+            stringTimeLeft.append(Integer.toString(until[1])).append(until[1] == 1 ? " hour" : " hours");
         }
-        int secs = (int) time;
-        if (stringTimeLeft.length() != 0) {
-            stringTimeLeft.append("and ");
+        if (until[2] > 0) {
+            if (stringTimeLeft.length() != 0) {
+                stringTimeLeft.append(until[3] > 0 ? ", " : " and ");
+            }
+            stringTimeLeft.append(Integer.toString(until[2])).append(until[2] == 1 ? " minute" : " minutes");
         }
-        if (secs == 1) {
-            stringTimeLeft.append(secs).append(" second.");
-        }
-        else {
-            stringTimeLeft.append(secs).append(" seconds.");
+        if (until[3] > 0) {
+            if (stringTimeLeft.length() != 0) {
+                stringTimeLeft.append(" and ");
+            }
+            stringTimeLeft.append(Integer.toString(until[3])).append(until[3] == 1 ? " second" : " seconds");
         }
         return stringTimeLeft.toString();
+    }
+
+    /**
+     * Gets an {@code int[]} representing the number of days, hours, minutes and seconds based on a given Unix Timestamp<br/>
+     * Useful for processing the information into a proper localized {@code String}
+     *
+     * @param time
+     *         the time in seconds to break down into days, hours, minutes and seconds
+     *
+     * @return an {@code int[4]} as Index 0 = days, 1 = hours, 2 = minutes, and 3 = seconds including zeros
+     */
+    public static int[] getTimeUntilArray(final long time) {
+        int[] toRet = new int[]{ 0, 0, 0, 0 };
+        if (time <= 0) {
+            return toRet;
+        }
+        long temp = time;
+        long conversion = TimeUnit.DAYS.toSeconds(1);
+        if (temp >= conversion) {
+            int days = (int) Math.floor(temp / conversion);
+            temp -= conversion * days;
+            toRet[0] = days;
+        }
+        conversion = TimeUnit.HOURS.toSeconds(1);
+        if (temp >= conversion) {
+            int hours = (int) Math.floor(temp / conversion);
+            temp -= conversion * hours;
+            toRet[1] = hours;
+        }
+        conversion = TimeUnit.MINUTES.toSeconds(1);
+        if (temp >= conversion) {
+            int minutes = (int) Math.floor(temp / conversion);
+            temp -= conversion * minutes;
+            toRet[2] = minutes;
+        }
+        toRet[3] = (int) temp;
+        return toRet;
     }
 
     /**
@@ -377,7 +377,7 @@ public final class DateUtils {
      *
      * @return the class version
      */
-    public final static float getClassVersion() {
+    public static float getClassVersion() {
         return classVersion;
     }
 }
