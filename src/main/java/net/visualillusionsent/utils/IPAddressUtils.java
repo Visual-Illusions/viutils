@@ -8,11 +8,11 @@
  * the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.
+ * You should have received a copy of the GNU General Public License along with this library.
  * If not, see http://www.gnu.org/licenses/lgpl.html.
  */
 package net.visualillusionsent.utils;
@@ -53,7 +53,7 @@ public final class IPAddressUtils {
      * @throws java.lang.NullPointerException
      *         if ip is null
      */
-    public static boolean isIPv4Address(final String ip) throws NullPointerException {
+    public static boolean isIPv4Address(final String ip) {
         notNull(ip, "String ip");
         return IPv4_REGEX.reset(ip).matches();
     }
@@ -69,7 +69,7 @@ public final class IPAddressUtils {
      * @throws java.lang.NullPointerException
      *         if ip is null
      */
-    public static boolean isIPv6Address(final String ip) throws NullPointerException {
+    public static boolean isIPv6Address(final String ip) {
         notNull(ip, "String ip");
         return IPv6_REGEX.reset(ip).matches();
     }
@@ -104,7 +104,7 @@ public final class IPAddressUtils {
      * @throws java.lang.IllegalArgumentException
      *         if address is not of length 4
      */
-    public static long ipv4ToLong(byte[] address) throws IllegalArgumentException {
+    public static long ipv4ToLong(byte[] address) {
         if (address.length != 4) {
             throw new IllegalArgumentException("byte array must be of length 4");
         }
@@ -130,7 +130,7 @@ public final class IPAddressUtils {
      * @throws java.lang.IllegalArgumentException
      *         if address is not of length 4
      */
-    public static String ipv4BytestoString(byte[] address) throws IllegalArgumentException {
+    public static String ipv4BytestoString(byte[] address) {
         if (address.length != 4) {
             throw new IllegalArgumentException("byte array must be of length 4");
         }

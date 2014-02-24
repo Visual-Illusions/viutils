@@ -27,6 +27,11 @@ public class StringUtilsTest {
     }
 
     @Test
+    public void hexadecimalStringToLongArray() {
+        Assert.assertArrayEquals(new long[]{ 0, 255 }, StringUtils.stringToLongArray("0x0,0XFF"));
+    }
+
+    @Test
     public void testDoubleArrayToString() {
         Assert.assertEquals("3.14,9.3214,14.4233", StringUtils.doubleArrayToString(new double[]{ 3.14, 9.3214, 14.4233 }, ","));
     }

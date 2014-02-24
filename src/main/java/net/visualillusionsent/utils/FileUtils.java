@@ -8,22 +8,30 @@
  * the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.
+ * You should have received a copy of the GNU General Public License along with this library.
  * If not, see http://www.gnu.org/licenses/lgpl.html.
  */
 package net.visualillusionsent.utils;
 
-import java.io.*;
-import java.net.MalformedURLException;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -55,18 +63,19 @@ public final class FileUtils {
     }
 
     public enum FileSignatures {
-        JAVA_CLASS((byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE),
-        JAVA_PACK200((byte) 0xCA, (byte) 0xFE, (byte) 0xD0, (byte) 0x0D),
-        PNG((byte) 0x89, (byte) 0x50, (byte) 0x4E, (byte) 0x47, (byte) 0x0D, (byte) 0x0A, (byte) 0x1A, (byte) 0x0A),
-        ICO((byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x00),
-        GIF_87A((byte) 0x47, (byte) 0x49, (byte) 0x46, (byte) 0x38, (byte) 0x37, (byte) 0x61),
-        GIF_89A((byte) 0x47, (byte) 0x49, (byte) 0x46, (byte) 0x38, (byte) 0x39, (byte) 0x61),
-        JPEG((byte) 0xFF, (byte) 0xD8, (byte) 0xFF),;
+        JAVA_CLASS("0xCA,0xFE,0xBA,0xBE"), //
+        JAVA_PACK200("0xCA,0xFE,0xD0,0x0D"), //
+        PNG("0x89,0x50,0x4E,0x47,0x0D,0x0A,0x1A,0x0A"), //
+        ICO("0x00,0x00,0x01,0x00"), //
+        GIF_87A("0x47,0x49,0x46,0x38,0x37,0x61"), //
+        GIF_89A("0x47,0x49,0x46,0x38,0x39,0x61"), //
+        JPEG("0xFF,0xD8,0xFF"), //
+        ;
 
         private final byte[] signature;
 
-        private FileSignatures(byte... signature) {
-            this.signature = signature;
+        private FileSignatures(String signature) {
+            this.signature = StringUtils.stringToByteArray(signature);
         }
 
         public byte[] getSignature() {
@@ -91,7 +100,7 @@ public final class FileUtils {
      *         if a read/write error occurs
      * @see #removeLines(File, String...)
      */
-    public static void removeLine(String filePath, String line) throws IOException, NullPointerException, IllegalArgumentException {
+    public static void removeLine(String filePath, String line) throws IOException {
         notNull(filePath, "String filePath");
         notEmpty(filePath, "String filePath");
         removeLines(new File(filePath), line);
@@ -115,7 +124,7 @@ public final class FileUtils {
      *         if a read/write error occurs
      * @see #removeLines(File, String...)
      */
-    public static void removeLines(String filePath, String... lines) throws IOException, NullPointerException, IllegalArgumentException {
+    public static void removeLines(String filePath, String... lines) throws IOException {
         notNull(filePath, "String filePath");
         notEmpty(filePath, "String filePath");
         removeLines(new File(filePath), lines);
@@ -137,7 +146,7 @@ public final class FileUtils {
      *         if a read/write error occurs
      * @see #removeLines(File, String...)
      */
-    public static void removeLine(File file, String line) throws IOException, NullPointerException, IllegalArgumentException {
+    public static void removeLine(File file, String line) throws IOException {
         removeLines(file, line);
     }
 
@@ -156,7 +165,7 @@ public final class FileUtils {
      * @throws java.io.IOException
      *         if a read/write error occurs
      */
-    public static void removeLines(File file, String... lines) throws IOException, NullPointerException, IllegalArgumentException {
+    public static void removeLines(File file, String... lines) throws IOException {
         notNull(file, "File file");
         notNull(lines, "String... lines");
         notEmpty(lines, "String... lines");
@@ -218,7 +227,7 @@ public final class FileUtils {
      *         if {@code toClone} is not a file, if {@code clone} is a directory, or if {@code toClone}'s path is equal to {@code clone}'s path
      * @see #cloneFile(File, File)
      */
-    public static void cloneFile(String toClone, String clone) throws IOException, NullPointerException, IllegalArgumentException {
+    public static void cloneFile(String toClone, String clone) throws IOException {
         notNull(toClone, "String toClone");
         notNull(clone, "String clone");
         notEmpty(toClone, "String toClone");
@@ -243,7 +252,7 @@ public final class FileUtils {
      *         if {@code toClone} is not a file, if {@code clone} is a directory, or if {@code toClone}'s path is equal to {@code clone}'s path
      * @see #cloneFile(File, File)
      */
-    public static void cloneFile(File toClone, String clone) throws IOException, NullPointerException, IllegalArgumentException {
+    public static void cloneFile(File toClone, String clone) throws IOException {
         notNull(toClone, "File toClone");
         notNull(clone, "String clone");
         notEmpty(clone, "String clone");
@@ -266,7 +275,7 @@ public final class FileUtils {
      * @throws java.io.IOException
      *         if a read/write error occurs
      */
-    public static void cloneFile(File toClone, File clone) throws IOException, NullPointerException, IllegalArgumentException {
+    public static void cloneFile(File toClone, File clone) throws IOException {
         notNull(toClone, "File toClone");
         notNull(clone, "File clone");
         fileCheck(clone, NOTDIRECTORY); // If its a Directory, Error
@@ -319,10 +328,14 @@ public final class FileUtils {
      * @param pathTo
      *         the path to clone the file to
      *
+     * @throws java.lang.NullPointerException
+     *         if {@code jarPath} or {@code fileToMove} or {@code pathTo} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code jarPath} or {@code fileToMove} or {@code pathTo} is empty
      * @throws java.io.IOException
      *         if a read/write error occurs
      */
-    public static void cloneFileFromJar(String jarPath, String fileToMove, String pathTo) throws IOException, NullPointerException, IllegalArgumentException {
+    public static void cloneFileFromJar(String jarPath, String fileToMove, String pathTo) throws IOException {
         notNull(jarPath, "String jarPath");
         notNull(fileToMove, "String fileToMove");
         notNull(pathTo, "String pathTo");
@@ -370,8 +383,13 @@ public final class FileUtils {
      *         the path to be normalized
      *
      * @return the normalized file path
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code path} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code path} is empty
      */
-    public static final String normalizePath(String path) {
+    public static String normalizePath(String path) {
         notNull(path, "String path");
         notEmpty(path, "String path");
 
@@ -393,11 +411,18 @@ public final class FileUtils {
      * @param algorithm
      *         the algorithm to use
      *
-     * @throws UtilityException
-     *         if an exception occurs where a check-sum cannot be completed
-     * @return{@code true} if the sums match; {@code false} if not
+     * @return {@code true} if the sums match; {@code false} if not
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code filePathA} or {@code filePathB} or {@code algorithm} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code filePathA} or {@code filePathB} or {@code algorithm} is empty
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws java.security.NoSuchAlgorithmException
+     *         if specified algorithm is not supported
      */
-    public static final boolean checkSumMatch(String filePathA, String filePathB, String algorithm) throws UtilityException, FileNotFoundException {
+    public static boolean checkSumMatch(String filePathA, String filePathB, String algorithm) throws IOException, NoSuchAlgorithmException {
         notNull(filePathA, "String filePathA");
         notNull(filePathB, "String filePathB");
         notEmpty(filePathA, "String filePathA");
@@ -414,12 +439,24 @@ public final class FileUtils {
      * @param filePathB
      *         the second file path to check
      *
-     * @throws UtilityException
-     *         if an exception occurs where a check-sum cannot be completed
-     * @return{@code true} if the sums match; {@code false} if not
+     * @return {@code true} if the sums match; {@code false} if not
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code filePathA} or {@code filePathB} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code filePathA} or {@code filePathB} is empty
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws net.visualillusionsent.utils.UtilityException
+     *         if the MD5 Algorithm is unsupported by the Runtime Environment
      */
-    public static final boolean md5SumMatch(String filePathA, String filePathB) throws UtilityException, FileNotFoundException {
-        return checkSumMatch(filePathA, filePathB, "MD5");
+    public static boolean md5SumMatch(String filePathA, String filePathB) throws IOException {
+        try {
+            return checkSumMatch(filePathA, filePathB, "MD5");
+        }
+        catch (NoSuchAlgorithmException nsaex) {
+            throw new UtilityException("sum.fail", "MD5");
+        }
     }
 
     /**
@@ -430,12 +467,24 @@ public final class FileUtils {
      * @param filePathB
      *         the second file path to check
      *
-     * @throws UtilityException
-     *         if an exception occurs where a check-sum cannot be completed
-     * @return{@code true} if the sums match; {@code false} if not
+     * @return {@code true} if the sums match; {@code false} if not
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code filePathA} or {@code filePathB} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code filePathA} or {@code filePathB} is empty
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws net.visualillusionsent.utils.UtilityException
+     *         if the SHA-1 Algorithm is unsupported by the Runtime Environment
      */
-    public static final boolean sha1SumMatch(String filePathA, String filePathB) throws UtilityException, FileNotFoundException {
-        return checkSumMatch(filePathA, filePathB, "SHA-1");
+    public static boolean sha1SumMatch(String filePathA, String filePathB) throws IOException {
+        try {
+            return checkSumMatch(filePathA, filePathB, "SHA-1");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "SHA-1");
+        }
     }
 
     /**
@@ -446,12 +495,24 @@ public final class FileUtils {
      * @param filePathB
      *         the second file path to check
      *
-     * @throws UtilityException
-     *         if an exception occurs where a check-sum cannot be completed
-     * @return{@code true} if the sums match; {@code false} if not
+     * @return {@code true} if the sums match; {@code false} if not
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code filePathA} or {@code filePathB} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code filePathA} or {@code filePathB} is empty
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws net.visualillusionsent.utils.UtilityException
+     *         if the SHA-256 Algorithm is unsupported by the Runtime Environment
      */
-    public static final boolean sha256SumMatch(String filePathA, String filePathB) throws UtilityException, FileNotFoundException {
-        return checkSumMatch(filePathA, filePathB, "SHA-256");
+    public static boolean sha256SumMatch(String filePathA, String filePathB) throws IOException {
+        try {
+            return checkSumMatch(filePathA, filePathB, "SHA-256");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "SHA-256");
+        }
     }
 
     /**
@@ -464,11 +525,18 @@ public final class FileUtils {
      * @param algorithm
      *         the algorithm to use
      *
-     * @throws UtilityException
-     *         if an exception occurs where a check-sum cannot be completed
-     * @return{@code true} if the sums match; {@code false} if not
+     * @return {@code true} if the sums match; {@code false} if not
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code fileA} or {@code fileB} or {@code algorithm} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code algorithm} is empty
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws java.security.NoSuchAlgorithmException
+     *         if specified algorithm is not supported
      */
-    public static final boolean checkSumMatch(File fileA, File fileB, String algorithm) throws UtilityException, FileNotFoundException {
+    public static boolean checkSumMatch(File fileA, File fileB, String algorithm) throws IOException, NoSuchAlgorithmException {
         notNull(fileA, "File fileA");
         notNull(fileB, "File fileB");
 
@@ -483,12 +551,24 @@ public final class FileUtils {
      * @param fileB
      *         the second file to check
      *
-     * @throws UtilityException
-     *         if an exception occurs where a check-sum cannot be completed
-     * @return{@code true} if the sums match; {@code false} if not
+     * @return {@code true} if the sums match; {@code false} if not
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code fileA} or {@code fileB} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code algorithm} is empty
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws net.visualillusionsent.utils.UtilityException
+     *         if the MD5 Algorithm is unsupported by the Runtime Environment
      */
-    public static final boolean md5SumMatch(File fileA, File fileB) throws UtilityException, FileNotFoundException {
-        return checkSumMatch(fileA, fileB, "MD5");
+    public static boolean md5SumMatch(File fileA, File fileB) throws IOException {
+        try {
+            return checkSumMatch(fileA, fileB, "MD5");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "MD5");
+        }
     }
 
     /**
@@ -499,12 +579,24 @@ public final class FileUtils {
      * @param fileB
      *         the second file to check
      *
-     * @throws UtilityException
-     *         if an exception occurs where a check-sum cannot be completed
-     * @return{@code true} if the sums match; {@code false} if not
+     * @return {@code true} if the sums match; {@code false} if not
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code fileA} or {@code fileB} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code algorithm} is empty
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws net.visualillusionsent.utils.UtilityException
+     *         if the SHA-1 Algorithm is unsupported by the Runtime Environment
      */
-    public static final boolean sha1SumMatch(File fileA, File fileB) throws UtilityException, FileNotFoundException {
-        return checkSumMatch(fileA, fileB, "SHA-1");
+    public static boolean sha1SumMatch(File fileA, File fileB) throws IOException {
+        try {
+            return checkSumMatch(fileA, fileB, "SHA-1");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "SHA-1");
+        }
     }
 
     /**
@@ -515,12 +607,24 @@ public final class FileUtils {
      * @param fileB
      *         the second file to check
      *
-     * @throws UtilityException
-     *         if an exception occurs where a check-sum cannot be completed
-     * @return{@code true} if the sums match; {@code false} if not
+     * @return {@code true} if the sums match; {@code false} if not
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code fileA} or {@code fileB} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code algorithm} is empty
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws net.visualillusionsent.utils.UtilityException
+     *         if the SHA-256 Algorithm is unsupported by the Runtime Environment
      */
-    public static final boolean sha256SumMatch(File fileA, File fileB) throws UtilityException, FileNotFoundException {
-        return checkSumMatch(fileA, fileB, "SHA-256");
+    public static boolean sha256SumMatch(File fileA, File fileB) throws IOException {
+        try {
+            return checkSumMatch(fileA, fileB, "SHA-256");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "SHA-256");
+        }
     }
 
     /**
@@ -535,28 +639,29 @@ public final class FileUtils {
      *
      * @return {@code true} if the sums match; {@code false} if not
      *
-     * @throws UtilityException
-     *         if an exception occurs where a check-sum cannot be completed
+     * @throws java.lang.NullPointerException
+     *         if {@code inStreamA} or {@code inStreamB} or {@code algorithm} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code algorithm} is empty
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws java.security.NoSuchAlgorithmException
+     *         if specified algorithm is not supported
      */
-    public static final boolean checkSumMatch(InputStream inStreamA, InputStream inStreamB, String algorithm) throws UtilityException {
+    public static boolean checkSumMatch(InputStream inStreamA, InputStream inStreamB, String algorithm) throws IOException, NoSuchAlgorithmException {
         notNull(inStreamA, "InputStream inStreamA");
         notNull(inStreamB, "InputStream inStreamB");
         notNull(algorithm, "String algorithm");
         notEmpty(algorithm, "String algorithm");
 
         byte[] digestLocal, digestJar;
-        try {
-            MessageDigest md = MessageDigest.getInstance(algorithm);
-            DigestInputStream dis = new DigestInputStream(inStreamA, md);
-            dis.read(new byte[dis.available()]);
-            digestLocal = md.digest();
-            dis = new DigestInputStream(inStreamB, md);
-            dis.read(new byte[dis.available()]);
-            digestJar = md.digest();
-        }
-        catch (Exception ex) {
-            throw new UtilityException("checksum failure (Algorithm: " + algorithm + ")", ex);
-        }
+        MessageDigest md = MessageDigest.getInstance(algorithm);
+        DigestInputStream dis = new DigestInputStream(inStreamA, md);
+        dis.read(new byte[dis.available()]);
+        digestLocal = md.digest();
+        dis = new DigestInputStream(inStreamB, md);
+        dis.read(new byte[dis.available()]);
+        digestJar = md.digest();
 
         return MessageDigest.isEqual(digestLocal, digestJar);
     }
@@ -569,12 +674,22 @@ public final class FileUtils {
      * @param inStreamB
      *         the second {@link InputStream} to check
      *
-     * @throws UtilityException
-     *         if an exception occurs where a check-sum cannot be completed
-     * @return{@code true} if the sums match; {@code false} if not
+     * @return {@code true} if the sums match; {@code false} if not
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code inStreamA} or {@code inStreamB} is null
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws net.visualillusionsent.utils.UtilityException
+     *         if the MD5 Algorithm is unsupported by the Runtime Environment
      */
-    public static final boolean md5SumMatch(InputStream inStreamA, InputStream inStreamB) throws UtilityException {
-        return checkSumMatch(inStreamA, inStreamB, "MD5");
+    public static boolean md5SumMatch(InputStream inStreamA, InputStream inStreamB) throws IOException {
+        try {
+            return checkSumMatch(inStreamA, inStreamB, "MD5");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "MD5");
+        }
     }
 
     /**
@@ -585,12 +700,22 @@ public final class FileUtils {
      * @param inStreamB
      *         the second {@link InputStream} to check
      *
-     * @throws UtilityException
-     *         if an exception occurs where a check-sum cannot be completed
-     * @return{@code true} if the sums match; {@code false} if not
+     * @return {@code true} if the sums match; {@code false} if not
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code inStreamA} or {@code inStreamB} is null
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws net.visualillusionsent.utils.UtilityException
+     *         if the SHA-1 Algorithm is unsupported by the Runtime Environment
      */
-    public static final boolean sha1SumMatch(InputStream inStreamA, InputStream inStreamB) throws UtilityException {
-        return checkSumMatch(inStreamA, inStreamB, "SHA-1");
+    public static boolean sha1SumMatch(InputStream inStreamA, InputStream inStreamB) throws IOException {
+        try {
+            return checkSumMatch(inStreamA, inStreamB, "SHA-1");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "SHA-1");
+        }
     }
 
     /**
@@ -601,12 +726,22 @@ public final class FileUtils {
      * @param inStreamB
      *         the second {@link InputStream} to check
      *
-     * @throws UtilityException
-     *         if an exception occurs where a check-sum cannot be completed
-     * @return{@code true} if the sums match; {@code false} if not
+     * @return {@code true} if the sums match; {@code false} if not
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code inStreamA} or {@code inStreamB} is null
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws net.visualillusionsent.utils.UtilityException
+     *         if the SHA-256 Algorithm is unsupported by the Runtime Environment
      */
-    public static final boolean sha256SumMatch(InputStream inStreamA, InputStream inStreamB) throws UtilityException {
-        return checkSumMatch(inStreamA, inStreamB, "SHA-256");
+    public static boolean sha256SumMatch(InputStream inStreamA, InputStream inStreamB) throws IOException {
+        try {
+            return checkSumMatch(inStreamA, inStreamB, "SHA-256");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "SHA-256");
+        }
     }
 
     /**
@@ -619,12 +754,16 @@ public final class FileUtils {
      *
      * @return the byte array check-sum
      *
-     * @throws UtilityException
-     *         if there was an error getting the check-sum
-     * @throws FileNotFoundException
-     *         if there is no file at the specified path
+     * @throws java.lang.NullPointerException
+     *         if {@code filePath} or {@code algorithm} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code filePath} or {@code algorithm} is empty
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws java.security.NoSuchAlgorithmException
+     *         if specified algorithm is not supported
      */
-    public static final byte[] checkSum(String filePath, String algorithm) throws UtilityException, FileNotFoundException {
+    public static byte[] checkSum(String filePath, String algorithm) throws IOException, NoSuchAlgorithmException {
         notNull(filePath, "String filePath");
         notEmpty(filePath, "String filePath");
 
@@ -639,13 +778,22 @@ public final class FileUtils {
      *
      * @return the MD5 sum
      *
-     * @throws UtilityException
-     *         if there was an error getting the sum
-     * @throws FileNotFoundException
-     *         if there is no file at the specified path
+     * @throws java.lang.NullPointerException
+     *         if {@code filePath} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code filePath} is empty
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws net.visualillusionsent.utils.UtilityException
+     *         if the MD5 Algorithm is unsupported by the Runtime Environment
      */
-    public static byte[] md5sum(String filePath) throws UtilityException, FileNotFoundException {
-        return checkSum(filePath, "MD5");
+    public static byte[] md5sum(String filePath) throws IOException {
+        try {
+            return checkSum(filePath, "MD5");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "MD5");
+        }
     }
 
     /**
@@ -656,13 +804,22 @@ public final class FileUtils {
      *
      * @return the SHA-1 sum
      *
-     * @throws UtilityException
-     *         if there was an error getting the sum
-     * @throws FileNotFoundException
-     *         if there is no file at the specified path
+     * @throws java.lang.NullPointerException
+     *         if {@code filePath} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code filePath} is empty
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws net.visualillusionsent.utils.UtilityException
+     *         if the SHA-1 Algorithm is unsupported by the Runtime Environment
      */
-    public static byte[] sha1sum(String filePath) throws UtilityException, FileNotFoundException {
-        return checkSum(filePath, "SHA-1");
+    public static byte[] sha1sum(String filePath) throws IOException {
+        try {
+            return checkSum(filePath, "SHA-1");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "SHA-1");
+        }
     }
 
     /**
@@ -673,13 +830,22 @@ public final class FileUtils {
      *
      * @return the SHA-256 sum
      *
-     * @throws UtilityException
-     *         if there was an error getting the sum
-     * @throws FileNotFoundException
-     *         if there is no file at the specified path
+     * @throws java.lang.NullPointerException
+     *         if {@code filePath} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code filePath} is empty
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws net.visualillusionsent.utils.UtilityException
+     *         if the SHA-256 Algorithm is unsupported by the Runtime Environment
      */
-    public static byte[] sha256sum(String filePath) throws UtilityException, FileNotFoundException {
-        return checkSum(filePath, "SHA-256");
+    public static byte[] sha256sum(String filePath) throws IOException {
+        try {
+            return checkSum(filePath, "SHA-256");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "SHA-256");
+        }
     }
 
     /**
@@ -690,12 +856,16 @@ public final class FileUtils {
      *
      * @return the checksum
      *
-     * @throws UtilityException
-     *         if there was an error getting the sum
-     * @throws FileNotFoundException
-     *         if there is no file at the specified path
+     * @throws java.lang.NullPointerException
+     *         if {@code file} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code algorithm} is empty
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws java.security.NoSuchAlgorithmException
+     *         if specified algorithm is not supported
      */
-    public static byte[] checkSum(File file, String algorithm) throws UtilityException, FileNotFoundException {
+    public static byte[] checkSum(File file, String algorithm) throws IOException, NoSuchAlgorithmException {
         notNull(file, "File file");
 
         return checkSum(new FileInputStream(file), algorithm);
@@ -709,13 +879,20 @@ public final class FileUtils {
      *
      * @return the MD5 sum
      *
-     * @throws UtilityException
-     *         if there was an error getting the sum
-     * @throws FileNotFoundException
-     *         if there is no file at the specified path
+     * @throws java.lang.NullPointerException
+     *         if {@code file} is null
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws net.visualillusionsent.utils.UtilityException
+     *         if the MD5 Algorithm is unsupported by the Runtime Environment
      */
-    public static byte[] md5sum(File file) throws UtilityException, FileNotFoundException {
-        return checkSum(file, "MD5");
+    public static byte[] md5sum(File file) throws IOException {
+        try {
+            return checkSum(file, "MD5");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "MD5");
+        }
     }
 
     /**
@@ -726,13 +903,20 @@ public final class FileUtils {
      *
      * @return the SHA-1 sum
      *
-     * @throws UtilityException
-     *         if there was an error getting the sum
-     * @throws FileNotFoundException
-     *         if there is no file at the specified path
+     * @throws java.lang.NullPointerException
+     *         if {@code file} is null
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws net.visualillusionsent.utils.UtilityException
+     *         if the SHA-1 Algorithm is unsupported by the Runtime Environment
      */
-    public static byte[] sha1sum(File file) throws UtilityException, FileNotFoundException {
-        return checkSum(file, "SHA-1");
+    public static byte[] sha1sum(File file) throws IOException {
+        try {
+            return checkSum(file, "SHA-1");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "SHA-1");
+        }
     }
 
     /**
@@ -743,13 +927,20 @@ public final class FileUtils {
      *
      * @return the SHA-256 sum
      *
-     * @throws UtilityException
-     *         if there was an error getting the sum
-     * @throws FileNotFoundException
-     *         if there is no file at the specified path
+     * @throws java.lang.NullPointerException
+     *         if {@code file} is null
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws net.visualillusionsent.utils.UtilityException
+     *         if the SHA-256 Algorithm is unsupported by the Runtime Environment
      */
-    public static byte[] sha256sum(File file) throws UtilityException, FileNotFoundException {
-        return checkSum(file, "SHA-256");
+    public static byte[] sha256sum(File file) throws IOException {
+        try {
+            return checkSum(file, "SHA-256");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "SHA-256");
+        }
     }
 
     /**
@@ -762,19 +953,18 @@ public final class FileUtils {
      *
      * @return the checksum
      *
-     * @throws UtilityException
-     *         if there was an error getting the sum
+     * @throws java.lang.NullPointerException
+     *         if {@code inStream} or {@code algorithm} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code algorithm} is empty
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
      */
-    public static final byte[] checkSum(InputStream inStream, String algorithm) throws UtilityException {
-        try {
-            MessageDigest md = MessageDigest.getInstance(algorithm);
-            DigestInputStream dis = new DigestInputStream(inStream, md);
-            dis.read(new byte[dis.available()]);
-            return md.digest();
-        }
-        catch (Exception ex) {
-            throw new UtilityException("checksum failure (Algorithm: " + algorithm + ")", ex);
-        }
+    public static byte[] checkSum(InputStream inStream, String algorithm) throws IOException, NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance(algorithm);
+        DigestInputStream dis = new DigestInputStream(inStream, md);
+        dis.read(new byte[dis.available()]);
+        return md.digest();
     }
 
     /**
@@ -785,11 +975,20 @@ public final class FileUtils {
      *
      * @return the MD5 sum
      *
-     * @throws UtilityException
-     *         if there was an error getting the sum
+     * @throws java.lang.NullPointerException
+     *         if {@code inStream} is null
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws net.visualillusionsent.utils.UtilityException
+     *         if the MD5 Algorithm is unsupported by the Runtime Environment
      */
-    public static final byte[] md5sum(InputStream inStream) throws UtilityException {
-        return checkSum(inStream, "MD5");
+    public static byte[] md5sum(InputStream inStream) throws IOException {
+        try {
+            return checkSum(inStream, "MD5");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "MD5");
+        }
     }
 
     /**
@@ -800,11 +999,20 @@ public final class FileUtils {
      *
      * @return the SHA-1 sum
      *
-     * @throws UtilityException
-     *         if there was an error getting the sum
+     * @throws java.lang.NullPointerException
+     *         if {@code inStream} is null
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws net.visualillusionsent.utils.UtilityException
+     *         if the MD5 Algorithm is unsupported by the Runtime Environment
      */
-    public static final byte[] sha1sum(InputStream inStream) throws UtilityException {
-        return checkSum(inStream, "SHA-1");
+    public static byte[] sha1sum(InputStream inStream) throws IOException {
+        try {
+            return checkSum(inStream, "SHA-1");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "SHA-1");
+        }
     }
 
     /**
@@ -815,11 +1023,20 @@ public final class FileUtils {
      *
      * @return the SHA-256 sum
      *
-     * @throws UtilityException
-     *         if there was an error getting the sum
+     * @throws java.lang.NullPointerException
+     *         if {@code inStream} is null
+     * @throws java.io.IOException
+     *         if an Input/Output exception occurs
+     * @throws net.visualillusionsent.utils.UtilityException
+     *         if the MD5 Algorithm is unsupported by the Runtime Environment
      */
-    public static final byte[] sha256sum(InputStream inStream) throws UtilityException {
-        return checkSum(inStream, "SHA-256");
+    public static byte[] sha256sum(InputStream inStream) throws IOException {
+        try {
+            return checkSum(inStream, "SHA-256");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "SHA-256");
+        }
     }
 
     /**
@@ -830,20 +1047,20 @@ public final class FileUtils {
      * @param filePath
      *         the file path to download to
      *
-     * @throws UtilityException
-     *         if url is null, empty, or malformed<br/>
-     *         if file path is null or empty
+     * @throws java.lang.NullPointerException
+     *         if {@code url} or {@code filePath} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code url} or {@code filePath} is empty
+     * @throws java.net.MalformedURLException
+     *         if {@code url} specifies an unknown protocol.
+     * @throws java.io.IOException
+     *         if a read/write exception occurs
      */
-    public static final void downloadFile(String url, String filePath) throws UtilityException {
+    public static void downloadFile(String url, String filePath) throws IOException {
         notNull(url, "String url");
         notEmpty(url, "String url");
 
-        try {
-            downloadFile(new URL(url), filePath);
-        }
-        catch (MalformedURLException murlex) {
-            throw new UtilityException("URL is malformed...");
-        }
+        downloadFile(new URL(url), filePath);
     }
 
 
@@ -855,23 +1072,21 @@ public final class FileUtils {
      * @param filePath
      *         the file path to download to
      *
-     * @throws UtilityException
-     *         if url is null, empty, or malformed<br/>
-     *         if file path is null or empty
+     * @throws java.lang.NullPointerException
+     *         if {@code url} or {@code filePath} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code filePath} is empty
+     * @throws java.io.IOException
+     *         if a read/write exception occurs
      */
-    public static final void downloadFile(URL url, String filePath) throws UtilityException {
+    public static void downloadFile(URL url, String filePath) throws UtilityException, IOException {
         notNull(url, "URL url");
         notNull(filePath, "String filePath");
         notEmpty(filePath, "String filePath");
 
-        try {
-            ReadableByteChannel rbc = Channels.newChannel(url.openStream());
-            FileOutputStream fos = new FileOutputStream(filePath);
-            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-        }
-        catch (Exception ex) {
-            throw new UtilityException("Failed to download file...", ex);
-        }
+        ReadableByteChannel rbc = Channels.newChannel(url.openStream());
+        FileOutputStream fos = new FileOutputStream(filePath);
+        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
     }
 
     /**
@@ -879,7 +1094,7 @@ public final class FileUtils {
      *
      * @return the class version
      */
-    public static final float getClassVersion() {
+    public static float getClassVersion() {
         return classVersion;
     }
 }

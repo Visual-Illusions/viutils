@@ -8,18 +8,14 @@
  * the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.
+ * You should have received a copy of the GNU General Public License along with this library.
  * If not, see http://www.gnu.org/licenses/lgpl.html.
  */
 package net.visualillusionsent.utils;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Utility Exception
@@ -28,36 +24,15 @@ import java.util.Map;
  * use the {@link #getMessage()} or {@link #getLocalizedMessage()} method to retrieve the reason why the utility method failed
  *
  * @author Jason (darkdiplomat)
- * @version 1.0
+ * @version 1.1
  * @since 1.0.0
- * @deprecated being phased out
  */
-@Deprecated
-public final class UtilityException extends RuntimeException {
+public class UtilityException extends RuntimeException {
 
-    private static final float classVersion = 1.0F;
-    private static final Map<String, String> errors;
+    /* 1.1 @ VIUtils 1.4.0 */
+    private static final float classVersion = 1.1F;
     /** Serial Version */
-    private static final long serialVersionUID = 042216122012L;
-
-    static {
-        HashMap<String, String> temp = new HashMap<String, String>();
-        temp.put("arg.null", "'%s' cannot be null");
-        temp.put("arg.empty", "'%s' cannot be empty");
-        temp.put("file.err.ioe", "An IOException occurred in File: %s");
-        temp.put("file.err.exist", "%s is not an existing file");
-        temp.put("file.err.read", "Could not read File: %s");
-        temp.put("file.err.write", "Could not write to File: %s");
-        temp.put("file.err.path", "%s path equals %s path");
-        temp.put("file.err.dir", "%s is a Directory, not a file");
-        temp.put("key.missing", "Property for KEY: %s was not found.");
-        temp.put("prop.nan", "Property for KEY: %s was not a number.");
-        temp.put("str.nan", "String Index: %s was not a number");
-        temp.put("entry.missing", "JarFile does not contain Entry: %s");
-        temp.put("num.zeroOrLess", "%s cannot be negative or zero");
-        temp.put("num.negative", "%s cannot be negative");
-        errors = Collections.unmodifiableMap(temp);
-    }
+    private static final long serialVersionUID = 020100242014L;
 
     /**
      * Class Constructor
@@ -76,14 +51,7 @@ public final class UtilityException extends RuntimeException {
     }
 
     UtilityException(String error, String... form) {
-        super(parseError(error, form));
-    }
-
-    private final static String parseError(String error, String[] form) {
-        if (errors.containsKey(error)) {
-            return String.format(errors.get(error), (Object[]) form);
-        }
-        return error;
+        super(Verify.parse(error, form));
     }
 
     /**
@@ -91,7 +59,7 @@ public final class UtilityException extends RuntimeException {
      *
      * @return the class version
      */
-    public final static float getClassVersion() {
+    public static float getClassVersion() {
         return classVersion;
     }
 }

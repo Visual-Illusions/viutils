@@ -8,11 +8,11 @@
  * the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.
+ * You should have received a copy of the GNU General Public License along with this library.
  * If not, see http://www.gnu.org/licenses/lgpl.html.
  */
 package net.visualillusionsent.utils;
@@ -286,7 +286,13 @@ public final class StringUtils {
         byte[] toRet = new byte[strings.length];
         for (int index = 0; index < strings.length; index++) {
             try {
-                toRet[index] = Byte.parseByte(strings[index].trim());
+                // A Byte can be 255 unsigned, but all numbers are signed in Java
+                // So we need to insert a work around
+                short temp = Short.decode(strings[index].trim());
+                if (temp > 255) { // If over 255 it will break the byte bounds beyond the assumed overflow
+                    throw new UtilityException("str.nan", strings[index]);
+                }
+                toRet[index] = (byte) temp;
             }
             catch (NumberFormatException nfe) {
                 throw new UtilityException("str.nan", strings[index]);
@@ -408,7 +414,7 @@ public final class StringUtils {
         short[] toRet = new short[strings.length];
         for (int index = 0; index < strings.length; index++) {
             try {
-                toRet[index] = Short.parseShort(strings[index].trim());
+                toRet[index] = Short.decode(strings[index].trim());
             }
             catch (NumberFormatException nfe) {
                 throw new UtilityException("str.nan", strings[index]);
@@ -530,7 +536,7 @@ public final class StringUtils {
         int[] toRet = new int[strings.length];
         for (int index = 0; index < strings.length; index++) {
             try {
-                toRet[index] = Integer.parseInt(strings[index].trim());
+                toRet[index] = Integer.decode(strings[index].trim());
             }
             catch (NumberFormatException nfe) {
                 throw new UtilityException("str.nan", strings[index]);
@@ -648,7 +654,7 @@ public final class StringUtils {
         long[] toRet = new long[strings.length];
         for (int index = 0; index < strings.length; index++) {
             try {
-                toRet[index] = Long.parseLong(strings[index].trim());
+                toRet[index] = Long.decode(strings[index].trim());
             }
             catch (NumberFormatException nfe) {
                 throw new UtilityException("str.nan", strings[index]);

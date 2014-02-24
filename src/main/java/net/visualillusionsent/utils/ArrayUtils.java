@@ -8,11 +8,11 @@
  * the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.
+ * You should have received a copy of the GNU General Public License along with this library.
  * If not, see http://www.gnu.org/licenses/lgpl.html.
  */
 package net.visualillusionsent.utils;
@@ -51,7 +51,7 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the 2 given ones
      */
-    public static <T> T[] arrayMerge(T[] first, T[] second) throws NullPointerException {
+    public static <T> T[] arrayMerge(T[] first, T[] second) {
         notNull(first, "T[] first");
         notNull(second, "T[] second");
 
@@ -72,7 +72,7 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the given 2 arrays, minus duplicate entries
      */
-    public static <T> T[] safeArrayMerge(T[] first, T[] second, T[] template) throws NullPointerException {
+    public static <T> T[] safeArrayMerge(T[] first, T[] second, T[] template) {
         notNull(first, "T[] first");
         notNull(second, "T[] second");
 
@@ -94,7 +94,7 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the 2 given ones
      */
-    public static byte[] arrayMerge(byte[] first, byte[] second) throws NullPointerException {
+    public static byte[] arrayMerge(byte[] first, byte[] second) {
         notNull(first, "byte[] first");
         notNull(second, "byte[] second");
 
@@ -113,7 +113,7 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the 2 given ones
      */
-    public static short[] arrayMerge(short[] first, short[] second) throws NullPointerException {
+    public static short[] arrayMerge(short[] first, short[] second) {
         notNull(first, "short[] first");
         notNull(second, "short[] second");
 
@@ -132,7 +132,7 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the 2 given ones
      */
-    public static int[] arrayMerge(int[] first, int[] second) throws NullPointerException {
+    public static int[] arrayMerge(int[] first, int[] second) {
         notNull(first, "int[] first");
         notNull(second, "int[] second");
 
@@ -151,7 +151,7 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the 2 given ones
      */
-    public static long[] arrayMerge(long[] first, long[] second) throws NullPointerException {
+    public static long[] arrayMerge(long[] first, long[] second) {
         notNull(first, "long[] first");
         notNull(second, "long[] second");
 
@@ -170,7 +170,7 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the 2 given ones
      */
-    public static float[] arrayMerge(float[] first, float[] second) throws NullPointerException {
+    public static float[] arrayMerge(float[] first, float[] second) {
         notNull(first, "float[] first");
         notNull(second, "float[] second");
 
@@ -189,7 +189,7 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the 2 given ones
      */
-    public static double[] arrayMerge(double[] first, double[] second) throws NullPointerException {
+    public static double[] arrayMerge(double[] first, double[] second) {
         notNull(first, "double[] first");
         notNull(second, "double[] second");
 
@@ -208,7 +208,7 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the 2 given ones
      */
-    public static char[] arrayMerge(char[] first, char[] second) throws NullPointerException {
+    public static char[] arrayMerge(char[] first, char[] second) {
         notNull(first, "char[] first");
         notNull(second, "char[] second");
 
@@ -227,7 +227,7 @@ public final class ArrayUtils {
      *
      * @return array containing all elements of the 2 given ones
      */
-    public static boolean[] arrayMerge(boolean[] first, boolean[] second) throws NullPointerException {
+    public static boolean[] arrayMerge(boolean[] first, boolean[] second) {
         notNull(first, "boolean[] first");
         notNull(second, "boolean[] second");
 
@@ -388,7 +388,7 @@ public final class ArrayUtils {
     }
 
     public static char[] toPrimative(Character[] value) {
-        notNull(value, "Double[] value");
+        notNull(value, "Character[] value");
 
         char[] working = new char[value.length];
         for (int index = 0; index < value.length; index++) {

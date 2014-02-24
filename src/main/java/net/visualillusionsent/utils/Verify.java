@@ -8,11 +8,11 @@
  * the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.
+ * You should have received a copy of the GNU General Public License along with this library.
  * If not, see http://www.gnu.org/licenses/lgpl.html.
  */
 package net.visualillusionsent.utils;
@@ -54,6 +54,7 @@ public final class Verify {
         temp.put("entry.missing", "JarFile does not contain Entry: %s");
         temp.put("num.zeroOrLess", "%s cannot be negative or zero");
         temp.put("num.negative", "%s cannot be negative");
+        temp.put("sum.fail", "The underlining Java Runtime Environment does not appear to support the %s Algorithm");
         errors = Collections.unmodifiableMap(temp);
     }
 

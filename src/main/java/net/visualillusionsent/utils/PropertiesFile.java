@@ -8,11 +8,11 @@
  * the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.
+ * You should have received a copy of the GNU General Public License along with this library.
  * If not, see http://www.gnu.org/licenses/lgpl.html.
  */
 package net.visualillusionsent.utils;
@@ -53,16 +53,16 @@ import static net.visualillusionsent.utils.Verify.notNull;
  */
 public final class PropertiesFile extends AbstractPropertiesFile {
 
-    /* VIU 1.4.0 / 1.5 */
+    /* 1.5 @ VIUtils 1.4.0 */
     private static final float classVersion = 1.5F;
 
     /**
      * {@inheritDoc}
      *
      * @throws PropertiesFileException
-     * if an exception occurs while reading the file or if unable to create the file
+     *         if an exception occurs while reading the file or if unable to create the file
      */
-    public PropertiesFile(String filePath) throws PropertiesFileException {
+    public PropertiesFile(String filePath) {
         super(filePath);
         this.props = new LinkedHashMap<String, String>();
         this.booleanCache = new HashMap<String, Boolean>();
@@ -98,7 +98,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * {@inheritDoc}
      *
      * @throws PropertiesFileException
-     * if an exception occurs while reading the file or if unable to create the file
+     *         if an exception occurs while reading the file or if unable to create the file
      */
     public PropertiesFile(File file) {
         super(file);
@@ -135,9 +135,9 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * {@inheritDoc}
      *
      * @throws PropertiesFileException
-     * if an exception occurs while reading the JarFile
+     *         if an exception occurs while reading the JarFile
      */
-    public PropertiesFile(String jarPath, String entry) throws PropertiesFileException {
+    public PropertiesFile(String jarPath, String entry) {
         super(jarPath, entry);
         JarEntry ent = jar.getJarEntry(entry);
         this.props = new LinkedHashMap<String, String>();
@@ -162,7 +162,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if an exception occurs while reading the file
      */
     @Override
-    protected final void load(InputStream inStream) throws PropertiesFileException {
+    protected final void load(InputStream inStream) {
         PropertiesFileException uex = null;
         BufferedReader in = null;
         try {
@@ -232,10 +232,10 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * {@inheritDoc}
      *
      * @throws PropertiesFileException
-     * if an exception occurs while reading/writing the file
+     *         if an exception occurs while reading/writing the file
      */
     @Override
-    public final void reload() throws PropertiesFileException {
+    public final void reload() {
         props.clear();
         comments.clear();
         booleanCache.clear();
@@ -267,10 +267,10 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * {@inheritDoc}
      *
      * @throws PropertiesFileException
-     * if an exception occurs while writing the file
+     *         if an exception occurs while writing the file
      */
     @Override
-    public final void save() throws PropertiesFileException {
+    public final void save() {
         this.save(false);
     }
 
@@ -278,10 +278,10 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * {@inheritDoc}
      *
      * @throws PropertiesFileException
-     * if an exception occurs while writing the file
+     *         if an exception occurs while writing the file
      */
     @Override
-    public final void forceSave() throws PropertiesFileException {
+    public final void forceSave() {
         this.save(true);
     }
 
@@ -289,10 +289,10 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * {@inheritDoc}
      *
      * @throws PropertiesFileException
-     * if an exception occurs while writing the file
+     *         if an exception occurs while writing the file
      */
     @Override
-    protected final void save(boolean force) throws PropertiesFileException {
+    protected final void save(boolean force) {
         if (jar != null) {
             throw new PropertiesFileException("Saving is not supported with PropertiesFiles inside of Jar files");
         }
@@ -345,7 +345,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if key is empty
      */
     @Override
-    public final boolean containsKey(String key) throws NullPointerException, IllegalArgumentException {
+    public final boolean containsKey(String key) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -361,7 +361,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if a key is empty
      */
     @Override
-    public final boolean containsKeys(String... keys) throws NullPointerException, IllegalArgumentException {
+    public final boolean containsKeys(String... keys) {
         boolean contains = true;
         for (String key : keys) {
             contains &= containsKey(key);
@@ -378,7 +378,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if key is empty
      */
     @Override
-    public final void removeKey(String key) throws NullPointerException, IllegalArgumentException {
+    public final void removeKey(String key) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -400,7 +400,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if a key is empty
      */
     @Override
-    public final void removeKeys(String... keys) throws NullPointerException, IllegalArgumentException {
+    public final void removeKeys(String... keys) {
         notNull(keys, "String... keys");
         notEmpty(keys, "String... keys");
 
@@ -426,7 +426,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if the key does not exist
      */
     @Override
-    public final String getString(String key) throws NullPointerException, IllegalArgumentException, UnknownPropertyException {
+    public final String getString(String key) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -442,10 +442,10 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * @throws java.lang.NullPointerException
      *         if key is null
      * @throws java.lang.IllegalArgumentException
-     *         if key is empty 
+     *         if key is empty
      */
     @Override
-    public final String getString(String key, String def) throws NullPointerException, IllegalArgumentException {
+    public final String getString(String key, String def) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -468,7 +468,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if key is empty
      */
     @Override
-    public final void setString(String key, String value) throws IllegalArgumentException, NullPointerException {
+    public final void setString(String key, String value) {
         setString(key, value, (String[]) null);
     }
 
@@ -479,10 +479,10 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if key is null
      *         if value is null
      * @throws java.lang.IllegalArgumentException
-     *         if key is empty 
+     *         if key is empty
      */
     @Override
-    public final void setString(String key, String value, String... comment) throws IllegalArgumentException, NullPointerException {
+    public final void setString(String key, String value, String... comment) {
         notNull(key, "String key");
         notNull(value, "String value");
         notEmpty(key, "String key");
@@ -509,10 +509,10 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * @throws java.lang.IllegalArgumentException
      *         if key is empty
      * @throws net.visualillusionsent.utils.UnknownPropertyException
-     *         if the key does not exist   
+     *         if the key does not exist
      */
     @Override
-    public final String[] getStringArray(String key) throws UtilityException {
+    public final String[] getStringArray(String key) {
         return getStringArray(key, ",");
     }
 
@@ -524,7 +524,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * @throws java.lang.IllegalArgumentException
      *         if key is empty
      * @throws net.visualillusionsent.utils.UnknownPropertyException
-     *         if the key does not exist   
+     *         if the key does not exist
      */
     @Override
     public final String[] getStringArray(String key, String[] def) throws UtilityException {

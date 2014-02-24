@@ -8,11 +8,11 @@
  * the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.
+ * You should have received a copy of the GNU General Public License along with this library.
  * If not, see http://www.gnu.org/licenses/lgpl.html.
  */
 package net.visualillusionsent.utils;
@@ -64,7 +64,7 @@ public final class DateUtils {
      * @throws java.lang.IllegalArgumentException
      *         if time is negative
      */
-    public static String longToDate(long time) throws IllegalArgumentException {
+    public static String longToDate(long time) {
         return longToDate(time, TimeZone.getDefault());
     }
 
@@ -81,7 +81,7 @@ public final class DateUtils {
      * @throws java.lang.IllegalArgumentException
      *         if time is negative
      */
-    public static String longToDate(long time, TimeZone zone) throws IllegalArgumentException {
+    public static String longToDate(long time, TimeZone zone) {
         notNegative(time, "Time");
 
         if (zone != null && zone != TimeZone.getDefault()) {
@@ -101,7 +101,7 @@ public final class DateUtils {
      * @throws java.lang.IllegalArgumentException
      *         if time is negative
      */
-    public static String longToTime(long time) throws IllegalArgumentException {
+    public static String longToTime(long time) {
         return longToTime(time, TimeZone.getDefault());
     }
 
@@ -116,7 +116,7 @@ public final class DateUtils {
      * @throws java.lang.IllegalArgumentException
      *         if time is negative
      */
-    public static String longToTime(long time, TimeZone zone) throws IllegalArgumentException {
+    public static String longToTime(long time, TimeZone zone) {
         notNegative(time, "Time");
 
         if (zone != null && zone != TimeZone.getDefault()) {
@@ -136,7 +136,7 @@ public final class DateUtils {
      * @throws java.lang.IllegalArgumentException
      *         if time is negative
      */
-    public static String longToDateTime(long time) throws IllegalArgumentException {
+    public static String longToDateTime(long time) {
         return longToDateTime(time, TimeZone.getDefault());
     }
 
@@ -153,7 +153,7 @@ public final class DateUtils {
      * @throws java.lang.IllegalArgumentException
      *         if time is negative
      */
-    public static String longToDateTime(long time, TimeZone zone) throws IllegalArgumentException {
+    public static String longToDateTime(long time, TimeZone zone) {
         notNegative(time, "Time");
 
         if (zone != null && zone != TimeZone.getDefault()) {
@@ -170,7 +170,7 @@ public final class DateUtils {
      *
      * @return date and time as a string formatted as HH:mm:ss dd-MMM-yyyy
      */
-    public static String longToTimeDate(long time) throws IllegalArgumentException {
+    public static String longToTimeDate(long time) {
         return longToTimeDate(time, TimeZone.getDefault());
     }
 
@@ -187,7 +187,7 @@ public final class DateUtils {
      * @throws java.lang.IllegalArgumentException
      *         if time is negative
      */
-    public static String longToTimeDate(long time, TimeZone zone) throws IllegalArgumentException {
+    public static String longToTimeDate(long time, TimeZone zone) {
         notNegative(time, "Time");
 
         if (zone != null && zone != TimeZone.getDefault()) {
@@ -211,7 +211,7 @@ public final class DateUtils {
      * @throws java.lang.NullPointerException
      *         if format is null
      */
-    public static String longToFormatedDateTime(long time, String format) throws NullPointerException, IllegalArgumentException {
+    public static String longToFormatedDateTime(long time, String format) {
         notNegative(time, "Time");
         notNull(format, "String format");
         notEmpty(format, "String format");
@@ -237,7 +237,7 @@ public final class DateUtils {
      * @throws java.lang.NullPointerException
      *         if date is null
      */
-    public static Date getDateFromString(String date) throws NullPointerException, IllegalArgumentException {
+    public static Date getDateFromString(String date) {
         notNull(date, "String date");
         notEmpty(date, "String date");
 
