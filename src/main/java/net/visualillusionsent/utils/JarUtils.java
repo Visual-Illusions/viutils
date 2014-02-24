@@ -18,8 +18,10 @@
 package net.visualillusionsent.utils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.security.CodeSource;
+import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
@@ -279,6 +281,88 @@ public final class JarUtils {
             }
         }
         return classes.toArray(new Class[classes.size()]);
+    }
+
+    /**
+     * Checks if a {@link JarFile} is properly signed
+     *
+     * @param jarPath
+     *         the path to the {@link JarFile}
+     *
+     * @return {@code true} if properly signed; {@code false} otherwise
+     *
+     * @throws IOException
+     *         if the JarFile is not readable or non-existent
+     * @throws java.lang.NullPointerException
+     *         if {@code jarPath} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code jarPath} is empty
+     */
+    public static boolean isSigned(String jarPath) throws IOException {
+        notNull(jarPath, "String jarPath");
+        notEmpty(jarPath, "String jarPath");
+
+        return isSigned(new JarFile(jarPath, false)); // don't verify it twice...
+    }
+
+    /**
+     * Checks if a {@link JarFile} is properly signed
+     *
+     * @param jarFile
+     *         the {@link JarFile} to check
+     *
+     * @return {@code true} if properly signed; {@code false} otherwise
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code jarFile} is null
+     */
+    public static boolean isSigned(JarFile jarFile) {
+        notNull(jarFile, "JarFile jarFile");
+
+        boolean passed = true;
+        InputStream is = null;
+        try {
+            Manifest man = jarFile.getManifest();
+            if (man == null) { // if no manifest, its not signed
+                return false;
+            }
+
+            byte[] buffer = new byte[4096];
+            Enumeration entries = jarFile.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry je = (JarEntry) entries.nextElement();
+                // check entries' for correct signatures
+                is = jarFile.getInputStream(je);
+                while (is.read(buffer, 0, buffer.length) != -1) {
+                    // we just read. this will throw a SecurityException if a signature/digest check fails.
+                }
+                is.close(); // Close each time
+
+                // Check if entry is signed
+                if (!je.isDirectory() && !je.getName().startsWith("META-INF")) { // Skip META-INF files
+                    Certificate[] certs = je.getCertificates();
+                    if (certs == null || certs.length == 0) { // If certs are null or empty, fail
+                        passed = false;
+                        break; // no need to continue checks
+                    }
+                }
+            }
+        }
+        catch (Exception ex) {
+            passed = false;
+        }
+        finally {
+            if (is != null) {
+                try {
+                    is.close(); // If we left this open, close it
+                    jarFile.close(); // this is probably still open
+                }
+                catch (IOException e) {
+                    // IGNORED
+                }
+            }
+        }
+        return passed;
     }
 
     /**

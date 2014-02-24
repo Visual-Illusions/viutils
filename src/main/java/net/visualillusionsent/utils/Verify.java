@@ -80,7 +80,7 @@ public final class Verify {
      * @throws NullPointerException
      *         if the object is null
      */
-    public static void notNull(Object obj, String arg) throws NullPointerException {
+    public static void notNull(Object obj, String arg) {
         if (obj == null)
             throw new NullPointerException(parse("arg.null", arg));
     }
@@ -96,8 +96,24 @@ public final class Verify {
      * @throws IllegalArgumentException
      *         if the {@link String} is empty
      */
-    public static void notEmpty(String str, String arg) throws IllegalArgumentException {
+    public static void notEmpty(String str, String arg) {
         if (str.trim().isEmpty())
+            throw new IllegalArgumentException(parse("arg.empty", arg));
+    }
+
+    /**
+     * Checks if a {@link String} is empty without trimming the {@link String}
+     *
+     * @param str
+     *         the {@link String} to check
+     * @param arg
+     *         the argument name to pass with the exception message
+     *
+     * @throws IllegalArgumentException
+     *         if the {@link String} is empty
+     */
+    public static void notEmptyNoTrim(String str, String arg) {
+        if (str.isEmpty())
             throw new IllegalArgumentException(parse("arg.empty", arg));
     }
 
@@ -112,7 +128,7 @@ public final class Verify {
      * @throws IllegalArgumentException
      *         if the {@code Object[]} is empty
      */
-    public static void notEmpty(Object[] objArray, String arg) throws IllegalArgumentException {
+    public static void notEmpty(Object[] objArray, String arg) {
         if (objArray.length <= 0)
             throw new IllegalArgumentException(parse("arg.empty", arg));
     }
@@ -128,7 +144,7 @@ public final class Verify {
      * @throws IllegalArgumentException
      *         if the {@code byte[]} is empty
      */
-    public static void notEmpty(byte[] byteArray, String arg) throws IllegalArgumentException {
+    public static void notEmpty(byte[] byteArray, String arg) {
         if (byteArray.length <= 0)
             throw new IllegalArgumentException(parse("arg.empty", arg));
     }
@@ -144,7 +160,7 @@ public final class Verify {
      * @throws IllegalArgumentException
      *         if the {@code short[]} is empty
      */
-    public static void notEmpty(short[] shortArray, String arg) throws IllegalArgumentException {
+    public static void notEmpty(short[] shortArray, String arg) {
         if (shortArray.length <= 0)
             throw new IllegalArgumentException(parse("arg.empty", arg));
     }
@@ -160,7 +176,7 @@ public final class Verify {
      * @throws IllegalArgumentException
      *         if the {@code int[]} is empty
      */
-    public static void notEmpty(int[] intArray, String arg) throws IllegalArgumentException {
+    public static void notEmpty(int[] intArray, String arg) {
         if (intArray.length <= 0)
             throw new IllegalArgumentException(parse("arg.empty", arg));
     }
@@ -176,7 +192,7 @@ public final class Verify {
      * @throws IllegalArgumentException
      *         if the {@code long[]} is empty
      */
-    public static void notEmpty(long[] longArray, String arg) throws IllegalArgumentException {
+    public static void notEmpty(long[] longArray, String arg) {
         if (longArray.length <= 0)
             throw new IllegalArgumentException(parse("arg.empty", arg));
     }
@@ -192,7 +208,7 @@ public final class Verify {
      * @throws IllegalArgumentException
      *         if the {@code float[]} is empty
      */
-    public static void notEmpty(float[] floatArray, String arg) throws IllegalArgumentException {
+    public static void notEmpty(float[] floatArray, String arg) {
         if (floatArray.length <= 0)
             throw new IllegalArgumentException(parse("arg.empty", arg));
     }
@@ -208,7 +224,7 @@ public final class Verify {
      * @throws IllegalArgumentException
      *         if the {@code double[]} is empty
      */
-    public static void notEmpty(double[] doubleArray, String arg) throws IllegalArgumentException {
+    public static void notEmpty(double[] doubleArray, String arg) {
         if (doubleArray.length <= 0)
             throw new IllegalArgumentException(parse("arg.empty", arg));
     }
@@ -224,27 +240,27 @@ public final class Verify {
      * @throws IllegalArgumentException
      *         if the {@code boolean[]} is empty
      */
-    public static void notEmpty(boolean[] booleanArray, String arg) throws IllegalArgumentException {
+    public static void notEmpty(boolean[] booleanArray, String arg) {
         if (booleanArray.length <= 0)
             throw new IllegalArgumentException(parse("arg.empty", arg));
     }
 
-    public static void notNegativeOrZero(Number number, String arg) throws IllegalArgumentException {
+    public static void notNegativeOrZero(Number number, String arg) {
         if (number.doubleValue() <= 0)
             throw new IllegalArgumentException(parse("num.zeroOrLess", arg));
     }
 
-    public static void notNegative(Number number, String arg) throws IllegalArgumentException {
+    public static void notNegative(Number number, String arg) {
         if (number.doubleValue() < 0)
             throw new IllegalArgumentException(parse("num.negative", arg));
     }
 
-    public static void notOutOfRange(long check, long range, String msg) throws IllegalArgumentException {
+    public static void notOutOfRange(long check, long range, String msg) {
         if (check > range)
             throw new IllegalArgumentException(msg);
     }
 
-    public static void notOutOfRangeEqual(long check, long range, String msg) throws IllegalArgumentException {
+    public static void notOutOfRangeEqual(long check, long range, String msg) {
         if (check >= range)
             throw new IllegalArgumentException(msg);
     }

@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 
 import static net.visualillusionsent.utils.Verify.notEmpty;
+import static net.visualillusionsent.utils.Verify.notEmptyNoTrim;
 import static net.visualillusionsent.utils.Verify.notNull;
 
 /**
@@ -180,9 +181,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
                     inComments.add(inLine);
                 }
                 else {
-                    String[] propsLine = null;
+                    String[] propsLine = inLine.split("=");
                     try {
-                        propsLine = inLine.split("=");
                         String key = propsLine[0].trim();
                         String value = propsLine[1];
                         if (value.contains("#!")) {
@@ -340,9 +340,9 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * {@inheritDoc}
      *
      * @throws java.lang.NullPointerException
-     *         if key is null
+     *         if {@code key} is null
      * @throws java.lang.IllegalArgumentException
-     *         if key is empty
+     *         if {@code key}  is empty
      */
     @Override
     public final boolean containsKey(String key) {
@@ -356,9 +356,9 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * {@inheritDoc}
      *
      * @throws java.lang.NullPointerException
-     *         if a key is null
+     *         if a {@code key} is null
      * @throws java.lang.IllegalArgumentException
-     *         if a key is empty
+     *         if a {@code key} is empty
      */
     @Override
     public final boolean containsKeys(String... keys) {
@@ -373,9 +373,9 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * {@inheritDoc}
      *
      * @throws java.lang.NullPointerException
-     *         if key is null
+     *         if {@code key} is null
      * @throws java.lang.IllegalArgumentException
-     *         if key is empty
+     *         if {@code key} is empty
      */
     @Override
     public final void removeKey(String key) {
@@ -395,9 +395,9 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * {@inheritDoc}
      *
      * @throws java.lang.NullPointerException
-     *         if a key is null
+     *         if a {@code key} is null
      * @throws java.lang.IllegalArgumentException
-     *         if a key is empty
+     *         if a {@code key} is empty
      */
     @Override
     public final void removeKeys(String... keys) {
@@ -419,11 +419,11 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * {@inheritDoc}
      *
      * @throws java.lang.NullPointerException
-     *         if key is null
+     *         if {@code key} is null
      * @throws java.lang.IllegalArgumentException
-     *         if key is empty
+     *         if {@code key} is empty
      * @throws net.visualillusionsent.utils.UnknownPropertyException
-     *         if the key does not exist
+     *         if the {@code key} does not exist
      */
     @Override
     public final String getString(String key) {
@@ -440,13 +440,14 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * {@inheritDoc}
      *
      * @throws java.lang.NullPointerException
-     *         if key is null
+     *         if {@code key} or {@code def} is null
      * @throws java.lang.IllegalArgumentException
-     *         if key is empty
+     *         if {@code key} is empty
      */
     @Override
     public final String getString(String key, String def) {
         notNull(key, "String key");
+        notNull(def, "String def");
         notEmpty(key, "String key");
 
         if (containsKey(key)) {
@@ -462,10 +463,10 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * {@inheritDoc}
      *
      * @throws java.lang.NullPointerException
-     *         if key is null
-     *         if value if null
+     *         if {@code key} is null
+     *         if {@code value} if null
      * @throws java.lang.IllegalArgumentException
-     *         if key is empty
+     *         if {@code key} is empty
      */
     @Override
     public final void setString(String key, String value) {
@@ -476,10 +477,9 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * {@inheritDoc}
      *
      * @throws java.lang.NullPointerException
-     *         if key is null
-     *         if value is null
+     *         if {@code key} or {@code value} is null
      * @throws java.lang.IllegalArgumentException
-     *         if key is empty
+     *         if {@code key} is empty
      */
     @Override
     public final void setString(String key, String value, String... comment) {
@@ -505,11 +505,11 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * {@inheritDoc}
      *
      * @throws java.lang.NullPointerException
-     *         if key is null
+     *         if {@code key} is null
      * @throws java.lang.IllegalArgumentException
-     *         if key is empty
+     *         if {@code key} is empty
      * @throws net.visualillusionsent.utils.UnknownPropertyException
-     *         if the key does not exist
+     *         if the {@code key} does not exist
      */
     @Override
     public final String[] getStringArray(String key) {
@@ -520,14 +520,14 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * {@inheritDoc}
      *
      * @throws java.lang.NullPointerException
-     *         if key is null
+     *         if {@code key} or {@code def} is null
      * @throws java.lang.IllegalArgumentException
-     *         if key is empty
-     * @throws net.visualillusionsent.utils.UnknownPropertyException
-     *         if the key does not exist
+     *         if {@code key} is empty
      */
     @Override
-    public final String[] getStringArray(String key, String[] def) throws UtilityException {
+    public final String[] getStringArray(String key, String[] def) {
+        notNull(def, "String[] def");
+
         if (containsKey(key)) {
             return getStringArray(key, ",");
         }
@@ -537,30 +537,60 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setStringArray(String key, String[] value) throws UtilityException {
+    public final void setStringArray(String key, String[] value) {
         setStringArray(key, ",", value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setStringArray(String key, String[] value, String... comment) throws UtilityException {
+    public final void setStringArray(String key, String[] value, String... comment) {
         setStringArray(key, ",", value, comment);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final String[] getStringArray(String key, String delimiter) throws UtilityException {
+    public final String[] getStringArray(String key, String delimiter) {
         notNull(delimiter, "String delimiter");
-        notEmpty(delimiter, "String delimiter");
+        notEmptyNoTrim(delimiter, "String delimiter");
 
         return StringUtils.trimElements(getString(key).split(delimiter));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final String[] getStringArray(String key, String delimiter, String[] def) throws UtilityException {
+    public final String[] getStringArray(String key, String delimiter, String[] def) {
         if (containsKey(key)) {
             return getStringArray(key, delimiter);
         }
@@ -570,18 +600,34 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final void setStringArray(String key, String delimiter, String[] value) throws UtilityException {
+    public final void setStringArray(String key, String delimiter, String[] value) {
         setStringArray(key, delimiter, value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final void setStringArray(String key, String delimiter, String[] value, String... comment) throws UtilityException {
+    public final void setStringArray(String key, String delimiter, String[] value, String... comment) {
         notNull(key, "String key");
         notNull(value, "String[] value");
+        notNull(delimiter, "String delimiter");
         notEmpty(key, "String key");
+        notEmptyNoTrim(delimiter, "String delimiter");
 
         String joinedValue = StringUtils.joinString(value, delimiter, 0);
         if (joinedValue.equals(props.get(key))) {
@@ -592,14 +638,23 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         this.hasChanged = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final byte getByte(String key) throws UtilityException {
+    public final byte getByte(String key) {
         if (numberCache.containsKey(key)) { // Caching check
             return numberCache.get(key).byteValue();
         }
         try {
-            byte value = Byte.parseByte(getString(key)); // parse
+            byte value = Byte.decode(getString(key)); // decode
             numberCache.put(key, value); // Cache
             return value;
         }
@@ -608,9 +663,16 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final byte getByte(String key, byte def) throws UtilityException {
+    public final byte getByte(String key, byte def) {
         if (containsKey(key)) {
             return getByte(key);
         }
@@ -620,15 +682,29 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setByte(String key, byte value) throws UtilityException {
+    public final void setByte(String key, byte value) {
         setByte(key, value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setByte(String key, byte value, String... comment) throws UtilityException {
+    public final void setByte(String key, byte value, String... comment) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -642,15 +718,31 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         this.hasChanged = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final byte[] getByteArray(String key) throws UtilityException {
+    public final byte[] getByteArray(String key) {
         return getByteArray(key, ",");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final byte[] getByteArray(String key, byte[] def) throws UtilityException {
+    public final byte[] getByteArray(String key, byte[] def) {
         if (containsKey(key)) {
             return getByteArray(key, ",");
         }
@@ -660,27 +752,55 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setByteArray(String key, byte[] value) throws UtilityException {
+    public final void setByteArray(String key, byte[] value) {
         setByteArray(key, ",", value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setByteArray(String key, byte[] value, String... comment) throws UtilityException {
+    public final void setByteArray(String key, byte[] value, String... comment) {
         setByteArray(key, ",", value, comment);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final byte[] getByteArray(String key, String delimiter) throws UtilityException {
+    public final byte[] getByteArray(String key, String delimiter) {
         return StringUtils.stringToByteArray(getString(key), delimiter);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final byte[] getByteArray(String key, String delimiter, byte[] def) throws UtilityException {
+    public final byte[] getByteArray(String key, String delimiter, byte[] def) {
         if (containsKey(key)) {
             return StringUtils.stringToByteArray(getString(key), delimiter);
         }
@@ -690,15 +810,29 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final void setByteArray(String key, String delimiter, byte[] value) throws UtilityException {
+    public final void setByteArray(String key, String delimiter, byte[] value) {
         setByteArray(key, delimiter, value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final void setByteArray(String key, String delimiter, byte[] value, String... comment) throws UtilityException {
+    public final void setByteArray(String key, String delimiter, byte[] value, String... comment) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -711,14 +845,23 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         this.hasChanged = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final short getShort(String key) throws UtilityException {
+    public final short getShort(String key) {
         if (numberCache.containsKey(key)) {
             return numberCache.get(key).shortValue();
         }
         try {
-            short value = Short.parseShort(getString(key));
+            short value = Short.decode(getString(key));
             numberCache.put(key, value);
             return value;
         }
@@ -727,9 +870,16 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final short getShort(String key, short def) throws UtilityException {
+    public final short getShort(String key, short def) {
         if (containsKey(key)) {
             return getShort(key);
         }
@@ -739,15 +889,29 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setShort(String key, short value) throws UtilityException {
+    public final void setShort(String key, short value) {
         setShort(key, value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setShort(String key, short value, String... comment) throws UtilityException {
+    public final void setShort(String key, short value, String... comment) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -761,15 +925,31 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         this.hasChanged = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final short[] getShortArray(String key) throws UtilityException {
+    public final short[] getShortArray(String key) {
         return getShortArray(key, ",");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final short[] getShortArray(String key, short[] def) throws UtilityException {
+    public final short[] getShortArray(String key, short[] def) {
         if (containsKey(key)) {
             return getShortArray(key, ",");
         }
@@ -779,27 +959,55 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setShortArray(String key, short[] value) throws UtilityException {
+    public final void setShortArray(String key, short[] value) {
         setShortArray(key, ",", value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setShortArray(String key, short[] value, String... comment) throws UtilityException {
+    public final void setShortArray(String key, short[] value, String... comment) {
         setShortArray(key, ",", value, comment);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final short[] getShortArray(String key, String delimiter) throws UtilityException {
+    public final short[] getShortArray(String key, String delimiter) {
         return StringUtils.stringToShortArray(getString(key), delimiter);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final short[] getShortArray(String key, String delimiter, short[] def) throws UtilityException {
+    public final short[] getShortArray(String key, String delimiter, short[] def) {
         if (containsKey(key)) {
             return StringUtils.stringToShortArray(getString(key), delimiter);
         }
@@ -809,15 +1017,29 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final void setShortArray(String key, String delimiter, short[] value) throws UtilityException {
+    public final void setShortArray(String key, String delimiter, short[] value) {
         setShortArray(key, delimiter, value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final void setShortArray(String key, String delimiter, short[] value, String... comment) throws UtilityException {
+    public final void setShortArray(String key, String delimiter, short[] value, String... comment) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -830,14 +1052,23 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         this.hasChanged = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final int getInt(String key) throws UtilityException {
+    public final int getInt(String key) {
         if (numberCache.containsKey(key)) {
             return numberCache.get(key).intValue();
         }
         try {
-            int value = Integer.parseInt(getString(key));
+            int value = Integer.decode(getString(key));
             numberCache.put(key, value);
             return value;
         }
@@ -846,9 +1077,16 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final int getInt(String key, int def) throws UtilityException {
+    public final int getInt(String key, int def) {
         if (containsKey(key)) {
             return getInt(key);
         }
@@ -858,15 +1096,29 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setInt(String key, int value) throws UtilityException {
+    public final void setInt(String key, int value) {
         setInt(key, value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setInt(String key, int value, String... comment) throws UtilityException {
+    public final void setInt(String key, int value, String... comment) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -880,15 +1132,31 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         this.hasChanged = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final int[] getIntArray(String key) throws UtilityException {
+    public final int[] getIntArray(String key) {
         return getIntArray(key, ",");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final int[] getIntArray(String key, int[] def) throws UtilityException {
+    public final int[] getIntArray(String key, int[] def) {
         if (containsKey(key)) {
             return getIntArray(key, ",");
         }
@@ -898,27 +1166,55 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setIntArray(String key, int[] value) throws UtilityException {
+    public final void setIntArray(String key, int[] value) {
         setIntArray(key, ",", value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setIntArray(String key, int[] value, String... comment) throws UtilityException {
+    public final void setIntArray(String key, int[] value, String... comment) {
         setIntArray(key, ",", value, comment);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final int[] getIntArray(String key, String delimiter) throws UtilityException {
+    public final int[] getIntArray(String key, String delimiter) {
         return StringUtils.stringToIntArray(getString(key), delimiter);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final int[] getIntArray(String key, String delimiter, int[] def) throws UtilityException {
+    public final int[] getIntArray(String key, String delimiter, int[] def) {
         if (containsKey(key)) {
             return StringUtils.stringToIntArray(getString(key), delimiter);
         }
@@ -928,15 +1224,29 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final void setIntArray(String key, String delimiter, int[] value) throws UtilityException {
+    public final void setIntArray(String key, String delimiter, int[] value) {
         setIntArray(key, delimiter, value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final void setIntArray(String key, String delimiter, int[] value, String... comment) throws UtilityException {
+    public final void setIntArray(String key, String delimiter, int[] value, String... comment) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -949,14 +1259,23 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         this.hasChanged = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final long getLong(String key) throws UtilityException {
+    public final long getLong(String key) {
         if (numberCache.containsKey(key)) {
             return numberCache.get(key).longValue();
         }
         try {
-            long value = Long.parseLong(getString(key));
+            long value = Long.decode(getString(key));
             numberCache.put(key, value);
             return value;
         }
@@ -965,9 +1284,16 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final long getLong(String key, long def) throws UtilityException {
+    public final long getLong(String key, long def) {
         if (containsKey(key)) {
             return getLong(key);
         }
@@ -977,15 +1303,29 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setLong(String key, long value) throws UtilityException {
+    public final void setLong(String key, long value) {
         setLong(key, value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setLong(String key, long value, String... comment) throws UtilityException {
+    public final void setLong(String key, long value, String... comment) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -999,15 +1339,31 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         this.hasChanged = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final long[] getLongArray(String key) throws UtilityException {
+    public final long[] getLongArray(String key) {
         return getLongArray(key, ",");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final long[] getLongArray(String key, long[] def) throws UtilityException {
+    public final long[] getLongArray(String key, long[] def) {
         if (containsKey(key)) {
             return getLongArray(key, ",");
         }
@@ -1017,27 +1373,55 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setLongArray(String key, long[] value) throws UtilityException {
+    public final void setLongArray(String key, long[] value) {
         setLongArray(key, ",", value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setLongArray(String key, long[] value, String... comment) throws UtilityException {
+    public final void setLongArray(String key, long[] value, String... comment) {
         setLongArray(key, ",", value, comment);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final long[] getLongArray(String key, String delimiter) throws UtilityException {
+    public final long[] getLongArray(String key, String delimiter) {
         return StringUtils.stringToLongArray(getString(key), delimiter);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final long[] getLongArray(String key, String delimiter, long[] def) throws UtilityException {
+    public final long[] getLongArray(String key, String delimiter, long[] def) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -1050,15 +1434,29 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final void setLongArray(String key, String delimiter, long[] value) throws UtilityException {
+    public final void setLongArray(String key, String delimiter, long[] value) {
         setLongArray(key, delimiter, value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final void setLongArray(String key, String delimiter, long[] value, String... comment) throws UtilityException {
+    public final void setLongArray(String key, String delimiter, long[] value, String... comment) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -1071,9 +1469,18 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         this.hasChanged = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final float getFloat(String key) throws UtilityException {
+    public final float getFloat(String key) {
         if (numberCache.containsKey(key)) {
             return numberCache.get(key).floatValue();
         }
@@ -1087,9 +1494,16 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final float getFloat(String key, float def) throws UtilityException {
+    public final float getFloat(String key, float def) {
         if (containsKey(key)) {
             return getFloat(key);
         }
@@ -1099,15 +1513,29 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setFloat(String key, float value) throws UtilityException {
+    public final void setFloat(String key, float value) {
         setFloat(key, value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setFloat(String key, float value, String... comment) throws UtilityException {
+    public final void setFloat(String key, float value, String... comment) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -1121,15 +1549,31 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         this.hasChanged = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final float[] getFloatArray(String key) throws UtilityException {
+    public final float[] getFloatArray(String key) {
         return getFloatArray(key, ",");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final float[] getFloatArray(String key, float[] def) throws UtilityException {
+    public final float[] getFloatArray(String key, float[] def) {
         if (containsKey(key)) {
             return getFloatArray(key, ",");
         }
@@ -1139,27 +1583,55 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setFloatArray(String key, float[] value) throws UtilityException {
+    public final void setFloatArray(String key, float[] value) {
         setFloatArray(key, ",", value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setFloatArray(String key, float[] value, String... comment) throws UtilityException {
+    public final void setFloatArray(String key, float[] value, String... comment) {
         setFloatArray(key, ",", value, comment);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final float[] getFloatArray(String key, String delimiter) throws UtilityException {
+    public final float[] getFloatArray(String key, String delimiter) {
         return StringUtils.stringToFloatArray(getString(key), delimiter);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final float[] getFloatArray(String key, String delimiter, float[] def) throws UtilityException {
+    public final float[] getFloatArray(String key, String delimiter, float[] def) {
         if (containsKey(key)) {
             return StringUtils.stringToFloatArray(getString(key), delimiter);
         }
@@ -1169,15 +1641,29 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final void setFloatArray(String key, String delimiter, float[] value) throws UtilityException {
+    public final void setFloatArray(String key, String delimiter, float[] value) {
         setFloatArray(key, delimiter, value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final void setFloatArray(String key, String delimiter, float[] value, String... comment) throws UtilityException {
+    public final void setFloatArray(String key, String delimiter, float[] value, String... comment) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -1190,9 +1676,18 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         this.hasChanged = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final double getDouble(String key) throws UtilityException {
+    public final double getDouble(String key) {
         if (numberCache.containsKey(key)) {
             return numberCache.get(key).doubleValue();
         }
@@ -1206,9 +1701,16 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final double getDouble(String key, double def) throws UtilityException {
+    public final double getDouble(String key, double def) {
         if (containsKey(key)) {
             return getDouble(key);
         }
@@ -1218,15 +1720,29 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setDouble(String key, double value) throws UtilityException {
+    public final void setDouble(String key, double value) {
         setDouble(key, value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setDouble(String key, double value, String... comment) throws UtilityException {
+    public final void setDouble(String key, double value, String... comment) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -1240,15 +1756,31 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         this.hasChanged = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final double[] getDoubleArray(String key) throws UtilityException {
+    public final double[] getDoubleArray(String key) {
         return getDoubleArray(key, ",");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final double[] getDoubleArray(String key, double[] def) throws UtilityException {
+    public final double[] getDoubleArray(String key, double[] def) {
         if (containsKey(key)) {
             return getDoubleArray(key, ",");
         }
@@ -1258,27 +1790,55 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setDoubleArray(String key, double[] value) throws UtilityException {
+    public final void setDoubleArray(String key, double[] value) {
         setDoubleArray(key, ",", value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setDoubleArray(String key, double[] value, String... comment) throws UtilityException {
+    public final void setDoubleArray(String key, double[] value, String... comment) {
         setDoubleArray(key, ",", value, comment);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final double[] getDoubleArray(String key, String delimiter) throws UtilityException {
+    public final double[] getDoubleArray(String key, String delimiter) {
         return StringUtils.stringToDoubleArray(getString(key), delimiter);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final double[] getDoubleArray(String key, String delimiter, double[] def) throws UtilityException {
+    public final double[] getDoubleArray(String key, String delimiter, double[] def) {
         if (containsKey(key)) {
             return StringUtils.stringToDoubleArray(getString(key), delimiter);
         }
@@ -1288,15 +1848,29 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final void setDoubleArray(String key, String delimiter, double[] value) throws UtilityException {
+    public final void setDoubleArray(String key, String delimiter, double[] value) {
         setDoubleArray(key, delimiter, value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final void setDoubleArray(String key, String delimiter, double[] value, String... comment) throws UtilityException {
+    public final void setDoubleArray(String key, String delimiter, double[] value, String... comment) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -1309,20 +1883,36 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         this.hasChanged = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final boolean getBoolean(String key) throws UtilityException {
+    public final boolean getBoolean(String key) {
         if (booleanCache.containsKey(key)) {
-            return booleanCache.get(key).booleanValue();
+            return booleanCache.get(key);
         }
         boolean value = BooleanUtils.parseBoolean(getString(key));
         booleanCache.put(key, value);
         return value;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final boolean getBoolean(String key, boolean def) throws UtilityException {
+    public final boolean getBoolean(String key, boolean def) {
         if (containsKey(key)) {
             return getBoolean(key);
         }
@@ -1332,15 +1922,29 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setBoolean(String key, boolean value) throws UtilityException {
+    public final void setBoolean(String key, boolean value) {
         setBoolean(key, value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setBoolean(String key, boolean value, String... comment) throws UtilityException {
+    public final void setBoolean(String key, boolean value, String... comment) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -1354,15 +1958,31 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         this.hasChanged = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final boolean[] getBooleanArray(String key) throws UtilityException {
+    public final boolean[] getBooleanArray(String key) {
         return getBooleanArray(key, ",");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final boolean[] getBooleanArray(String key, boolean[] def) throws UtilityException {
+    public final boolean[] getBooleanArray(String key, boolean[] def) {
         if (containsKey(key)) {
             return getBooleanArray(key, ",");
         }
@@ -1372,27 +1992,55 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setBooleanArray(String key, boolean[] value) throws UtilityException {
+    public final void setBooleanArray(String key, boolean[] value) {
         setBooleanArray(key, ",", value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setBooleanArray(String key, boolean[] value, String... comment) throws UtilityException {
+    public final void setBooleanArray(String key, boolean[] value, String... comment) {
         setBooleanArray(key, ",", value, comment);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final boolean[] getBooleanArray(String key, String delimiter) throws UtilityException {
+    public final boolean[] getBooleanArray(String key, String delimiter) {
         return StringUtils.stringToBooleanArray(getString(key), delimiter);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final boolean[] getBooleanArray(String key, String delimiter, boolean[] def) throws UtilityException {
+    public final boolean[] getBooleanArray(String key, String delimiter, boolean[] def) {
         if (containsKey(key)) {
             return StringUtils.stringToBooleanArray(getString(key), delimiter);
         }
@@ -1402,15 +2050,29 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final void setBooleanArray(String key, String delimiter, boolean[] value) throws UtilityException {
+    public final void setBooleanArray(String key, String delimiter, boolean[] value) {
         setBooleanArray(key, delimiter, value, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code value} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final void setBooleanArray(String key, String delimiter, boolean[] value, String... comment) throws UtilityException {
+    public final void setBooleanArray(String key, String delimiter, boolean[] value, String... comment) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
@@ -1423,15 +2085,31 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         this.hasChanged = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final char getCharacter(String key) throws UtilityException {
+    public final char getCharacter(String key) {
         return getString(key).trim().charAt(0);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final char getCharacter(String key, char def) throws UtilityException {
+    public final char getCharacter(String key, char def) {
         if (containsKey(key)) {
             return getString(key).trim().charAt(0);
         }
@@ -1441,15 +2119,29 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setCharacter(String key, char ch) throws UtilityException {
+    public final void setCharacter(String key, char ch) {
         setCharacter(key, ch, (String[]) null);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final void setCharacter(String key, char ch, String... comment) throws UtilityException {
+    public final void setCharacter(String key, char ch, String... comment) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 

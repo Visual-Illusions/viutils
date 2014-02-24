@@ -56,7 +56,7 @@ public final class TaskManager {
 
     static {
         threadPool = new ScheduledThreadPoolExecutor(8); // Set the max number of core idle threads
-        threadPool.setKeepAliveTime(10, SECONDS); // How long to keep idle threads alive
+        threadPool.setKeepAliveTime(5, SECONDS); // How long to keep idle threads alive
         threadPool.allowCoreThreadTimeOut(true); // Allow the core threads to time out
         threadPool.setContinueExistingPeriodicTasksAfterShutdownPolicy(false); //Don't execute anything after shutdown
         threadPool.setExecuteExistingDelayedTasksAfterShutdownPolicy(false); //Don't execute anything after shutdown
@@ -74,16 +74,14 @@ public final class TaskManager {
      * @param task
      *         the {@link Runnable} task to execute
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null
+     * @throws java.lang.NullPointerException
+     *         if {@code task} is null
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static void executeTask(Runnable task) throws UtilityException, RejectedExecutionException {
+    public static void executeTask(Runnable task) throws RejectedExecutionException {
         notNull(task, "Runnable task");
-
         threadPool.execute(task); //wrap runnable for exception logging
     }
 
@@ -95,16 +93,14 @@ public final class TaskManager {
      *
      * @return a Future representing pending completion of the task
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null
+     * @throws java.lang.NullPointerException
+     *         if {@code task} is null
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static Future<?> submitTask(Runnable task) throws UtilityException, RejectedExecutionException {
+    public static Future<?> submitTask(Runnable task) throws RejectedExecutionException {
         notNull(task, "Runnable task");
-
         return threadPool.submit(task);
     }
 
@@ -116,16 +112,14 @@ public final class TaskManager {
      *
      * @return a {@link Future} representing pending completion of the task
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null
+     * @throws java.lang.NullPointerException
+     *         if {@code task} is null
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static <V> Future<V> submitTask(Callable<V> task) throws UtilityException, RejectedExecutionException {
+    public static <V> Future<V> submitTask(Callable<V> task) throws RejectedExecutionException {
         notNull(task, "Callable task");
-
         return threadPool.submit(task);
     }
 
@@ -139,15 +133,15 @@ public final class TaskManager {
      *
      * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null;<br>
-     *         if the delay is equal to or less than zero
+     * @throws java.lang.NullPointerException
+     *         if {@code task} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if the {@code delay} is equal to or less than zero
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static ScheduledFuture<?> scheduleDelayedTaskInMicros(Runnable task, long delay) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleDelayedTaskInMicros(Runnable task, long delay) throws RejectedExecutionException {
         return scheduleDelayedTask(task, delay, MICROSECONDS);
     }
 
@@ -161,15 +155,15 @@ public final class TaskManager {
      *
      * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null;<br>
-     *         if the delay is equal to or less than zero
+     * @throws java.lang.NullPointerException
+     *         if {@code task} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if the {@code delay} is equal to or less than zero
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static <V> ScheduledFuture<V> scheduleDelayedTaskInMicros(Callable<V> task, long delay) throws UtilityException, RejectedExecutionException {
+    public static <V> ScheduledFuture<V> scheduleDelayedTaskInMicros(Callable<V> task, long delay) throws RejectedExecutionException {
         return scheduleDelayedTask(task, delay, MICROSECONDS);
     }
 
@@ -183,15 +177,15 @@ public final class TaskManager {
      *
      * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null;<br>
-     *         if the delay is equal to or less than zero
+     * @throws java.lang.NullPointerException
+     *         if {@code task} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if the {@code delay} is equal to or less than zero
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static ScheduledFuture<?> scheduleDelayedTaskInMillis(Runnable task, long delay) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleDelayedTaskInMillis(Runnable task, long delay) throws RejectedExecutionException {
         return scheduleDelayedTask(task, delay, MILLISECONDS);
     }
 
@@ -205,15 +199,15 @@ public final class TaskManager {
      *
      * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null;<br>
-     *         if the delay is equal to or less than zero
+     * @throws java.lang.NullPointerException
+     *         if {@code task} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if the {@code delay} is equal to or less than zero
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static <V> ScheduledFuture<V> scheduleDelayedTaskInMillis(Callable<V> task, long delay) throws UtilityException, RejectedExecutionException {
+    public static <V> ScheduledFuture<V> scheduleDelayedTaskInMillis(Callable<V> task, long delay) throws RejectedExecutionException {
         return scheduleDelayedTask(task, delay, MILLISECONDS);
     }
 
@@ -227,15 +221,15 @@ public final class TaskManager {
      *
      * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null;<br>
-     *         if the delay is equal to or less than zero
+     * @throws java.lang.NullPointerException
+     *         if {@code task} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if the {@code delay} is equal to or less than zero
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static ScheduledFuture<?> scheduleDelayedTaskInSeconds(Runnable task, long delay) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleDelayedTaskInSeconds(Runnable task, long delay) throws RejectedExecutionException {
         return scheduleDelayedTask(task, delay, SECONDS);
     }
 
@@ -249,15 +243,15 @@ public final class TaskManager {
      *
      * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null;<br>
-     *         if the delay is equal to or less than zero
+     * @throws java.lang.NullPointerException
+     *         if {@code task} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if the {@code delay} is equal to or less than zero
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static <V> ScheduledFuture<V> scheduleDelayedTaskInSeconds(Callable<V> task, long delay) throws UtilityException, RejectedExecutionException {
+    public static <V> ScheduledFuture<V> scheduleDelayedTaskInSeconds(Callable<V> task, long delay) throws RejectedExecutionException {
         return scheduleDelayedTask(task, delay, SECONDS);
     }
 
@@ -271,15 +265,15 @@ public final class TaskManager {
      *
      * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null;<br>
-     *         if the delay is equal to or less than zero
+     * @throws java.lang.NullPointerException
+     *         if {@code task} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if the {@code delay} is equal to or less than zero
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static ScheduledFuture<?> scheduleDelayedTaskInMinutes(Runnable task, long delay) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleDelayedTaskInMinutes(Runnable task, long delay) throws RejectedExecutionException {
         return scheduleDelayedTask(task, delay, MINUTES);
     }
 
@@ -293,15 +287,15 @@ public final class TaskManager {
      *
      * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null;<br>
-     *         if the delay is equal to or less than zero
+     * @throws java.lang.NullPointerException
+     *         if {@code task} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if the {@code delay} is equal to or less than zero
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static <V> ScheduledFuture<V> scheduleDelayedTaskInMinutes(Callable<V> task, long delay) throws UtilityException, RejectedExecutionException {
+    public static <V> ScheduledFuture<V> scheduleDelayedTaskInMinutes(Callable<V> task, long delay) throws RejectedExecutionException {
         return scheduleDelayedTask(task, delay, MINUTES);
     }
 
@@ -315,15 +309,15 @@ public final class TaskManager {
      *
      * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null;<br>
-     *         if the delay is equal to or less than zero
+     * @throws java.lang.NullPointerException
+     *         if {@code task} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if the {@code delay} is equal to or less than zero
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static ScheduledFuture<?> scheduleDelayedTaskInHours(Runnable task, long delay) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleDelayedTaskInHours(Runnable task, long delay) throws RejectedExecutionException {
         return scheduleDelayedTask(task, delay, HOURS);
     }
 
@@ -337,15 +331,15 @@ public final class TaskManager {
      *
      * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null;<br>
-     *         if the delay is equal to or less than zero
+     * @throws java.lang.NullPointerException
+     *         if {@code task} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if the {@code delay} is equal to or less than zero
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static <V> ScheduledFuture<V> scheduleDelayedTaskInHours(Callable<V> task, long delay) throws UtilityException, RejectedExecutionException {
+    public static <V> ScheduledFuture<V> scheduleDelayedTaskInHours(Callable<V> task, long delay) throws RejectedExecutionException {
         return scheduleDelayedTask(task, delay, HOURS);
     }
 
@@ -361,16 +355,15 @@ public final class TaskManager {
      *
      * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null;<br>
-     *         if the delay is equal to or less than zero<br/>
-     *         or if timeUnit is null
+     * @throws java.lang.NullPointerException
+     *         if {@code task} or {@code timeUnit} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if the {@code delay} is equal to or less than zero
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static ScheduledFuture<?> scheduleDelayedTask(Runnable task, long delay, TimeUnit timeUnit) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleDelayedTask(Runnable task, long delay, TimeUnit timeUnit) throws RejectedExecutionException {
         notNull(task, "Runnable task");
         notNegativeOrZero(delay, "Delay");
         notNull(timeUnit, "TimeUnit timeUnit");
@@ -392,16 +385,15 @@ public final class TaskManager {
      *
      * @return a ScheduledFuture representing pending completion of the task and whose get() method will return null upon completion
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null;<br>
-     *         if the delay is equal to or less than zero<br/>
-     *         or if timeUnit is null
+     * @throws java.lang.NullPointerException
+     *         if {@code task} or {@code timeUnit} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if the {@code delay} is equal to or less than zero
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static <V> ScheduledFuture<V> scheduleDelayedTask(Callable<V> task, long delay, TimeUnit timeUnit) throws UtilityException, RejectedExecutionException {
+    public static <V> ScheduledFuture<V> scheduleDelayedTask(Callable<V> task, long delay, TimeUnit timeUnit) throws RejectedExecutionException {
         notNull(task, "Callable task");
         notNegativeOrZero(delay, "Delay");
         notNull(timeUnit, "TimeUnit timeUnit");
@@ -423,15 +415,15 @@ public final class TaskManager {
      *
      * @return a ScheduledFuture representing pending completion of the task and whose get() method will throw an exception upon cancellation
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null;<br>
-     *         if the delay is equal to or less than zero
+     * @throws java.lang.NullPointerException
+     *         if {@code task} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if the {@code delay} is equal to or less than zero
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static ScheduledFuture<?> scheduleContinuedTaskInMicros(Runnable task, long initialDelay, long delay) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleContinuedTaskInMicros(Runnable task, long initialDelay, long delay) throws RejectedExecutionException {
         return scheduleContinuedTask(task, initialDelay, delay, MICROSECONDS);
     }
 
@@ -447,15 +439,15 @@ public final class TaskManager {
      *
      * @return a ScheduledFuture representing pending completion of the task and whose get() method will throw an exception upon cancellation
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null;<br>
-     *         if the delay is equal to or less than zero
+     * @throws java.lang.NullPointerException
+     *         if {@code task} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if the {@code delay} is equal to or less than zero
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static ScheduledFuture<?> scheduleContinuedTaskInMillis(Runnable task, long initialDelay, long delay) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleContinuedTaskInMillis(Runnable task, long initialDelay, long delay) throws RejectedExecutionException {
         return scheduleContinuedTask(task, initialDelay, delay, MILLISECONDS);
     }
 
@@ -471,15 +463,15 @@ public final class TaskManager {
      *
      * @return a ScheduledFuture representing pending completion of the task and whose get() method will throw an exception upon cancellation
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null;<br>
-     *         if the delay is equal to or less than zero
+     * @throws java.lang.NullPointerException
+     *         if {@code task} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if the {@code delay} is equal to or less than zero
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static ScheduledFuture<?> scheduleContinuedTaskInSeconds(Runnable task, long initialDelay, long delay) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleContinuedTaskInSeconds(Runnable task, long initialDelay, long delay) throws RejectedExecutionException {
         return scheduleContinuedTask(task, initialDelay, delay, SECONDS);
     }
 
@@ -495,15 +487,15 @@ public final class TaskManager {
      *
      * @return a ScheduledFuture representing pending completion of the task and whose get() method will throw an exception upon cancellation
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null;<br>
-     *         if the delay is equal to or less than zero
+     * @throws java.lang.NullPointerException
+     *         if {@code task} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if the {@code delay} is equal to or less than zero
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static ScheduledFuture<?> scheduleContinuedTaskInMinutes(Runnable task, long initialDelay, long delay) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleContinuedTaskInMinutes(Runnable task, long initialDelay, long delay) throws RejectedExecutionException {
         return scheduleContinuedTask(task, initialDelay, delay, MINUTES);
     }
 
@@ -521,15 +513,15 @@ public final class TaskManager {
      *
      * @return a ScheduledFuture representing pending completion of the task and whose get() method will throw an exception upon cancellation
      *
-     * @throws UtilityException
-     *         <br>
-     *         if task is null;<br>
-     *         if the delay is equal to or less than zero
+     * @throws java.lang.NullPointerException
+     *         if {@code task} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if the {@code delay} is equal to or less than zero
      * @throws RejectedExecutionException
      *         at discretion of <tt>RejectedExecutionHandler</tt>, if task cannot be accepted
      *         for execution because the executor has been shut down.
      */
-    public static ScheduledFuture<?> scheduleContinuedTask(Runnable task, long initialDelay, long delay, TimeUnit timeUnit) throws UtilityException, RejectedExecutionException {
+    public static ScheduledFuture<?> scheduleContinuedTask(Runnable task, long initialDelay, long delay, TimeUnit timeUnit) throws RejectedExecutionException {
         notNull(task, "Runnable task");
         notNegativeOrZero(initialDelay, "long initialDelay");
 

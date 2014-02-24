@@ -20,7 +20,7 @@ package net.visualillusionsent.utils;
 /**
  * @author Jason (darkdiplomat)
  */
-public final class MissingJarEntryException extends RuntimeException {
+public final class MissingJarEntryException extends UtilityException {
 
     public MissingJarEntryException(String msg) {
         super(msg);

@@ -20,6 +20,7 @@ package net.visualillusionsent.utils;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 /**
@@ -59,7 +60,27 @@ public abstract class LocaleHelper {
 
     /** Constructs a default LocaleHelper that will look in the jar for the lang files */
     protected LocaleHelper() {
-        this(false, null, null);
+        this(false, null, (String) null);
+    }
+
+    /**
+     * Constructs a default LocaleHelper with a default Locale specified
+     *
+     * @param defaultLocale
+     *         the locale to use by default
+     */
+    protected LocaleHelper(String defaultLocale) {
+        this(false, null, defaultLocale);
+    }
+
+    /**
+     * Constructs a default LocaleHelper with a default Locale specified
+     *
+     * @param defaultLocale
+     *         the locale to use by default
+     */
+    protected LocaleHelper(Locale defaultLocale) {
+        this(false, null, defaultLocale.toString());
     }
 
     /**
@@ -69,6 +90,22 @@ public abstract class LocaleHelper {
      *         {@code true} for external files; {@code false} otherwise
      * @param externalDirectory
      *         the path to the directory for the external files
+     * @param defaultLocale
+     *         the default Locale to use for messages
+     */
+    protected LocaleHelper(boolean useExternalFiles, String externalDirectory, Locale defaultLocale) {
+        this(useExternalFiles, externalDirectory, defaultLocale.toString());
+    }
+
+    /**
+     * Constructs a new LocaleHelper with specifying external files and the directory for those files
+     *
+     * @param useExternalFiles
+     *         {@code true} for external files; {@code false} otherwise
+     * @param externalDirectory
+     *         the path to the directory for the external files
+     * @param defaultLocale
+     *         the default Locale to use for messages
      */
     protected LocaleHelper(boolean useExternalFiles, String externalDirectory, String defaultLocale) {
         this.defaultLocale = defaultLocale == null ? SystemUtils.SYSTEM_LOCALE : defaultLocale;
@@ -235,7 +272,7 @@ public abstract class LocaleHelper {
     /**
      * Reloads the language files.
      *
-     * @see PropertiesFile#reload
+     * @see UnmodifiablePropertiesFile#reload
      */
     public final void reloadLangFiles() {
         for (UnmodifiablePropertiesFile upf : langs.values()) {
