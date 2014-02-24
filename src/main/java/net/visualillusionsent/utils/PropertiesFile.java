@@ -379,10 +379,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      */
     @Override
     public final void removeKey(String key) {
-        notNull(key, "String key");
-        notEmpty(key, "String key");
-
-        if (props.containsKey(key)) {
+        if (containsKey(key)) {
             props.remove(key);
             if (comments.containsKey(key)) {
                 comments.remove(key);
@@ -405,7 +402,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         notEmpty(keys, "String... keys");
 
         for (String key : keys) {
-            if (props.containsKey(key)) {
+            if (containsKey(key)) {
                 props.remove(key);
                 if (comments.containsKey(key)) {
                     comments.remove(key);
@@ -427,9 +424,6 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      */
     @Override
     public final String getString(String key) {
-        notNull(key, "String key");
-        notEmpty(key, "String key");
-
         if (containsKey(key)) {
             return props.get(key);
         }
@@ -453,10 +447,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         if (containsKey(key)) {
             return props.get(key);
         }
-        else {
-            setString(key, def);
-            return def;
-        }
+        setString(key, def);
+        return def;
     }
 
     /**
@@ -647,9 +639,13 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if {@code key} is empty
      * @throws net.visualillusionsent.utils.UnknownPropertyException
      *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
     @Override
     public final byte getByte(String key) {
+        notNull(key, "String key");
+
         if (numberCache.containsKey(key)) { // Caching check
             return numberCache.get(key).byteValue();
         }
@@ -659,7 +655,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
             return value;
         }
         catch (NumberFormatException nfe) {
-            throw new UtilityException("prop.nan", key);
+            // Change Message
+            throw new NumberFormatException(Verify.parse("prop.nan", key));
         }
     }
 
@@ -674,12 +671,15 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final byte getByte(String key, byte def) {
         if (containsKey(key)) {
-            return getByte(key);
+            try {
+                return getByte(key);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            setByte(key, def);
-            return def;
-        }
+        setByte(key, def);
+        return def;
     }
 
     /**
@@ -727,6 +727,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if {@code key} is empty
      * @throws net.visualillusionsent.utils.UnknownPropertyException
      *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
     @Override
     public final byte[] getByteArray(String key) {
@@ -744,12 +746,15 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final byte[] getByteArray(String key, byte[] def) {
         if (containsKey(key)) {
-            return getByteArray(key, ",");
+            try {
+                return getByteArray(key, ",");
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            setByteArray(key, def);
-            return def;
-        }
+        setByteArray(key, def);
+        return def;
     }
 
     /**
@@ -785,6 +790,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if {@code key} or {@code delimiter} is null
      * @throws java.lang.IllegalArgumentException
      *         if {@code key} or {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
     @Override
     public final byte[] getByteArray(String key, String delimiter) {
@@ -802,12 +809,15 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final byte[] getByteArray(String key, String delimiter, byte[] def) {
         if (containsKey(key)) {
-            return StringUtils.stringToByteArray(getString(key), delimiter);
+            try {
+                return StringUtils.stringToByteArray(getString(key), delimiter);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            setByteArray(key, delimiter, def);
-            return def;
-        }
+        setByteArray(key, delimiter, def);
+        return def;
     }
 
     /**
@@ -854,9 +864,13 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if {@code key} is empty
      * @throws net.visualillusionsent.utils.UnknownPropertyException
      *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
     @Override
     public final short getShort(String key) {
+        notNull(key, "String key");
+
         if (numberCache.containsKey(key)) {
             return numberCache.get(key).shortValue();
         }
@@ -866,7 +880,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
             return value;
         }
         catch (NumberFormatException nfe) {
-            throw new UtilityException("prop.nan", key);
+            // Change Message
+            throw new NumberFormatException(Verify.parse("prop.nan", key));
         }
     }
 
@@ -881,12 +896,15 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final short getShort(String key, short def) {
         if (containsKey(key)) {
-            return getShort(key);
+            try {
+                return getShort(key);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            setShort(key, def);
-            return def;
-        }
+        setShort(key, def);
+        return def;
     }
 
     /**
@@ -934,6 +952,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if {@code key} is empty
      * @throws net.visualillusionsent.utils.UnknownPropertyException
      *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
     @Override
     public final short[] getShortArray(String key) {
@@ -951,12 +971,15 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final short[] getShortArray(String key, short[] def) {
         if (containsKey(key)) {
-            return getShortArray(key, ",");
+            try {
+                return getShortArray(key, ",");
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            setShortArray(key, def);
-            return def;
-        }
+        setShortArray(key, def);
+        return def;
     }
 
     /**
@@ -992,6 +1015,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if {@code key} or {@code delimiter} is null
      * @throws java.lang.IllegalArgumentException
      *         if {@code key} or {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
     @Override
     public final short[] getShortArray(String key, String delimiter) {
@@ -1009,12 +1034,15 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final short[] getShortArray(String key, String delimiter, short[] def) {
         if (containsKey(key)) {
-            return StringUtils.stringToShortArray(getString(key), delimiter);
+            try {
+                return StringUtils.stringToShortArray(getString(key), delimiter);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            setShortArray(key, delimiter, def);
-            return def;
-        }
+        setShortArray(key, delimiter, def);
+        return def;
     }
 
     /**
@@ -1061,9 +1089,13 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if {@code key} is empty
      * @throws net.visualillusionsent.utils.UnknownPropertyException
      *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
     @Override
     public final int getInt(String key) {
+        notNull(key, "String key");
+
         if (numberCache.containsKey(key)) {
             return numberCache.get(key).intValue();
         }
@@ -1073,7 +1105,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
             return value;
         }
         catch (NumberFormatException nfe) {
-            throw new UtilityException("prop.nan", key);
+            // Change Message
+            throw new NumberFormatException(Verify.parse("prop.nan", key));
         }
     }
 
@@ -1088,12 +1121,15 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final int getInt(String key, int def) {
         if (containsKey(key)) {
-            return getInt(key);
+            try {
+                return getInt(key);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            setInt(key, def);
-            return def;
-        }
+        setInt(key, def);
+        return def;
     }
 
     /**
@@ -1141,6 +1177,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if {@code key} is empty
      * @throws net.visualillusionsent.utils.UnknownPropertyException
      *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
     @Override
     public final int[] getIntArray(String key) {
@@ -1158,12 +1196,15 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final int[] getIntArray(String key, int[] def) {
         if (containsKey(key)) {
-            return getIntArray(key, ",");
+            try {
+                return getIntArray(key, ",");
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            setIntArray(key, def);
-            return def;
-        }
+        setIntArray(key, def);
+        return def;
     }
 
     /**
@@ -1199,6 +1240,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if {@code key} or {@code delimiter} is null
      * @throws java.lang.IllegalArgumentException
      *         if {@code key} or {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
     @Override
     public final int[] getIntArray(String key, String delimiter) {
@@ -1216,12 +1259,15 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final int[] getIntArray(String key, String delimiter, int[] def) {
         if (containsKey(key)) {
-            return StringUtils.stringToIntArray(getString(key), delimiter);
+            try {
+                return StringUtils.stringToIntArray(getString(key), delimiter);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            setIntArray(key, delimiter, def);
-            return def;
-        }
+        setIntArray(key, delimiter, def);
+        return def;
     }
 
     /**
@@ -1268,9 +1314,13 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if {@code key} is empty
      * @throws net.visualillusionsent.utils.UnknownPropertyException
      *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
     @Override
     public final long getLong(String key) {
+        notNull(key, "String key");
+
         if (numberCache.containsKey(key)) {
             return numberCache.get(key).longValue();
         }
@@ -1280,7 +1330,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
             return value;
         }
         catch (NumberFormatException nfe) {
-            throw new UtilityException("prop.nan", key);
+            // Change Message
+            throw new NumberFormatException(Verify.parse("prop.nan", key));
         }
     }
 
@@ -1295,12 +1346,15 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final long getLong(String key, long def) {
         if (containsKey(key)) {
-            return getLong(key);
+            try {
+                return getLong(key);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            setLong(key, def);
-            return def;
-        }
+        setLong(key, def);
+        return def;
     }
 
     /**
@@ -1348,6 +1402,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if {@code key} is empty
      * @throws net.visualillusionsent.utils.UnknownPropertyException
      *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
     @Override
     public final long[] getLongArray(String key) {
@@ -1365,12 +1421,15 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final long[] getLongArray(String key, long[] def) {
         if (containsKey(key)) {
-            return getLongArray(key, ",");
+            try {
+                return getLongArray(key, ",");
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            setLongArray(key, def);
-            return def;
-        }
+        setLongArray(key, def);
+        return def;
     }
 
     /**
@@ -1406,6 +1465,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if {@code key} or {@code delimiter} is null
      * @throws java.lang.IllegalArgumentException
      *         if {@code key} or {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
     @Override
     public final long[] getLongArray(String key, String delimiter) {
@@ -1422,16 +1483,16 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      */
     @Override
     public final long[] getLongArray(String key, String delimiter, long[] def) {
-        notNull(key, "String key");
-        notEmpty(key, "String key");
-
         if (containsKey(key)) {
-            return StringUtils.stringToLongArray(getString(key), delimiter);
+            try {
+                return StringUtils.stringToLongArray(getString(key), delimiter);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            setLongArray(key, delimiter, def);
-            return def;
-        }
+        setLongArray(key, delimiter, def);
+        return def;
     }
 
     /**
@@ -1478,9 +1539,12 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if {@code key} is empty
      * @throws net.visualillusionsent.utils.UnknownPropertyException
      *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
     @Override
     public final float getFloat(String key) {
+        notNull(key, "String key");
         if (numberCache.containsKey(key)) {
             return numberCache.get(key).floatValue();
         }
@@ -1490,7 +1554,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
             return value;
         }
         catch (NumberFormatException nfe) {
-            throw new UtilityException("prop.nan", key);
+            // Change Message
+            throw new NumberFormatException(Verify.parse("prop.nan", key));
         }
     }
 
@@ -1505,12 +1570,15 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final float getFloat(String key, float def) {
         if (containsKey(key)) {
-            return getFloat(key);
+            try {
+                return getFloat(key);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            setFloat(key, def);
-            return def;
-        }
+        setFloat(key, def);
+        return def;
     }
 
     /**
@@ -1558,6 +1626,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if {@code key} is empty
      * @throws net.visualillusionsent.utils.UnknownPropertyException
      *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
     @Override
     public final float[] getFloatArray(String key) {
@@ -1575,12 +1645,15 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final float[] getFloatArray(String key, float[] def) {
         if (containsKey(key)) {
-            return getFloatArray(key, ",");
+            try {
+                return getFloatArray(key, ",");
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            setFloatArray(key, def);
-            return def;
-        }
+        setFloatArray(key, def);
+        return def;
     }
 
     /**
@@ -1616,6 +1689,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if {@code key} or {@code delimiter} is null
      * @throws java.lang.IllegalArgumentException
      *         if {@code key} or {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
     @Override
     public final float[] getFloatArray(String key, String delimiter) {
@@ -1633,12 +1708,15 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final float[] getFloatArray(String key, String delimiter, float[] def) {
         if (containsKey(key)) {
-            return StringUtils.stringToFloatArray(getString(key), delimiter);
+            try {
+                return StringUtils.stringToFloatArray(getString(key), delimiter);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            setFloatArray(key, delimiter, def);
-            return def;
-        }
+        setFloatArray(key, delimiter, def);
+        return def;
     }
 
     /**
@@ -1685,9 +1763,12 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if {@code key} is empty
      * @throws net.visualillusionsent.utils.UnknownPropertyException
      *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
     @Override
     public final double getDouble(String key) {
+        notNull(key, "String key");
         if (numberCache.containsKey(key)) {
             return numberCache.get(key).doubleValue();
         }
@@ -1697,7 +1778,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
             return value;
         }
         catch (NumberFormatException nfe) {
-            throw new UtilityException("prop.nan");
+            // Change Message
+            throw new NumberFormatException(Verify.parse("prop.nan", key));
         }
     }
 
@@ -1712,12 +1794,15 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final double getDouble(String key, double def) {
         if (containsKey(key)) {
-            return getDouble(key);
+            try {
+                return getDouble(key);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            setDouble(key, def);
-            return def;
-        }
+        setDouble(key, def);
+        return def;
     }
 
     /**
@@ -1765,6 +1850,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if {@code key} is empty
      * @throws net.visualillusionsent.utils.UnknownPropertyException
      *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
     @Override
     public final double[] getDoubleArray(String key) {
@@ -1782,12 +1869,15 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final double[] getDoubleArray(String key, double[] def) {
         if (containsKey(key)) {
-            return getDoubleArray(key, ",");
+            try {
+                return getDoubleArray(key, ",");
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            setDoubleArray(key, def);
-            return def;
-        }
+        setDoubleArray(key, def);
+        return def;
     }
 
     /**
@@ -1823,6 +1913,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      *         if {@code key} or {@code delimiter} is null
      * @throws java.lang.IllegalArgumentException
      *         if {@code key} or {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
     @Override
     public final double[] getDoubleArray(String key, String delimiter) {
@@ -1840,12 +1932,15 @@ public final class PropertiesFile extends AbstractPropertiesFile {
     @Override
     public final double[] getDoubleArray(String key, String delimiter, double[] def) {
         if (containsKey(key)) {
-            return StringUtils.stringToDoubleArray(getString(key), delimiter);
+            try {
+                return StringUtils.stringToDoubleArray(getString(key), delimiter);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            setDoubleArray(key, delimiter, def);
-            return def;
-        }
+        setDoubleArray(key, delimiter, def);
+        return def;
     }
 
     /**

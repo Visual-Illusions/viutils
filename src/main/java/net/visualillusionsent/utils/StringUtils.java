@@ -50,13 +50,13 @@ public final class StringUtils {
      *
      * @return the newly joined {@link String}
      *
-     * @throws UtilityException
-     *         <br>
-     *         if startIndex is greater than or equal to args.length<br>
-     *         or if startIndex is greater than or equal to endIndex<br>
-     *         or if endIndex is greater than or equal to args.length<br>
+     * @throws java.lang.NullPointerException
+     *         if {@code args} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if startIndex is greater than or equal to args.length or endIndex;
+     *         if endIndex is greater than or equal to args.length
      */
-    public static final String joinString(String[] args, String delimiter, int startIndex) throws UtilityException {
+    public static String joinString(String[] args, String delimiter, int startIndex) {
         return joinString(args, delimiter, startIndex, args.length - 1);
     }
 
@@ -75,13 +75,13 @@ public final class StringUtils {
      *
      * @return the newly joined {@link String}
      *
-     * @throws UtilityException
-     *         <br>
-     *         if startIndex is greater than or equal to args.length<br>
-     *         or if startIndex is greater than or equal to endIndex<br>
-     *         or if endIndex is greater than or equal to args.length<br>
+     * @throws java.lang.NullPointerException
+     *         if {@code args} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if startIndex is greater than or equal to args.length or endIndex;
+     *         if endIndex is greater than or equal to args.length
      */
-    public static final String joinString(String[] args, String delimiter, int startIndex, int endIndex) throws UtilityException {
+    public static String joinString(String[] args, String delimiter, int startIndex, int endIndex) {
         notNull(args, "String[] args");
         //notNull(delimiter, "String delimiter"); Convert Null to the null char
         notEmpty(args, "String[] args");
@@ -105,7 +105,7 @@ public final class StringUtils {
     }
 
     /**
-     * Pads to the right of a {@link String} with spaces ' '<br>
+     * Pads to the right of a {@link String} with spaces ' '<br/>
      * NOTE: Padding also takes into account existing characters so a padAmount less that the give String has no effect
      *
      * @param toPad
@@ -115,15 +115,15 @@ public final class StringUtils {
      *
      * @return the padded string
      *
-     * @throws UtilityException
-     *         if toPad is null
+     * @throws java.lang.NullPointerException
+     *         if {@code toPad} is null
      */
-    public static final String padRight(String toPad, int padAmount) throws UtilityException {
+    public static String padRight(String toPad, int padAmount) {
         return padCharRight(toPad, padAmount, ' ');
     }
 
     /**
-     * Pads to the right of a {@link String} with specified character<br>
+     * Pads to the right of a {@link String} with specified character<br/>
      * NOTE: Padding also takes into account existing characters so a padAmount less that the give String has no effect
      *
      * @param toPad
@@ -135,13 +135,13 @@ public final class StringUtils {
      *
      * @return the padded string
      *
-     * @throws UtilityException
-     *         if toPad is null
+     * @throws java.lang.NullPointerException
+     *         if {@code toPad} is null
      */
-    public static final String padCharRight(String toPad, int padAmount, char delimiter) throws UtilityException {
+    public static String padCharRight(String toPad, int padAmount, char delimiter) {
         notNull(toPad, "String toPad");
 
-        StringBuffer padded = new StringBuffer(toPad);
+        StringBuilder padded = new StringBuilder(toPad);
         while ((padded.length() - toPad.length()) < padAmount) {
             padded.append(delimiter);
         }
@@ -149,7 +149,7 @@ public final class StringUtils {
     }
 
     /**
-     * Pads to the left of a {@link String} with spaces ' '<br>
+     * Pads to the left of a {@link String} with spaces ' '<br/>
      * NOTE: Padding also takes into account existing characters so a padAmount less that the give String has no effect
      *
      * @param toPad
@@ -159,14 +159,15 @@ public final class StringUtils {
      *
      * @return the padded string
      *
-     * @throws UtilityException
+     * @throws java.lang.NullPointerException
+     *         if {@code toPad} is null
      */
-    public static final String padLeft(String toPad, int padAmount) throws UtilityException {
+    public static String padLeft(String toPad, int padAmount) {
         return padCharLeft(toPad, padAmount, ' ');
     }
 
     /**
-     * Pads to the left of a {@link String} with specified character<br>
+     * Pads to the left of a {@link String} with specified character<br/>
      * NOTE: Padding also takes into account existing characters so a padAmount less that the give String has no effect
      *
      * @param toPad
@@ -178,12 +179,13 @@ public final class StringUtils {
      *
      * @return the padded string
      *
-     * @throws UtilityException
+     * @throws java.lang.NullPointerException
+     *         if {@code toPad} is null
      */
-    public static final String padCharLeft(String toPad, int padAmount, char delimiter) throws UtilityException {
+    public static String padCharLeft(String toPad, int padAmount, char delimiter) {
         notNull(toPad, "String toPad");
 
-        StringBuffer padded = new StringBuffer(toPad);
+        StringBuilder padded = new StringBuilder(toPad);
         while ((padded.length() - toPad.length()) < padAmount) {
             padded.insert(0, delimiter);
         }
@@ -200,10 +202,10 @@ public final class StringUtils {
      *
      * @return the padded String
      *
-     * @throws UtilityException
-     *         if toCenter is null
+     * @throws java.lang.NullPointerException
+     *         if {@code toCenter} is null
      */
-    public static final String centerLine(String toCenter, int lineLength) throws UtilityException {
+    public static String centerLine(String toCenter, int lineLength) {
         notNull(toCenter, "String toCenter");
 
         return padCharLeft(toCenter, (int) (Math.floor(lineLength - toCenter.length()) / 2), ' ');
@@ -217,10 +219,12 @@ public final class StringUtils {
      *
      * @return whitespace cleaned {@link String} array
      *
-     * @throws UtilityException
-     *         if toTrim is null or empty
+     * @throws java.lang.NullPointerException
+     *         if {@code toTrim} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code toTrim} is empty
      */
-    public static String[] trimElements(String[] toTrim) throws UtilityException {
+    public static String[] trimElements(String[] toTrim) {
         notNull(toTrim, "String[] toTrim");
         notEmpty(toTrim, "String[] toTrim");
 
@@ -239,9 +243,12 @@ public final class StringUtils {
      *
      * @return byte array of the string
      *
-     * @throws UtilityException
+     * @throws java.lang.NullPointerException
+     *         if {@code str} is null
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
-    public static byte[] stringToByteArray(String str) throws UtilityException {
+    public static byte[] stringToByteArray(String str) {
         return stringToByteArray(str, ",");
     }
 
@@ -255,12 +262,14 @@ public final class StringUtils {
      *
      * @return byte array of the string
      *
-     * @throws UtilityException
-     *         if str is null or empty<br>
-     *         or if delimiter is null or empty<br>
-     *         or if an element is not a number
+     * @throws java.lang.NullPointerException
+     *         if {@code str} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
-    public static byte[] stringToByteArray(String str, String delimiter) throws UtilityException {
+    public static byte[] stringToByteArray(String str, String delimiter) {
         notNull(str, "String str");
         notNull(delimiter, "String delimiter");
         //notEmpty(str, "String str"); // Empty array is alright
@@ -277,9 +286,12 @@ public final class StringUtils {
      *
      * @return byte array
      *
-     * @throws UtilityException
+     * @throws java.lang.NullPointerException
+     *         if {@code strings} is null
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
-    public static byte[] stringArrayToByteArray(String[] strings) throws UtilityException {
+    public static byte[] stringArrayToByteArray(String[] strings) {
         notNull(strings, "String[] strArray");
         //notEmpty(strings, "String[] strArray"); // Empty ok
 
@@ -290,12 +302,13 @@ public final class StringUtils {
                 // So we need to insert a work around
                 short temp = Short.decode(strings[index].trim());
                 if (temp > 255) { // If over 255 it will break the byte bounds beyond the assumed overflow
-                    throw new UtilityException("str.nan", strings[index]);
+                    throw new NumberFormatException(Verify.parse("str.num.range", strings[index]));
                 }
                 toRet[index] = (byte) temp;
             }
             catch (NumberFormatException nfe) {
-                throw new UtilityException("str.nan", strings[index]);
+                // Change Message
+                throw new NumberFormatException(Verify.parse("str.nan", strings[index]));
             }
         }
         return toRet;
@@ -309,10 +322,10 @@ public final class StringUtils {
      *
      * @return the joined byte array as a String
      *
-     * @throws UtilityException
-     *         if bytes is null or empty
+     * @throws java.lang.NullPointerException
+     *         if {@code bytes} is null
      */
-    public static String byteArrayToString(byte[] bytes) throws UtilityException {
+    public static String byteArrayToString(byte[] bytes) {
         return byteArrayToString(bytes, ",");
     }
 
@@ -326,11 +339,10 @@ public final class StringUtils {
      *
      * @return the joined byte array as a String
      *
-     * @throws UtilityException
-     *         if bytes is null or empty<br/>
-     *         or if spacer is null
+     * @throws java.lang.NullPointerException
+     *         if {@code bytes} or {@code delimiter} is null
      */
-    public static String byteArrayToString(byte[] bytes, String delimiter) throws UtilityException {
+    public static String byteArrayToString(byte[] bytes, String delimiter) {
         return joinString(byteArrayToStringArray(bytes), delimiter, 0);
     }
 
@@ -342,10 +354,10 @@ public final class StringUtils {
      *
      * @return string array
      *
-     * @throws UtilityException
-     *         if bytes is null or empty
+     * @throws java.lang.NullPointerException
+     *         if {@code bytes} is null
      */
-    public static String[] byteArrayToStringArray(byte[] bytes) throws UtilityException {
+    public static String[] byteArrayToStringArray(byte[] bytes) {
         notNull(bytes, "byte[] bytes");
         // notEmpty(bytes, "byte[] bytes"); //Empty ok
 
@@ -364,11 +376,12 @@ public final class StringUtils {
      *
      * @return short array of the string
      *
-     * @throws UtilityException
-     *         if str is null or empty<br/>
-     *         or if an element is not a number
+     * @throws java.lang.NullPointerException
+     *         if {@code str} is null
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
-    public static short[] stringToShortArray(String str) throws UtilityException {
+    public static short[] stringToShortArray(String str) {
         return stringToShortArray(str, ",");
     }
 
@@ -382,12 +395,14 @@ public final class StringUtils {
      *
      * @return short array of the string
      *
-     * @throws UtilityException
-     *         if str is null or empty<br/>
-     *         or if delimiter is null or empty<br/>
-     *         or if an element is not a number
+     * @throws java.lang.NullPointerException
+     *         if {@code str} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
-    public static short[] stringToShortArray(String str, String delimiter) throws UtilityException {
+    public static short[] stringToShortArray(String str, String delimiter) {
         notNull(str, "String str");
         notNull(delimiter, "String delimiter");
         //notEmpty(str, "String str"); // Empty array is alright
@@ -404,10 +419,12 @@ public final class StringUtils {
      *
      * @return short array
      *
-     * @throws UtilityException
-     *         if strings is null or empty
+     * @throws java.lang.NullPointerException
+     *         if {@code strings} is null
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
-    public static short[] stringArrayToShortArray(String[] strings) throws UtilityException {
+    public static short[] stringArrayToShortArray(String[] strings) {
         notNull(strings, "String[] strArray");
         // notEmpty(strings, "String[] strArray"); //Empty ok
 
@@ -417,7 +434,8 @@ public final class StringUtils {
                 toRet[index] = Short.decode(strings[index].trim());
             }
             catch (NumberFormatException nfe) {
-                throw new UtilityException("str.nan", strings[index]);
+                // Change Message
+                throw new NumberFormatException(Verify.parse("str.nan", strings[index]));
             }
         }
         return toRet;
@@ -431,10 +449,10 @@ public final class StringUtils {
      *
      * @return the joined short array as a String
      *
-     * @throws UtilityException
-     *         if shorts is null or empty
+     * @throws java.lang.NullPointerException
+     *         if {@code shorts} is null
      */
-    public static String shortArrayToString(short[] shorts) throws UtilityException {
+    public static String shortArrayToString(short[] shorts) {
         return shortArrayToString(shorts, ",");
     }
 
@@ -448,11 +466,12 @@ public final class StringUtils {
      *
      * @return the joined short array as a String
      *
-     * @throws UtilityException
-     *         if shorts is null or empty<br/>
-     *         or if spacer is null
+     * @throws java.lang.NullPointerException
+     *         if {@code shorts} or {@code delimiter}is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code delimiter} is empty
      */
-    public static String shortArrayToString(short[] shorts, String delimiter) throws UtilityException {
+    public static String shortArrayToString(short[] shorts, String delimiter) {
         return joinString(shortArrayToStringArray(shorts), delimiter, 0);
     }
 
@@ -464,10 +483,10 @@ public final class StringUtils {
      *
      * @return string array
      *
-     * @throws UtilityException
-     *         if shorts is null or empty
+     * @throws java.lang.NullPointerException
+     *         if {@code shorts} is null
      */
-    public static String[] shortArrayToStringArray(short[] shorts) throws UtilityException {
+    public static String[] shortArrayToStringArray(short[] shorts) {
         notNull(shorts, "short[] shorts");
         // notEmpty(shorts, "short[] shorts"); //Empty ok
 
@@ -486,11 +505,12 @@ public final class StringUtils {
      *
      * @return int array of the string
      *
-     * @throws UtilityException
-     *         if str is null or empty<br/>
-     *         if an element is not a number
+     * @throws java.lang.NullPointerException
+     *         if {@code str} is null
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
-    public static int[] stringToIntArray(String str) throws UtilityException {
+    public static int[] stringToIntArray(String str) {
         return stringToIntArray(str, ",");
     }
 
@@ -504,12 +524,14 @@ public final class StringUtils {
      *
      * @return int array of the string
      *
-     * @throws UtilityException
-     *         if str is null or empty<br>
-     *         or if delimiter is null or empty<br>
-     *         or if an element is not a number
+     * @throws java.lang.NullPointerException
+     *         if {@code str} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
-    public static int[] stringToIntArray(String str, String delimiter) throws UtilityException {
+    public static int[] stringToIntArray(String str, String delimiter) {
         notNull(str, "String str");
         notNull(delimiter, "String delimiter");
         //notEmpty(str, "String str"); // Empty array is alright
@@ -526,10 +548,10 @@ public final class StringUtils {
      *
      * @return int array
      *
-     * @throws UtilityException
-     *         if strings is null or empty
+     * @throws java.lang.NullPointerException
+     *         if {@code strings} is null
      */
-    public static int[] stringArrayToIntArray(String[] strings) throws UtilityException {
+    public static int[] stringArrayToIntArray(String[] strings) {
         notNull(strings, "String[] strings");
         // notEmpty(strings, "String[] strings"); //Empty ok
 
@@ -539,7 +561,8 @@ public final class StringUtils {
                 toRet[index] = Integer.decode(strings[index].trim());
             }
             catch (NumberFormatException nfe) {
-                throw new UtilityException("str.nan", strings[index]);
+                // Change Message
+                throw new NumberFormatException(Verify.parse("str.nan", strings[index]));
             }
         }
         return toRet;
@@ -553,10 +576,10 @@ public final class StringUtils {
      *
      * @return the joined int array as a String
      *
-     * @throws UtilityException
-     *         if integers is null or empty
+     * @throws java.lang.NullPointerException
+     *         if {@code integers} is null
      */
-    public static String intArrayToString(int[] integers) throws UtilityException {
+    public static String intArrayToString(int[] integers) {
         return intArrayToString(integers, ",");
     }
 
@@ -570,11 +593,14 @@ public final class StringUtils {
      *
      * @return the joined int array as a String
      *
-     * @throws UtilityException
-     *         if integers is null or empty<br>
-     *         or if delimiter is null
+     * @throws java.lang.NullPointerException
+     *         if {@code integers} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
-    public static String intArrayToString(int[] integers, String delimiter) throws UtilityException {
+    public static String intArrayToString(int[] integers, String delimiter) {
         return joinString(intArrayToStringArray(integers), delimiter, 0);
     }
 
@@ -586,9 +612,10 @@ public final class StringUtils {
      *
      * @return string array
      *
-     * @throws UtilityException
+     * @throws java.lang.NullPointerException
+     *         if {@code integers} is null
      */
-    public static String[] intArrayToStringArray(int[] integers) throws UtilityException {
+    public static String[] intArrayToStringArray(int[] integers) {
         notNull(integers, "int[] integers");
         // notEmpty(integers, "int[] integers"); //Empty ok
 
@@ -607,9 +634,12 @@ public final class StringUtils {
      *
      * @return long array of the string
      *
-     * @throws UtilityException
+     * @throws java.lang.NullPointerException
+     *         if {@code str} is null
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
-    public static long[] stringToLongArray(String str) throws UtilityException {
+    public static long[] stringToLongArray(String str) {
         return stringToLongArray(str, ",");
     }
 
@@ -623,12 +653,14 @@ public final class StringUtils {
      *
      * @return int array of the string
      *
-     * @throws UtilityException
-     *         if str is null or empty<br>
-     *         or if splitBy is null or empty<br>
-     *         or if an element is not a number
+     * @throws java.lang.NullPointerException
+     *         if {@code str} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
-    public static long[] stringToLongArray(String str, String delimiter) throws UtilityException {
+    public static long[] stringToLongArray(String str, String delimiter) {
         notNull(str, "String str");
         notNull(delimiter, "String delimiter");
         //notEmpty(str, "String str"); // Empty array is alright
@@ -645,11 +677,16 @@ public final class StringUtils {
      *
      * @return long array
      *
-     * @throws UtilityException
+     * @throws java.lang.NullPointerException
+     *         if {@code str} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
-    public static long[] stringArrayToLongArray(String[] strings) throws UtilityException {
+    public static long[] stringArrayToLongArray(String[] strings) {
         notNull(strings, "String[] strings");
-        notEmpty(strings, "String[] strings");
+        // notEmpty(strings, "String[] strings"); // Empty OK
 
         long[] toRet = new long[strings.length];
         for (int index = 0; index < strings.length; index++) {
@@ -657,7 +694,8 @@ public final class StringUtils {
                 toRet[index] = Long.decode(strings[index].trim());
             }
             catch (NumberFormatException nfe) {
-                throw new UtilityException("str.nan", strings[index]);
+                // Change Message
+                throw new NumberFormatException(Verify.parse("str.nan", strings[index]));
             }
         }
         return toRet;
@@ -671,10 +709,10 @@ public final class StringUtils {
      *
      * @return the joined long array as a String
      *
-     * @throws UtilityException
-     *         if longs is null or empty<br>
+     * @throws java.lang.NullPointerException
+     *         if {@code longs} is null
      */
-    public static String longArrayToString(long[] longs) throws UtilityException {
+    public static String longArrayToString(long[] longs) {
         return longArrayToString(longs, ",");
     }
 
@@ -688,11 +726,12 @@ public final class StringUtils {
      *
      * @return the joined long array as a String
      *
-     * @throws UtilityException
-     *         if longs is null or empty<br>
-     *         or if delimiter is null
+     * @throws java.lang.NullPointerException
+     *         if {@code longs} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code delimiter} is empty
      */
-    public static String longArrayToString(long[] longs, String delimiter) throws UtilityException {
+    public static String longArrayToString(long[] longs, String delimiter) {
         return joinString(longArrayToStringArray(longs), delimiter, 0);
     }
 
@@ -704,9 +743,10 @@ public final class StringUtils {
      *
      * @return string array
      *
-     * @throws UtilityException
+     * @throws java.lang.NullPointerException
+     *         if {@code longs} is null
      */
-    public static String[] longArrayToStringArray(long[] longs) throws UtilityException {
+    public static String[] longArrayToStringArray(long[] longs) {
         notNull(longs, "long[] longs");
         // notEmpty(longs, "long[] longs"); //Empty ok
 
@@ -725,9 +765,12 @@ public final class StringUtils {
      *
      * @return float array of the string
      *
-     * @throws UtilityException
+     * @throws java.lang.NullPointerException
+     *         if {@code str} is null
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
-    public static float[] stringToFloatArray(String str) throws UtilityException {
+    public static float[] stringToFloatArray(String str) {
         return stringToFloatArray(str, ",");
     }
 
@@ -741,12 +784,14 @@ public final class StringUtils {
      *
      * @return float array of the string
      *
-     * @throws UtilityException
-     *         if str is null or empty<br>
-     *         or if splitBy is null or empty<br>
-     *         or if an element is not a number
+     * @throws java.lang.NullPointerException
+     *         if {@code str} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
-    public static float[] stringToFloatArray(String str, String delimiter) throws UtilityException {
+    public static float[] stringToFloatArray(String str, String delimiter) {
         notNull(str, "String str");
         notNull(delimiter, "String delimiter");
         //notEmpty(str, "String str"); // Empty array is alright
@@ -763,9 +808,12 @@ public final class StringUtils {
      *
      * @return float array
      *
-     * @throws UtilityException
+     * @throws java.lang.NullPointerException
+     *         if {@code strings} is null
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
-    public static float[] stringArrayToFloatArray(String[] strings) throws UtilityException {
+    public static float[] stringArrayToFloatArray(String[] strings) {
         notNull(strings, "Strings[] strings");
         // notEmpty(strings, "String[] strings"); //Empty ok
 
@@ -775,7 +823,8 @@ public final class StringUtils {
                 toRet[index] = Float.parseFloat(strings[index].trim());
             }
             catch (NumberFormatException nfe) {
-                throw new UtilityException("str.nan", strings[index]);
+                // Change Message
+                throw new NumberFormatException(Verify.parse("str.nan", strings[index]));
             }
         }
         return toRet;
@@ -789,10 +838,10 @@ public final class StringUtils {
      *
      * @return the joined float array as a String
      *
-     * @throws UtilityException
-     *         if floats is null or empty<br>
+     * @throws java.lang.NullPointerException
+     *         if {@code floats} is null
      */
-    public static String floatArrayToString(float[] floats) throws UtilityException {
+    public static String floatArrayToString(float[] floats) {
         return floatArrayToString(floats, ",");
     }
 
@@ -806,11 +855,12 @@ public final class StringUtils {
      *
      * @return the joined float array as a String
      *
-     * @throws UtilityException
-     *         if floats is null or empty<br>
-     *         or if spacer is null
+     * @throws java.lang.NullPointerException
+     *         if {@code floats} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code delimiter} is empty
      */
-    public static String floatArrayToString(float[] floats, String delimiter) throws UtilityException {
+    public static String floatArrayToString(float[] floats, String delimiter) {
         return joinString(floatArrayToStringArray(floats), delimiter, 0);
     }
 
@@ -822,9 +872,10 @@ public final class StringUtils {
      *
      * @return string array
      *
-     * @throws UtilityException
+     * @throws java.lang.NullPointerException
+     *         if {@code floats} is null
      */
-    public static String[] floatArrayToStringArray(float[] floats) throws UtilityException {
+    public static String[] floatArrayToStringArray(float[] floats) {
         notNull(floats, "float[] floats");
         // notEmpty(floats, "float[] floats"); //Empty ok
 
@@ -843,11 +894,12 @@ public final class StringUtils {
      *
      * @return double array of the string
      *
-     * @throws UtilityException
-     *         if str is null or empty<br>
-     *         or if an element is not a number
+     * @throws java.lang.NullPointerException
+     *         if {@code str} is null
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
-    public static double[] stringToDoubleArray(String str) throws UtilityException {
+    public static double[] stringToDoubleArray(String str) {
         return stringToDoubleArray(str, ",");
     }
 
@@ -861,12 +913,14 @@ public final class StringUtils {
      *
      * @return double array of the string
      *
-     * @throws UtilityException
-     *         if str is null or empty<br>
-     *         or if delimiter is null or empty<br>
-     *         or if an element is not a number
+     * @throws java.lang.NullPointerException
+     *         if {@code str} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
-    public static double[] stringToDoubleArray(String str, String delimiter) throws UtilityException {
+    public static double[] stringToDoubleArray(String str, String delimiter) {
         notNull(str, "String str");
         notNull(delimiter, "String delimiter");
         //notEmpty(str, "String str"); // Empty array is alright
@@ -883,9 +937,12 @@ public final class StringUtils {
      *
      * @return double array
      *
-     * @throws UtilityException
+     * @throws java.lang.NullPointerException
+     *         if {@code strings} is null
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
      */
-    public static double[] stringArrayToDoubleArray(String[] strings) throws UtilityException {
+    public static double[] stringArrayToDoubleArray(String[] strings) {
         notNull(strings, "String[] strings");
         //notEmpty(strings, "String[] strings"); //Empty ok
 
@@ -895,7 +952,8 @@ public final class StringUtils {
                 toRet[index] = Double.parseDouble(strings[index].trim());
             }
             catch (NumberFormatException nfe) {
-                throw new UtilityException("str.nan", strings[index]);
+                // Change Message
+                throw new NumberFormatException(Verify.parse("str.nan", strings[index]));
             }
         }
         return toRet;
@@ -909,10 +967,10 @@ public final class StringUtils {
      *
      * @return the joined double array as a String
      *
-     * @throws UtilityException
-     *         if doubles is null or empty
+     * @throws java.lang.NullPointerException
+     *         if {@code doubles} is null
      */
-    public static String doubleArrayToString(double[] doubles) throws UtilityException {
+    public static String doubleArrayToString(double[] doubles) {
         return doubleArrayToString(doubles, ",");
     }
 
@@ -926,11 +984,12 @@ public final class StringUtils {
      *
      * @return the joined double array as a String
      *
-     * @throws UtilityException
-     *         if doubles is null or empty<br>
-     *         or if delimiter is null or empty
+     * @throws java.lang.NullPointerException
+     *         if {@code doubles} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code delimiter} is empty
      */
-    public static String doubleArrayToString(double[] doubles, String delimiter) throws UtilityException {
+    public static String doubleArrayToString(double[] doubles, String delimiter) {
         return joinString(doubleArrayToStringArray(doubles), delimiter, 0);
     }
 
@@ -942,9 +1001,10 @@ public final class StringUtils {
      *
      * @return string array
      *
-     * @throws UtilityException
+     * @throws java.lang.NullPointerException
+     *         if {@code doubles} is null
      */
-    public static String[] doubleArrayToStringArray(double[] doubles) throws UtilityException {
+    public static String[] doubleArrayToStringArray(double[] doubles) {
         notNull(doubles, "double[] doubles");
         // notEmpty(doubles, "double[] doubles"); //Empty ok
 
@@ -963,11 +1023,10 @@ public final class StringUtils {
      *
      * @return boolean array of the string
      *
-     * @throws UtilityException
-     *         if str is null or empty<br>
-     *         or if an element is not a number
+     * @throws java.lang.NullPointerException
+     *         if {@code str} is null
      */
-    public static boolean[] stringToBooleanArray(String str) throws UtilityException {
+    public static boolean[] stringToBooleanArray(String str) {
         return stringToBooleanArray(str, ",");
     }
 
@@ -981,12 +1040,12 @@ public final class StringUtils {
      *
      * @return boolean array of the string
      *
-     * @throws UtilityException
-     *         if str is null or empty<br>
-     *         or if delimiter is null or empty<br>
-     *         or if an element is not a number
+     * @throws java.lang.NullPointerException
+     *         if {@code str} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code delimiter} is empty
      */
-    public static boolean[] stringToBooleanArray(String str, String delimiter) throws UtilityException {
+    public static boolean[] stringToBooleanArray(String str, String delimiter) {
         notNull(str, "String str");
         notNull(delimiter, "String delimiter");
         //notEmpty(str, "String str"); // Empty array is alright
@@ -1003,9 +1062,10 @@ public final class StringUtils {
      *
      * @return boolean array
      *
-     * @throws UtilityException
+     * @throws java.lang.NullPointerException
+     *         if {@code strings} is null
      */
-    public static boolean[] stringArrayToBooleanArray(String[] strings) throws UtilityException {
+    public static boolean[] stringArrayToBooleanArray(String[] strings) {
         notNull(strings, "String[] strings");
         // notEmpty(strings, "String[] strings"); //Empty ok
 
@@ -1024,10 +1084,10 @@ public final class StringUtils {
      *
      * @return the joined boolean array as a String
      *
-     * @throws UtilityException
-     *         if doubles is null or empty<br>
+     * @throws java.lang.NullPointerException
+     *         if {@code booleans} is null
      */
-    public static String booleanArrayToString(boolean[] booleans) throws UtilityException {
+    public static String booleanArrayToString(boolean[] booleans) {
         return booleanArrayToString(booleans, ",");
     }
 
@@ -1041,11 +1101,12 @@ public final class StringUtils {
      *
      * @return the joined boolean array as a String
      *
-     * @throws UtilityException
-     *         if doubles is null or empty<br>
-     *         or if spacer is null
+     * @throws java.lang.NullPointerException
+     *         if {@code booleans} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code delimiter} is empty
      */
-    public static String booleanArrayToString(boolean[] booleans, String delimiter) throws UtilityException {
+    public static String booleanArrayToString(boolean[] booleans, String delimiter) {
         return joinString(booleanArrayToStringArray(booleans), delimiter, 0);
     }
 
@@ -1057,9 +1118,10 @@ public final class StringUtils {
      *
      * @return string array
      *
-     * @throws UtilityException
+     * @throws java.lang.NullPointerException
+     *         if {@code booleans} is null
      */
-    public static String[] booleanArrayToStringArray(boolean[] booleans) throws UtilityException {
+    public static String[] booleanArrayToStringArray(boolean[] booleans) {
         notNull(booleans, "boolean[] booleans");
         // notEmpty(booleans, "boolean[] booleans"); //Empty ok
 
@@ -1078,10 +1140,10 @@ public final class StringUtils {
      *
      * @return the joined object array as a String
      *
-     * @throws UtilityException
-     *         if doubles is null or empty<br>
+     * @throws java.lang.NullPointerException
+     *         if {@code str} or {@code delimiter} is null
      */
-    public static String objectArrayToString(Object[] objects) throws UtilityException {
+    public static String objectArrayToString(Object[] objects) {
         return objectArrayToString(objects, ",");
     }
 
@@ -1095,11 +1157,12 @@ public final class StringUtils {
      *
      * @return the joined object array as a String
      *
-     * @throws UtilityException
-     *         if doubles is null or empty<br>
-     *         or if spacer is null
+     * @throws java.lang.NullPointerException
+     *         if {@code objects} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code delimiter} is empty
      */
-    public static String objectArrayToString(Object[] objects, String delimiter) throws UtilityException {
+    public static String objectArrayToString(Object[] objects, String delimiter) {
         return joinString(objectArrayToStringArray(objects), delimiter, 0);
     }
 
@@ -1111,9 +1174,10 @@ public final class StringUtils {
      *
      * @return string array
      *
-     * @throws UtilityException
+     * @throws java.lang.NullPointerException
+     *         if {@code objects} is null
      */
-    public static String[] objectArrayToStringArray(Object[] objects) throws UtilityException {
+    public static String[] objectArrayToStringArray(Object[] objects) {
         notNull(objects, "Object[] objects");
         // notEmpty(objects, "Object[] objects"); //Empty ok
 
@@ -1129,7 +1193,7 @@ public final class StringUtils {
      *
      * @return the class version
      */
-    public static final float getClassVersion() {
+    public static float getClassVersion() {
         return classVersion;
     }
 }

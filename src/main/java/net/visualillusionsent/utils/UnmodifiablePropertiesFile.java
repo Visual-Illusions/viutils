@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 
 import static net.visualillusionsent.utils.Verify.notEmpty;
+import static net.visualillusionsent.utils.Verify.notEmptyNoTrim;
 import static net.visualillusionsent.utils.Verify.notNull;
 
 /**
@@ -47,8 +48,11 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
 
     /**
      * {@inheritDoc}
+     *
+     * @throws PropertiesFileException
+     *         if there was an error with reading the properties file
      */
-    public UnmodifiablePropertiesFile(String filePath) throws UtilityException {
+    public UnmodifiablePropertiesFile(String filePath) {
         super(filePath);
         if (propsFile.exists()) {
             try {
@@ -62,8 +66,11 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
 
     /**
      * {@inheritDoc}
+     *
+     * @throws PropertiesFileException
+     *         if there was an error with reading the properties file
      */
-    public UnmodifiablePropertiesFile(File file) throws UtilityException {
+    public UnmodifiablePropertiesFile(File file) {
         super(file);
         if (propsFile.exists()) {
             try {
@@ -77,8 +84,11 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
 
     /**
      * {@inheritDoc}
+     *
+     * @throws PropertiesFileException
+     *         if there was an error with reading the properties file
      */
-    public UnmodifiablePropertiesFile(String jarPath, String entry) throws UtilityException {
+    public UnmodifiablePropertiesFile(String jarPath, String entry) {
         super(jarPath, entry);
         JarEntry ent = jar.getJarEntry(entry);
         try {
@@ -92,12 +102,11 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
     /**
      * Loads the Properties File
      *
-     * @throws UtilityException
-     *         <br>
+     * @throws PropertiesFileException
      *         if there was an error with reading the properties file
      */
     @Override
-    protected final void load(InputStream instream) throws UtilityException {
+    protected final void load(InputStream instream) {
         HashMap<String, String> tempProps = new HashMap<String, String>();
         HashMap<String, String> tempInLine = new HashMap<String, String>();
         HashMap<String, List<String>> tempCom = new HashMap<String, List<String>>();
@@ -154,7 +163,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
         }
         catch (IOException ioe) {
             UtilsLogger.severe(String.format("An IOException occurred in File: '%s'", filePath), ioe);
-            uex = new UtilityException("file.err.ioe", filePath);
+            uex = new PropertiesFileException("file.err.ioe", filePath);
         }
         finally {
             if (in != null) {
@@ -180,19 +189,19 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
 
     /** {@inheritDoc} */
     @Override
-    public final void reload() throws UtilityException {
+    public final void reload() {
         //props.clear();  UNSUPPORTED
         //comments.clear(); UNSUPPORTED
         if (jar != null) {
             JarEntry ent = jar.getJarEntry(filePath);
             if (ent == null) {
-                throw new UtilityException("entry.missing", filePath);
+                throw new PropertiesFileException("entry.missing", filePath);
             }
             try {
                 load(jar.getInputStream(ent));
             }
             catch (IOException e) {
-                throw new UtilityException("file.err.ioe", filePath);
+                throw new PropertiesFileException("file.err.ioe", filePath);
             }
         }
         else {
@@ -200,7 +209,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
                 load(new FileInputStream(propsFile));
             }
             catch (FileNotFoundException e) {
-                throw new UtilityException("file.err.ioe", filePath);
+                throw new PropertiesFileException("file.err.ioe", filePath);
             }
         }
     }
@@ -212,7 +221,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void save() throws UnsupportedOperationException {
+    protected final void save() {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -223,7 +232,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void forceSave() throws UnsupportedOperationException {
+    protected final void forceSave() {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -234,22 +243,36 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void save(boolean force) throws UnsupportedOperationException {
+    protected final void save(boolean force) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key}  is empty
+     */
     @Override
-    public final boolean containsKey(String key) throws UtilityException {
+    public final boolean containsKey(String key) {
         notNull(key, "String key");
         notEmpty(key, "String key");
 
         return props.containsKey(key);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if a {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if a {@code key} is empty
+     */
     @Override
-    public final boolean containsKeys(String... keys) throws UtilityException {
+    public final boolean containsKeys(String... keys) {
         boolean contains = true;
         for (String key : keys) {
             contains &= containsKey(key);
@@ -258,45 +281,67 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
     }
 
     /**
-     * Unsupported Operation with UnmodifiablePropertiesFiles
+     * {@inheritDoc}
      *
-     * @throws UnsupportedOperationException
-     *         Not supported with Unmodifiable Properties Files
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
      */
     @Override
-    protected final void removeKey(String key) throws UnsupportedOperationException {
+    protected final void removeKey(String key) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if a {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if a {@code key} is empty
+     */
     @Override
-    protected final void removeKeys(String... keys) {
+    public final void removeKeys(String... keys) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final String getString(String key) throws UtilityException {
+    public final String getString(String key) {
+        if (containsKey(key)) {
+            return props.get(key);
+        }
+        throw new UnknownPropertyException("key.missing", key);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
+    @Override
+    public final String getString(String key, String def) {
         notNull(key, "String key");
+        notNull(def, "String def");
         notEmpty(key, "String key");
 
         if (containsKey(key)) {
             return props.get(key);
         }
-        throw new UtilityException("key.missing", key);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final String getString(String key, String def) throws UtilityException {
-        notNull(key, "String key");
-        notEmpty(key, "String key");
-
-        if (containsKey(key)) {
-            return props.get(key);
-        }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -306,7 +351,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setString(String key, String value) throws UnsupportedOperationException {
+    protected final void setString(String key, String value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -317,25 +362,41 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setString(String key, String value, String... comments) throws UnsupportedOperationException {
+    protected final void setString(String key, String value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final String[] getStringArray(String key) throws UtilityException {
+    public final String[] getStringArray(String key) {
         return getStringArray(key, ",");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final String[] getStringArray(String key, String[] def) throws UtilityException {
+    public final String[] getStringArray(String key, String[] def) {
+        notNull(def, "String[] def");
+
         if (containsKey(key)) {
             return getStringArray(key, ",");
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -345,7 +406,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setStringArray(String key, String[] value) throws UnsupportedOperationException {
+    protected final void setStringArray(String key, String[] value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -356,31 +417,42 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setStringArray(String key, String[] value, String... comment) throws UnsupportedOperationException {
+    protected final void setStringArray(String key, String[] value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final String[] getStringArray(String key, String delimiter) throws UtilityException {
+    public final String[] getStringArray(String key, String delimiter) {
         notNull(delimiter, "String delimiter");
-        notEmpty(delimiter, "String delimiter");
+        notEmptyNoTrim(delimiter, "String delimiter");
 
         return StringUtils.trimElements(getString(key).split(delimiter));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final String[] getStringArray(String key, String delimiter, String[] def) throws UtilityException {
-        notNull(delimiter, "String delimiter");
-        notEmpty(delimiter, "String delimiter");
-
+    public final String[] getStringArray(String key, String delimiter, String[] def) {
         if (containsKey(key)) {
-            return StringUtils.trimElements(getString(key).split(delimiter));
+            return getStringArray(key, delimiter);
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -390,7 +462,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setStringArray(String key, String spacer, String[] value) throws UnsupportedOperationException {
+    protected final void setStringArray(String key, String delimiter, String[] value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -401,35 +473,59 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setStringArray(String key, String spacer, String[] value, String... comment) throws UnsupportedOperationException {
+    protected final void setStringArray(String key, String delimiter, String[] value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
+     */
     @Override
-    public final byte getByte(String key) throws UtilityException {
-        if (numberCache.containsKey(key)) {
+    public final byte getByte(String key) {
+        notNull(key, "String key");
+
+        if (numberCache.containsKey(key)) { // Caching check
             return numberCache.get(key).byteValue();
         }
         try {
-            byte value = Byte.parseByte(getString(key));
-            numberCache.put(key, value);
+            byte value = Byte.decode(getString(key)); // decode
+            numberCache.put(key, value); // Cache
             return value;
         }
         catch (NumberFormatException nfe) {
-            throw new UtilityException("prop.nan", key);
+            // Change Message
+            throw new NumberFormatException(Verify.parse("prop.nan", key));
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final byte getByte(String key, byte def) throws UtilityException {
+    public final byte getByte(String key, byte def) {
         if (containsKey(key)) {
-            return getByte(key);
+            try {
+                return getByte(key);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -439,7 +535,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setByte(String key, byte value) throws UnsupportedOperationException {
+    protected final void setByte(String key, byte value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -450,25 +546,47 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setByte(String key, byte value, String... comment) throws UnsupportedOperationException {
+    protected final void setByte(String key, byte value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
+     */
     @Override
-    public final byte[] getByteArray(String key) throws UtilityException {
+    public final byte[] getByteArray(String key) {
         return getByteArray(key, ",");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final byte[] getByteArray(String key, byte[] def) throws UtilityException {
+    public final byte[] getByteArray(String key, byte[] def) {
         if (containsKey(key)) {
-            return getByteArray(key, ",");
+            try {
+                return getByteArray(key, ",");
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            return def;
-        }
+        setByteArray(key, def);
+        return def;
     }
 
     /**
@@ -478,7 +596,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setByteArray(String key, byte[] value) throws UnsupportedOperationException {
+    protected final void setByteArray(String key, byte[] value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -489,31 +607,44 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setByteArray(String key, byte[] value, String... comment) throws UnsupportedOperationException {
+    protected final void setByteArray(String key, byte[] value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
+     */
     @Override
-    public final byte[] getByteArray(String key, String delimiter) throws UtilityException {
-        notNull(delimiter, "String delimiter");
-        notEmpty(delimiter, "String delimiter");
-
+    public final byte[] getByteArray(String key, String delimiter) {
         return StringUtils.stringToByteArray(getString(key), delimiter);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final byte[] getByteArray(String key, String delimiter, byte[] def) throws UtilityException {
-        notNull(delimiter, "String delimiter");
-        notEmpty(delimiter, "String delimiter");
-
+    public final byte[] getByteArray(String key, String delimiter, byte[] def) {
         if (containsKey(key)) {
-            return StringUtils.stringToByteArray(getString(key), delimiter);
+            try {
+                return StringUtils.stringToByteArray(getString(key), delimiter);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -523,7 +654,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setByteArray(String key, String delimiter, byte[] value) throws UnsupportedOperationException {
+    protected final void setByteArray(String key, String delimiter, byte[] value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -534,35 +665,59 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setByteArray(String key, String delimiter, byte[] value, String... comment) throws UnsupportedOperationException {
+    protected final void setByteArray(String key, String delimiter, byte[] value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
+     */
     @Override
-    public final short getShort(String key) throws UtilityException {
+    public final short getShort(String key) {
+        notNull(key, "String key");
+
         if (numberCache.containsKey(key)) {
             return numberCache.get(key).shortValue();
         }
         try {
-            short value = Short.parseShort(getString(key));
+            short value = Short.decode(getString(key));
             numberCache.put(key, value);
             return value;
         }
         catch (NumberFormatException nfe) {
-            throw new UtilityException("prop.nan", key);
+            // Change Message
+            throw new NumberFormatException(Verify.parse("prop.nan", key));
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final short getShort(String key, short def) throws UtilityException {
+    public final short getShort(String key, short def) {
         if (containsKey(key)) {
-            return getShort(key);
+            try {
+                return getShort(key);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -572,7 +727,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setShort(String key, short value) throws UnsupportedOperationException {
+    protected final void setShort(String key, short value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -583,25 +738,46 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setShort(String key, short value, String... comment) throws UnsupportedOperationException {
+    protected final void setShort(String key, short value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
+     */
     @Override
-    public final short[] getShortArray(String key) throws UtilityException {
+    public final short[] getShortArray(String key) {
         return getShortArray(key, ",");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final short[] getShortArray(String key, short[] def) throws UtilityException {
+    public final short[] getShortArray(String key, short[] def) {
         if (containsKey(key)) {
-            return getShortArray(key, ",");
+            try {
+                return getShortArray(key, ",");
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -611,7 +787,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setShortArray(String key, short[] value) throws UnsupportedOperationException {
+    protected final void setShortArray(String key, short[] value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -622,31 +798,44 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setShortArray(String key, short[] value, String... comment) throws UnsupportedOperationException {
+    protected final void setShortArray(String key, short[] value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
+     */
     @Override
-    public final short[] getShortArray(String key, String delimiter) throws UtilityException {
-        notNull(delimiter, "String delimiter");
-        notEmpty(delimiter, "String delimiter");
-
+    public final short[] getShortArray(String key, String delimiter) {
         return StringUtils.stringToShortArray(getString(key), delimiter);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final short[] getShortArray(String key, String delimiter, short[] def) throws UtilityException {
-        notNull(delimiter, "String delimiter");
-        notEmpty(delimiter, "String delimiter");
-
+    public final short[] getShortArray(String key, String delimiter, short[] def) {
         if (containsKey(key)) {
-            return StringUtils.stringToShortArray(getString(key), delimiter);
+            try {
+                return StringUtils.stringToShortArray(getString(key), delimiter);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -656,7 +845,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setShortArray(String key, String spacer, short[] value) throws UnsupportedOperationException {
+    protected final void setShortArray(String key, String delimiter, short[] value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -667,35 +856,59 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setShortArray(String key, String spacer, short[] value, String... comment) throws UnsupportedOperationException {
+    protected final void setShortArray(String key, String delimiter, short[] value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
+     */
     @Override
-    public final int getInt(String key) throws UtilityException {
+    public final int getInt(String key) {
+        notNull(key, "String key");
+
         if (numberCache.containsKey(key)) {
             return numberCache.get(key).intValue();
         }
         try {
-            int value = Integer.parseInt(getString(key));
+            int value = Integer.decode(getString(key));
             numberCache.put(key, value);
             return value;
         }
         catch (NumberFormatException nfe) {
-            throw new UtilityException("prop.nan", key);
+            // Change Message
+            throw new NumberFormatException(Verify.parse("prop.nan", key));
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final int getInt(String key, int def) throws UtilityException {
+    public final int getInt(String key, int def) {
         if (containsKey(key)) {
-            return getInt(key);
+            try {
+                return getInt(key);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -705,7 +918,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setInt(String key, int value) throws UnsupportedOperationException {
+    protected final void setInt(String key, int value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -716,25 +929,46 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setInt(String key, int value, String... comment) throws UnsupportedOperationException {
+    protected final void setInt(String key, int value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
+     */
     @Override
-    public final int[] getIntArray(String key) throws UtilityException {
+    public final int[] getIntArray(String key) {
         return getIntArray(key, ",");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final int[] getIntArray(String key, int[] def) throws UtilityException {
+    public final int[] getIntArray(String key, int[] def) {
         if (containsKey(key)) {
-            return getIntArray(key, ",");
+            try {
+                return getIntArray(key, ",");
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -744,7 +978,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setIntArray(String key, int[] value) throws UnsupportedOperationException {
+    protected final void setIntArray(String key, int[] value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -755,31 +989,44 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setIntArray(String key, int[] value, String... comment) throws UnsupportedOperationException {
+    protected final void setIntArray(String key, int[] value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
+     */
     @Override
-    public final int[] getIntArray(String key, String delimiter) throws UtilityException {
-        notNull(delimiter, "String delimiter");
-        notEmpty(delimiter, "String delimiter");
-
+    public final int[] getIntArray(String key, String delimiter) {
         return StringUtils.stringToIntArray(getString(key), delimiter);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final int[] getIntArray(String key, String delimiter, int[] def) throws UtilityException {
-        notNull(delimiter, "String delimiter");
-        notEmpty(delimiter, "String delimiter");
-
+    public final int[] getIntArray(String key, String delimiter, int[] def) {
         if (containsKey(key)) {
-            return StringUtils.stringToIntArray(getString(key), delimiter);
+            try {
+                return StringUtils.stringToIntArray(getString(key), delimiter);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -789,7 +1036,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setIntArray(String key, String spacer, int[] value) throws UnsupportedOperationException {
+    protected final void setIntArray(String key, String delimiter, int[] value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -800,35 +1047,59 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setIntArray(String key, String spacer, int[] value, String... comment) throws UnsupportedOperationException {
+    protected final void setIntArray(String key, String delimiter, int[] value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
+     */
     @Override
-    public final long getLong(String key) throws UtilityException {
+    public final long getLong(String key) {
+        notNull(key, "String key");
+
         if (numberCache.containsKey(key)) {
             return numberCache.get(key).longValue();
         }
         try {
-            long value = Long.parseLong(getString(key));
+            long value = Long.decode(getString(key));
             numberCache.put(key, value);
             return value;
         }
         catch (NumberFormatException nfe) {
-            throw new UtilityException("prop.nan", key);
+            // Change Message
+            throw new NumberFormatException(Verify.parse("prop.nan", key));
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final long getLong(String key, long def) throws UtilityException {
+    public final long getLong(String key, long def) {
         if (containsKey(key)) {
-            return getLong(key);
+            try {
+                return getLong(key);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -838,7 +1109,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setLong(String key, long value) throws UnsupportedOperationException {
+    protected final void setLong(String key, long value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -849,25 +1120,46 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setLong(String key, long value, String... comment) throws UnsupportedOperationException {
+    protected final void setLong(String key, long value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
+     */
     @Override
-    public final long[] getLongArray(String key) throws UtilityException {
+    public final long[] getLongArray(String key) {
         return getLongArray(key, ",");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final long[] getLongArray(String key, long[] def) throws UtilityException {
+    public final long[] getLongArray(String key, long[] def) {
         if (containsKey(key)) {
-            return getLongArray(key, ",");
+            try {
+                return getLongArray(key, ",");
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -877,7 +1169,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setLongArray(String key, long[] value) throws UnsupportedOperationException {
+    protected final void setLongArray(String key, long[] value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -888,31 +1180,44 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setLongArray(String key, long[] value, String... comment) throws UnsupportedOperationException {
+    protected final void setLongArray(String key, long[] value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
+     */
     @Override
-    public final long[] getLongArray(String key, String delimiter) throws UtilityException {
-        notNull(delimiter, "String delimiter");
-        notEmpty(delimiter, "String delimiter");
-
+    public final long[] getLongArray(String key, String delimiter) {
         return StringUtils.stringToLongArray(getString(key), delimiter);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final long[] getLongArray(String key, String delimiter, long[] def) throws UtilityException {
-        notNull(delimiter, "String delimiter");
-        notEmpty(delimiter, "String delimiter");
-
+    public final long[] getLongArray(String key, String delimiter, long[] def) {
         if (containsKey(key)) {
-            return StringUtils.stringToLongArray(getString(key), delimiter);
+            try {
+                return StringUtils.stringToLongArray(getString(key), delimiter);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -922,7 +1227,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setLongArray(String key, String spacer, long[] value) throws UnsupportedOperationException {
+    protected final void setLongArray(String key, String delimiter, long[] value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -933,13 +1238,25 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setLongArray(String key, String spacer, long[] value, String... comment) throws UnsupportedOperationException {
+    protected final void setLongArray(String key, String delimiter, long[] value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
+     */
     @Override
-    public final float getFloat(String key) throws UtilityException {
+    public final float getFloat(String key) {
+        notNull(key, "String key");
         if (numberCache.containsKey(key)) {
             return numberCache.get(key).floatValue();
         }
@@ -949,19 +1266,30 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
             return value;
         }
         catch (NumberFormatException nfe) {
-            throw new UtilityException("prop.nan", key);
+            // Change Message
+            throw new NumberFormatException(Verify.parse("prop.nan", key));
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final float getFloat(String key, float def) throws UtilityException {
+    public final float getFloat(String key, float def) {
         if (containsKey(key)) {
-            return getFloat(key);
+            try {
+                return getFloat(key);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -971,7 +1299,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setFloat(String key, float value) throws UnsupportedOperationException {
+    protected final void setFloat(String key, float value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -982,25 +1310,46 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setFloat(String key, float value, String... comment) throws UnsupportedOperationException {
+    protected final void setFloat(String key, float value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
+     */
     @Override
-    public final float[] getFloatArray(String key) throws UtilityException {
+    public final float[] getFloatArray(String key) {
         return getFloatArray(key, ",");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final float[] getFloatArray(String key, float[] def) throws UtilityException {
+    public final float[] getFloatArray(String key, float[] def) {
         if (containsKey(key)) {
-            return getFloatArray(key, ",");
+            try {
+                return getFloatArray(key, ",");
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -1010,7 +1359,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setFloatArray(String key, float[] value) throws UnsupportedOperationException {
+    protected final void setFloatArray(String key, float[] value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -1021,31 +1370,44 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setFloatArray(String key, float[] value, String... comment) throws UnsupportedOperationException {
+    protected final void setFloatArray(String key, float[] value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
+     */
     @Override
-    public final float[] getFloatArray(String key, String delimiter) throws UtilityException {
-        notNull(delimiter, "String delimiter");
-        notEmpty(delimiter, "String delimiter");
-
+    public final float[] getFloatArray(String key, String delimiter) {
         return StringUtils.stringToFloatArray(getString(key), delimiter);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final float[] getFloatArray(String key, String delimiter, float[] def) throws UtilityException {
-        notNull(delimiter, "String delimiter");
-        notEmpty(delimiter, "String delimiter");
-
+    public final float[] getFloatArray(String key, String delimiter, float[] def) {
         if (containsKey(key)) {
-            return StringUtils.stringToFloatArray(getString(key), delimiter);
+            try {
+                return StringUtils.stringToFloatArray(getString(key), delimiter);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -1055,7 +1417,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setFloatArray(String key, String spacer, float[] value) throws UnsupportedOperationException {
+    protected final void setFloatArray(String key, String delimiter, float[] value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -1066,13 +1428,25 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setFloatArray(String key, String spacer, float[] value, String... comment) throws UnsupportedOperationException {
+    protected final void setFloatArray(String key, String delimiter, float[] value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
+     */
     @Override
-    public final double getDouble(String key) throws UtilityException {
+    public final double getDouble(String key) {
+        notNull(key, "String key");
         if (numberCache.containsKey(key)) {
             return numberCache.get(key).doubleValue();
         }
@@ -1082,24 +1456,30 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
             return value;
         }
         catch (NumberFormatException nfe) {
-            throw new UtilityException("prop.nan");
+            // Change Message
+            throw new NumberFormatException(Verify.parse("prop.nan", key));
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final double getDouble(String key, double def) throws UtilityException {
+    public final double getDouble(String key, double def) {
         if (containsKey(key)) {
             try {
-                return Double.parseDouble(getString(key));
+                return getDouble(key);
             }
-            catch (NumberFormatException nfe) {
-                throw new UtilityException("prop.nan", key);
+            catch (NumberFormatException nfex) {
+                // Continue with default
             }
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -1109,7 +1489,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setDouble(String key, double value) throws UnsupportedOperationException {
+    protected final void setDouble(String key, double value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -1120,25 +1500,46 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setDouble(String key, double value, String... comment) throws UnsupportedOperationException {
+    protected final void setDouble(String key, double value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
+     */
     @Override
-    public final double[] getDoubleArray(String key) throws UtilityException {
+    public final double[] getDoubleArray(String key) {
         return getDoubleArray(key, ",");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final double[] getDoubleArray(String key, double[] def) throws UtilityException {
+    public final double[] getDoubleArray(String key, double[] def) {
         if (containsKey(key)) {
-            return getDoubleArray(key, ",");
+            try {
+                return getDoubleArray(key, ",");
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -1148,7 +1549,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setDoubleArray(String key, double[] value) throws UnsupportedOperationException {
+    protected final void setDoubleArray(String key, double[] value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -1159,31 +1560,44 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setDoubleArray(String key, double[] value, String... comment) throws UnsupportedOperationException {
+    protected final void setDoubleArray(String key, double[] value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     * @throws java.lang.NumberFormatException
+     *         if a value is not a number or out of range
+     */
     @Override
-    public final double[] getDoubleArray(String key, String delimiter) throws UtilityException {
-        notNull(delimiter, "String delimiter");
-        notEmpty(delimiter, "String delimiter");
-
+    public final double[] getDoubleArray(String key, String delimiter) {
         return StringUtils.stringToDoubleArray(getString(key), delimiter);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final double[] getDoubleArray(String key, String delimiter, double[] def) throws UtilityException {
-        notNull(delimiter, "String delimiter");
-        notEmpty(delimiter, "String delimiter");
-
+    public final double[] getDoubleArray(String key, String delimiter, double[] def) {
         if (containsKey(key)) {
-            return StringUtils.stringToDoubleArray(getString(key), delimiter);
+            try {
+                return StringUtils.stringToDoubleArray(getString(key), delimiter);
+            }
+            catch (NumberFormatException nfex) {
+                // Continue with default
+            }
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -1193,7 +1607,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setDoubleArray(String key, String spacer, double[] value) throws UnsupportedOperationException {
+    protected final void setDoubleArray(String key, String delimiter, double[] value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -1204,13 +1618,22 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setDoubleArray(String key, String spacer, double[] value, String... comment) throws UnsupportedOperationException {
+    protected final void setDoubleArray(String key, String delimiter, double[] value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final boolean getBoolean(String key) throws UtilityException {
+    public final boolean getBoolean(String key) {
         if (booleanCache.containsKey(key)) {
             return booleanCache.get(key);
         }
@@ -1219,15 +1642,20 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
         return value;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final boolean getBoolean(String key, boolean def) throws UtilityException {
+    public final boolean getBoolean(String key, boolean def) {
         if (containsKey(key)) {
             return getBoolean(key);
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -1237,7 +1665,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setBoolean(String key, boolean value) throws UnsupportedOperationException {
+    protected final void setBoolean(String key, boolean value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -1248,25 +1676,39 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setBoolean(String key, boolean value, String... comment) throws UnsupportedOperationException {
+    protected final void setBoolean(String key, boolean value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final boolean[] getBooleanArray(String key) throws UtilityException {
+    public final boolean[] getBooleanArray(String key) {
         return getBooleanArray(key, ",");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final boolean[] getBooleanArray(String key, boolean[] def) throws UtilityException {
+    public final boolean[] getBooleanArray(String key, boolean[] def) {
         if (containsKey(key)) {
             return getBooleanArray(key, ",");
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -1276,7 +1718,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setBooleanArray(String key, boolean[] value) throws UnsupportedOperationException {
+    protected final void setBooleanArray(String key, boolean[] value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -1287,31 +1729,37 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setBooleanArray(String key, boolean[] value, String... comment) throws UnsupportedOperationException {
+    protected final void setBooleanArray(String key, boolean[] value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final boolean[] getBooleanArray(String key, String delimiter) throws UtilityException {
-        notNull(delimiter, "String delimiter");
-        notEmpty(delimiter, "String delimiter");
-
+    public final boolean[] getBooleanArray(String key, String delimiter) {
         return StringUtils.stringToBooleanArray(getString(key), delimiter);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} or {@code delimiter} or {@code def} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} or {@code delimiter} is empty
+     */
     @Override
-    public final boolean[] getBooleanArray(String key, String delimiter, boolean[] def) throws UtilityException {
-        notNull(delimiter, "String delimiter");
-        notEmpty(delimiter, "String delimiter");
-
+    public final boolean[] getBooleanArray(String key, String delimiter, boolean[] def) {
         if (containsKey(key)) {
             return StringUtils.stringToBooleanArray(getString(key), delimiter);
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -1321,7 +1769,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setBooleanArray(String key, String spacer, boolean[] value) throws UnsupportedOperationException {
+    protected final void setBooleanArray(String key, String delimiter, boolean[] value) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -1332,25 +1780,39 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setBooleanArray(String key, String spacer, boolean[] value, String... comment) throws UnsupportedOperationException {
+    protected final void setBooleanArray(String key, String delimiter, boolean[] value, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     * @throws net.visualillusionsent.utils.UnknownPropertyException
+     *         if the {@code key} does not exist
+     */
     @Override
-    public final char getCharacter(String key) throws UtilityException {
+    public final char getCharacter(String key) {
         return getString(key).trim().charAt(0);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws java.lang.NullPointerException
+     *         if {@code key} is null
+     * @throws java.lang.IllegalArgumentException
+     *         if {@code key} is empty
+     */
     @Override
-    public final char getCharacter(String key, char def) throws UtilityException {
+    public final char getCharacter(String key, char def) {
         if (containsKey(key)) {
             return getString(key).trim().charAt(0);
         }
-        else {
-            return def;
-        }
+        return def;
     }
 
     /**
@@ -1360,7 +1822,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setCharacter(String key, char ch) throws UnsupportedOperationException {
+    protected final void setCharacter(String key, char ch) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
@@ -1371,7 +1833,7 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      *         Not supported with Unmodifiable Properties Files
      */
     @Override
-    protected final void setCharacter(String key, char ch, String... comment) throws UnsupportedOperationException {
+    protected final void setCharacter(String key, char ch, String... comment) {
         throw new UnsupportedOperationException("Unable to modify an UnmodifiablePropertiesFile");
     }
 
