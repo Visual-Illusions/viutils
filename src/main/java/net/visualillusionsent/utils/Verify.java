@@ -103,6 +103,11 @@ public final class Verify {
             throw new IllegalArgumentException(parse("arg.empty", arg));
     }
 
+    public static void notEmpty(CharSequence chs, String arg){
+        if(chs.length() == 0)
+            throw new IllegalArgumentException(parse("arg.empty", arg));
+    }
+
     /**
      * Checks if a {@link String} is empty without trimming the {@link String}
      *

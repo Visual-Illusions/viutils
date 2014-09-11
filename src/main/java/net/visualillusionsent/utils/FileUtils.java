@@ -26,6 +26,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -38,14 +39,12 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import static net.visualillusionsent.utils.Verify.*;
 import static net.visualillusionsent.utils.Verify.FileAction.EXISTS;
 import static net.visualillusionsent.utils.Verify.FileAction.ISFILE;
 import static net.visualillusionsent.utils.Verify.FileAction.NOTDIRECTORY;
 import static net.visualillusionsent.utils.Verify.FileAction.READ;
 import static net.visualillusionsent.utils.Verify.FileAction.WRITE;
-import static net.visualillusionsent.utils.Verify.fileCheck;
-import static net.visualillusionsent.utils.Verify.notEmpty;
-import static net.visualillusionsent.utils.Verify.notNull;
 
 /**
  * Provides static methods to help with {@link File} manipulations
@@ -664,6 +663,93 @@ public final class FileUtils {
         digestJar = md.digest();
 
         return MessageDigest.isEqual(digestLocal, digestJar);
+    }
+
+    public static boolean checkSumMatch(String sum, CharSequence file, String alogrithm) throws IOException, NoSuchAlgorithmException {
+        notNull(sum, "String sum");
+        notNull(file, "CharSequence file");
+        notEmpty(sum, "String sum");
+        notEmpty(file, "CharSequence file");
+
+        return checkSumMatch(sum, new File(file.toString()), alogrithm);
+    }
+
+    public static boolean md5SumMatch(String hash, CharSequence file) throws IOException {
+        try {
+            return checkSumMatch(hash, file, "MD5");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "MD5");
+        }
+    }
+
+    public static boolean sha1SumMatch(String hash, CharSequence file) throws IOException {
+        try {
+            return checkSumMatch(hash, file, "SHA1");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "SHA1");
+        }
+    }
+
+    public static boolean sha256SumMatch(String hash, CharSequence file) throws IOException {
+        try {
+            return checkSumMatch(hash, file, "SHA256");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "SHA256");
+        }
+    }
+
+    public static boolean checkSumMatch(String hash, File file, String algorithm) throws IOException, NoSuchAlgorithmException {
+        notNull(hash, "String hash");
+        notEmpty(hash, "String hash");
+        notNull(file, "File file");
+
+        return checkSumMatch(hash, new FileInputStream(file), algorithm);
+    }
+
+    public static boolean md5SumMatch(String hash, File file) throws IOException {
+        try {
+            return checkSumMatch(hash, file, "MD5");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "MD5");
+        }
+    }
+
+    public static boolean sha1SumMatch(String hash, File file) throws IOException {
+        try {
+            return checkSumMatch(hash, file, "SHA1");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "SHA1");
+        }
+    }
+
+    public static boolean sha256SumMatch(String hash, File file) throws IOException {
+        try {
+            return checkSumMatch(hash, file, "SHA256");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new UtilityException("sum.fail", "SHA256");
+        }
+    }
+
+    public static boolean checkSumMatch(String hash, InputStream inStream, String algorithm) throws NoSuchAlgorithmException, IOException {
+        notNull(hash, "String hash");
+        notEmpty(hash, "String hash");
+        notNull(inStream, "InputStream inStreamB");
+        notNull(algorithm, "String algorithm");
+        notEmpty(algorithm, "String algorithm");
+
+        byte[] digestLocal;
+        MessageDigest md = MessageDigest.getInstance(algorithm);
+        DigestInputStream dis = new DigestInputStream(inStream, md);
+        dis.read(new byte[dis.available()]);
+        digestLocal = md.digest();
+
+        return MessageDigest.isEqual(digestLocal, new BigInteger(hash, 16).toByteArray());
     }
 
     /**
