@@ -251,6 +251,23 @@ public final class DateUtils {
         return theDate;
     }
 
+    /**
+     * Parses a {@link Date} object into a {@link String} date.
+     * This is a String that can later be passed to {@link DateUtils#getDateFromString(java.lang.String)}.
+     * 
+     * The format here is: "dd-MMM-yyyy HH:mm:ss"
+     *
+     * @param date
+     *         the {@link Date} to parse into a {@link String}.
+     *
+     * @return {@link String} formatted from the date parameter
+     */
+    public static String getStringFromDate(Date date) {
+        notNull(date, "String date");
+        
+        return datetime_form.format(date);
+    }
+
     private static Calendar parseCal(long time, TimeZone to) {
         Calendar calendar = Calendar.getInstance();
         TimeZone fromTimeZone = calendar.getTimeZone();
