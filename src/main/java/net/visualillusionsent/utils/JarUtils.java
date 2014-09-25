@@ -189,6 +189,7 @@ public final class JarUtils {
      * @throws java.lang.NullPointerException
      *         if {@code jarFile} or {@code sCls} is null
      */
+    @SuppressWarnings({"unchecked"})
     public static <T> Class<? extends T>[] getAllClassesExtending(JarFile jarFile, Class<T> sCls) throws ClassNotFoundException {
         notNull(jarFile, "JarFile jarFile");
         notNull(sCls, "Class<T> sCls");
@@ -262,6 +263,7 @@ public final class JarUtils {
      * @throws java.lang.IllegalArgumentException
      *         if {@code packageName} is empty
      */
+    @SuppressWarnings({"unchecked"})
     public static <T> Class<? extends T>[] getClassesInPackageExtending(JarFile jarFile, String packageName, Class<T> sCls) throws ClassNotFoundException {
         notNull(jarFile, "JarFile jarFile");
         notNull(packageName, "String packageName");
@@ -327,14 +329,17 @@ public final class JarUtils {
                 return false;
             }
 
-            byte[] buffer = new byte[4096];
+            byte[] buffer = new byte[4096]; // 4 Kilobyte buffer
             Enumeration entries = jarFile.entries();
             while (entries.hasMoreElements()) {
                 JarEntry je = (JarEntry) entries.nextElement();
                 // check entries' for correct signatures
                 is = jarFile.getInputStream(je);
-                while (is.read(buffer, 0, buffer.length) != -1) {
-                    // we just read. this will throw a SecurityException if a signature/digest check fails.
+                // we just read. this will throw a SecurityException if a signature/digest check fails.
+                for (; ; ) { // intellij didn't like the empty while loop so i converted it to this
+                    int r = is.read(buffer, 0, buffer.length);
+                    if (r != -1) continue; // while its still reading bytes, continue
+                    break; // everything read and no errors
                 }
                 is.close(); // Close each time
 
@@ -357,8 +362,8 @@ public final class JarUtils {
                     is.close(); // If we left this open, close it
                     jarFile.close(); // this is probably still open
                 }
-                catch (IOException e) {
-                    // IGNORED
+                catch (IOException ioex) {
+                    UtilsLogger.warning("An IOException was raised while closing a JarFile...", ioex);
                 }
             }
         }

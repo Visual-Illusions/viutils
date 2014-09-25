@@ -17,15 +17,7 @@
  */
 package net.visualillusionsent.utils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.math.BigInteger;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -39,12 +31,8 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import static net.visualillusionsent.utils.Verify.FileAction.*;
 import static net.visualillusionsent.utils.Verify.*;
-import static net.visualillusionsent.utils.Verify.FileAction.EXISTS;
-import static net.visualillusionsent.utils.Verify.FileAction.ISFILE;
-import static net.visualillusionsent.utils.Verify.FileAction.NOTDIRECTORY;
-import static net.visualillusionsent.utils.Verify.FileAction.READ;
-import static net.visualillusionsent.utils.Verify.FileAction.WRITE;
 
 /**
  * Provides static methods to help with {@link File} manipulations
@@ -685,19 +673,19 @@ public final class FileUtils {
 
     public static boolean sha1SumMatch(String hash, CharSequence file) throws IOException {
         try {
-            return checkSumMatch(hash, file, "SHA1");
+            return checkSumMatch(hash, file, "SHA-1");
         }
         catch (NoSuchAlgorithmException e) {
-            throw new UtilityException("sum.fail", "SHA1");
+            throw new UtilityException("sum.fail", "SHA-1");
         }
     }
 
     public static boolean sha256SumMatch(String hash, CharSequence file) throws IOException {
         try {
-            return checkSumMatch(hash, file, "SHA256");
+            return checkSumMatch(hash, file, "SHA-256");
         }
         catch (NoSuchAlgorithmException e) {
-            throw new UtilityException("sum.fail", "SHA256");
+            throw new UtilityException("sum.fail", "SHA-256");
         }
     }
 
@@ -720,19 +708,19 @@ public final class FileUtils {
 
     public static boolean sha1SumMatch(String hash, File file) throws IOException {
         try {
-            return checkSumMatch(hash, file, "SHA1");
+            return checkSumMatch(hash, file, "SHA-1");
         }
         catch (NoSuchAlgorithmException e) {
-            throw new UtilityException("sum.fail", "SHA1");
+            throw new UtilityException("sum.fail", "SHA-1");
         }
     }
 
     public static boolean sha256SumMatch(String hash, File file) throws IOException {
         try {
-            return checkSumMatch(hash, file, "SHA256");
+            return checkSumMatch(hash, file, "SHA-256");
         }
         catch (NoSuchAlgorithmException e) {
-            throw new UtilityException("sum.fail", "SHA256");
+            throw new UtilityException("sum.fail", "SHA-256");
         }
     }
 

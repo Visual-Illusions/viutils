@@ -43,7 +43,7 @@ public class PropertiesFileTest {
 
     @Test
     public void filePathTest() {
-        Assert.assertTrue(cfg.getFilePath().contains("src/test/resources/test.cfg"));
+        Assert.assertTrue(cfg.getFilePath().contains("src/test/resources/test.cfg") || cfg.getFilePath().contains("src\\test\\resources\\test.cfg"));
     }
 
     @Test
