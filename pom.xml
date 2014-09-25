@@ -4,13 +4,13 @@
 
     <groupId>net.visualillusionsent</groupId>
     <artifactId>viutils</artifactId>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.4.0</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.build.timestamp.format>dd MMMM yyyy HH:mm z</maven.build.timestamp.format>
         <program.version>1.4.0</program.version>
-        <program.status>SNAPSHOT</program.status>
+        <program.status>STABLE</program.status>
     </properties>
     <name>VIUtils</name>
     <description>Visual Illusions Entertainment Java Utilities Library</description>
