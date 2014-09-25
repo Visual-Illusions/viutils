@@ -44,32 +44,12 @@ public final class SystemUtils {
     public static final String OPERATING_SYSTEM = System.getProperty("os.name");
 
     /**
-     * The System Operation System
-     *
-     * @deprecated Being replaced by {@link net.visualillusionsent.utils.SystemUtils#OPERATING_SYSTEM}
-     */
-    @Deprecated
-    public static final String SYSTEM_OS = OPERATING_SYSTEM;
-
-    /**
      * The Operating System Version
      */
     public static final String OS_VERSION = System.getProperty("os.version");
 
-    /**
-     * The System Version
-     *
-     * @deprecated Being replaced by {@link net.visualillusionsent.utils.SystemUtils#OS_VERSION}
-     */
-    @Deprecated
-    public static final String SYSTEM_VERSION = OS_VERSION;
-
     /** The OS Architecture (Examples: x86 [32Bit] x64 x86-64 [64Bit] armv71 [ARM]) */
     public static final String OS_ARCHITECTURE = System.getProperty("os.arch");
-
-    /** The System Architecture (x86 [32Bit] x64 x86-64 [64Bit]) */
-    @Deprecated
-    public static final String SYSTEM_ARCH = System.getProperty("os.arch");
 
     /* JAVA */
     /** The Java Vendor */

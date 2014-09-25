@@ -50,14 +50,6 @@ public final class VIUtils {
     public static final String VERSION;
 
     /**
-     * The version of this VIUtils
-     *
-     * @deprecated Being replaced by {@link #VERSION}
-     */
-    @Deprecated
-    public static final String VIUTILS_VERSION = "1.4.0";
-
-    /**
      * The {@link net.visualillusionsent.utils.ProgramStatus} of this VIUtils
      */
     public static final ProgramStatus STATUS;
