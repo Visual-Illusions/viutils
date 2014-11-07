@@ -23,8 +23,8 @@ import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import static net.visualillusionsent.utils.Verify.entryExists;
 import static net.visualillusionsent.utils.Verify.notEmpty;
@@ -41,7 +41,7 @@ public abstract class AbstractPropertiesFile {
 
     protected File propsFile;
     protected String filePath;
-    protected JarFile jar;
+    protected ZipFile zip;
     protected Map<String, String> props;
     protected Map<String, Number> numberCache;
     protected Map<String, Boolean> booleanCache;
@@ -82,26 +82,26 @@ public abstract class AbstractPropertiesFile {
     }
 
     /**
-     * Loads a PropertiesFile stored inside a Jar file
+     * Loads a PropertiesFile stored inside a Zip/Jar file
      *
-     * @param jarPath
-     *         the path to the Jar file
+     * @param zipPath
+     *         the path to the Zip/Jar file
      * @param entry
-     *         the name of the file inside of the jar
+     *         the name of the file inside of the zip/jar
      */
-    public AbstractPropertiesFile(String jarPath, String entry) {
-        notNull(jarPath, "String jarPath");
+    public AbstractPropertiesFile(String zipPath, String entry) {
+        notNull(zipPath, "String zipPath");
         notNull(entry, "String entry");
-        notEmpty(jarPath, "String jarPath");
+        notEmpty(zipPath, "String jarPath");
         notEmpty(entry, "String entry");
 
         try {
-            jar = new JarFile(jarPath);
+            zip = new ZipFile(zipPath);
         }
         catch (IOException ioe) {
-            throw new UtilityException("Unable to get JarFile");
+            throw new UtilityException("Unable to get Zip/Jar File");
         }
-        JarEntry ent = jar.getJarEntry(entry);
+        ZipEntry ent = zip.getEntry(entry);
         entryExists(ent, entry);
         filePath = entry;
     }
@@ -121,19 +121,19 @@ public abstract class AbstractPropertiesFile {
 
     /**
      * Saves the Properties File<br>
-     * <b>NOTE:</b> Saving is not supported for PropertiesFiles inside of Jar Files
+     * <b>NOTE:</b> Saving is not supported for PropertiesFiles inside of Zip/Jar Files
      */
     protected abstract void save();
 
     /**
      * Force saves the Properties File<br>
-     * <b>NOTE:</b> Saving is not supported for PropertiesFiles inside of Jar Files
+     * <b>NOTE:</b> Saving is not supported for PropertiesFiles inside of Zip/Jar Files
      */
     protected abstract void forceSave();
 
     /**
      * Saves the Properties File<br>
-     * <b>NOTE:</b> Saving is not supported for PropertiesFiles inside of Jar Files
+     * <b>NOTE:</b> Saving is not supported for PropertiesFiles inside of Zip/Jar Files
      *
      * @param force
      *         {@code true} to force save the file; {@code false} to save as needed
@@ -1531,8 +1531,8 @@ public abstract class AbstractPropertiesFile {
         if (propsFile != null) {
             return propsFile.getAbsolutePath();
         }
-        else if (jar != null) {
-            return new File(jar.getName()).getAbsolutePath();
+        else if (zip != null) {
+            return new File(zip.getName()).getAbsolutePath();
         }
         else {
             return null;
@@ -1548,8 +1548,8 @@ public abstract class AbstractPropertiesFile {
         if (propsFile != null) {
             return propsFile.getName();
         }
-        else if (jar != null) {
-            return new File(jar.getName()).getName();
+        else if (zip != null) {
+            return new File(zip.getName()).getName();
         }
         else {
             return null;

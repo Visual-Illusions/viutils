@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.jar.JarEntry;
+import java.util.zip.ZipEntry;
 
 import static net.visualillusionsent.utils.Verify.notEmpty;
 import static net.visualillusionsent.utils.Verify.notEmptyNoTrim;
@@ -88,11 +88,11 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
      * @throws PropertiesFileException
      *         if there was an error with reading the properties file
      */
-    public UnmodifiablePropertiesFile(String jarPath, String entry) {
-        super(jarPath, entry);
-        JarEntry ent = jar.getJarEntry(entry);
+    public UnmodifiablePropertiesFile(String zipPath, String entry) {
+        super(zipPath, entry);
+        ZipEntry ent = zip.getEntry(entry);
         try {
-            load(jar.getInputStream(ent));
+            load(zip.getInputStream(ent));
         }
         catch (IOException e) {
             throw new UtilityException("file.err.ioe", filePath);
@@ -192,13 +192,13 @@ public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
     public final void reload() {
         //props.clear();  UNSUPPORTED
         //comments.clear(); UNSUPPORTED
-        if (jar != null) {
-            JarEntry ent = jar.getJarEntry(filePath);
+        if (zip != null) {
+            ZipEntry ent = zip.getEntry(filePath);
             if (ent == null) {
                 throw new PropertiesFileException("entry.missing", filePath);
             }
             try {
-                load(jar.getInputStream(ent));
+                load(zip.getInputStream(ent));
             }
             catch (IOException e) {
                 throw new PropertiesFileException("file.err.ioe", filePath);

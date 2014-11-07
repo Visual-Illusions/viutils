@@ -21,7 +21,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.jar.JarEntry;
+import java.util.zip.ZipEntry;
 
 /**
  * Verify
@@ -272,7 +272,7 @@ public final class Verify {
             throw new IllegalArgumentException(msg);
     }
 
-    public static void entryExists(JarEntry entry, String arg) {
+    public static void entryExists(ZipEntry entry, String arg) {
         if (entry == null)
             throw new MissingJarEntryException(parse("entry.missing", arg));
     }

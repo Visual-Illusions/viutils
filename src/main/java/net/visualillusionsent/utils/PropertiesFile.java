@@ -32,7 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.jar.JarEntry;
+import java.util.zip.ZipEntry;
 
 import static net.visualillusionsent.utils.Verify.notEmpty;
 import static net.visualillusionsent.utils.Verify.notEmptyNoTrim;
@@ -136,11 +136,11 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      * {@inheritDoc}
      *
      * @throws PropertiesFileException
-     *         if an exception occurs while reading the JarFile
+     *         if an exception occurs while reading the Zip File
      */
-    public PropertiesFile(String jarPath, String entry) {
-        super(jarPath, entry);
-        JarEntry ent = jar.getJarEntry(entry);
+    public PropertiesFile(String zipPath, String entry) {
+        super(zipPath, entry);
+        ZipEntry ent = zip.getEntry(entry);
         this.props = new LinkedHashMap<String, String>();
         this.booleanCache = new HashMap<String, Boolean>();
         this.numberCache = new HashMap<String, Number>();
@@ -149,7 +149,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         this.header = new LinkedList<String>();
         this.footer = new LinkedList<String>();
         try {
-            load(jar.getInputStream(ent));
+            load(zip.getInputStream(ent));
         }
         catch (IOException e) {
             throw new PropertiesFileException("file.err.ioe", filePath);
@@ -240,13 +240,13 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         comments.clear();
         booleanCache.clear();
         numberCache.clear();
-        if (jar != null) {
-            JarEntry ent = jar.getJarEntry(filePath);
+        if (zip != null) {
+            ZipEntry ent = zip.getEntry(filePath);
             if (ent == null) {
                 throw new PropertiesFileException("entry.missing", filePath);
             }
             try {
-                load(jar.getInputStream(ent));
+                load(zip.getInputStream(ent));
             }
             catch (IOException e) {
                 throw new PropertiesFileException("file.err.ioe", filePath);
@@ -293,8 +293,8 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      */
     @Override
     protected final void save(boolean force) {
-        if (jar != null) {
-            throw new PropertiesFileException("Saving is not supported with PropertiesFiles inside of Jar files");
+        if (zip != null) {
+            throw new PropertiesFileException("Saving is not supported with PropertiesFiles inside of Zip/Jar files");
         }
         if (!hasChanged && !force) {
             return;
@@ -2418,7 +2418,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         if (this.propsFile != null && this.propsFile != that.propsFile) {
             return false;
         }
-        if (this.jar != null && this.jar != that.jar) {
+        if (this.zip != null && this.zip != that.zip) {
             return false;
         }
         return true;
@@ -2433,7 +2433,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
      */
     @Override
     public final String toString() {
-        return String.format("PropertiesFile[FilePath=%s]", propsFile != null ? propsFile.getAbsolutePath() : jar.getName() + ":" + filePath);
+        return String.format("PropertiesFile[FilePath=%s]", propsFile != null ? propsFile.getAbsolutePath() : zip.getName() + ":" + filePath);
     }
 
     /**
@@ -2448,7 +2448,7 @@ public final class PropertiesFile extends AbstractPropertiesFile {
         int hash = 9;
         hash = 45 * hash + filePath.hashCode();
         hash = 54 * hash + (propsFile != null ? propsFile.hashCode() : 0);
-        hash = 45 * hash + (jar != null ? jar.hashCode() : 0);
+        hash = 45 * hash + (zip != null ? zip.hashCode() : 0);
         return hash;
     }
 
