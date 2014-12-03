@@ -49,13 +49,13 @@ import static net.visualillusionsent.utils.Verify.notNull;
  * If #! is needed as a property it can be escaped with \ ie: \#\!
  *
  * @author Jason (darkdiplomat)
- * @version 1.5
+ * @version 1.6
  * @since 1.0.0
  */
 public final class PropertiesFile extends AbstractPropertiesFile {
 
-    /* 1.5 @ VIUtils 1.4.0 */
-    private static final float classVersion = 1.5F;
+    /* 1.6 @ VIUtils 1.4.1 */
+    private static final float classVersion = 1.6F;
 
     /**
      * {@inheritDoc}

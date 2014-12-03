@@ -22,7 +22,23 @@ package net.visualillusionsent.utils;
  */
 public final class UnknownPropertyException extends PropertiesFileException {
 
+    /* 1.0 @ VIUtils 1.4.0 */
+    private static final float classVersion = 1.0F;
+    /**
+     * Serial Version
+     */
+    private static final long serialVersionUID = 3122014080000L;
+
     public UnknownPropertyException(String key, String msg) {
         super(Verify.parse(key, msg));
+    }
+
+    /**
+     * Gets this class's version number
+     *
+     * @return the class version
+     */
+    public static float getClassVersion() {
+        return classVersion;
     }
 }

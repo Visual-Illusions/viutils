@@ -39,12 +39,12 @@ import static net.visualillusionsent.utils.Verify.notNull;
  * An Unmodifiable Properties File implementation
  *
  * @author Jason (darkdiplomat)
- * @version 1.2
+ * @version 1.3
  * @since 1.1.0
  */
 public final class UnmodifiablePropertiesFile extends AbstractPropertiesFile {
-    /* VIU 1.4.0 / 1.2 */
-    private static final float classVersion = 1.2F;
+    /* 1.3 @ VIUtils 1.4.1 */
+    private static final float classVersion = 1.3F;
 
     /**
      * {@inheritDoc}

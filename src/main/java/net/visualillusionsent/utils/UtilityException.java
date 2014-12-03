@@ -32,7 +32,7 @@ public class UtilityException extends RuntimeException {
     /* 1.1 @ VIUtils 1.4.0 */
     private static final float classVersion = 1.1F;
     /** Serial Version */
-    private static final long serialVersionUID = 020100242014L;
+    private static final long serialVersionUID = 20100242014L;
 
     /**
      * Class Constructor

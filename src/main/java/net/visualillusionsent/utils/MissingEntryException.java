@@ -20,9 +20,25 @@ package net.visualillusionsent.utils;
 /**
  * @author Jason (darkdiplomat)
  */
-public final class MissingJarEntryException extends UtilityException {
+public final class MissingEntryException extends UtilityException {
 
-    public MissingJarEntryException(String msg) {
+    /* 1.0 @ VIUtils 1.4.0 */
+    private static final float classVersion = 1.0F;
+    /**
+     * Serial Version
+     */
+    private static final long serialVersionUID = 3122014080149L;
+
+    public MissingEntryException(String msg) {
         super(msg);
+    }
+
+    /**
+     * Gets this class's version number
+     *
+     * @return the class version
+     */
+    public static float getClassVersion() {
+        return classVersion;
     }
 }

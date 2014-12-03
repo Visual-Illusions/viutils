@@ -273,8 +273,9 @@ public final class Verify {
     }
 
     public static void entryExists(ZipEntry entry, String arg) {
-        if (entry == null)
-            throw new MissingJarEntryException(parse("entry.missing", arg));
+        if (entry == null) {
+            throw new MissingEntryException(parse("entry.missing", arg));
+        }
     }
 
     public static void fileCheck(File file, FileAction action) {

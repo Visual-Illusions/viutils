@@ -22,11 +22,27 @@ package net.visualillusionsent.utils;
  */
 public class PropertiesFileException extends UtilityException {
 
+    /* 1.0 @ VIUtils 1.4.0 */
+    private static final float classVersion = 1.0F;
+    /**
+     * Serial Version
+     */
+    private static final long serialVersionUID = 3122014075657L;
+
     PropertiesFileException(String msg) {
         super(msg);
     }
 
     public PropertiesFileException(String key, String msg) {
         super(Verify.parse(key, msg));
+    }
+
+    /**
+     * Gets this class's version number
+     *
+     * @return the class version
+     */
+    public static float getClassVersion() {
+        return classVersion;
     }
 }

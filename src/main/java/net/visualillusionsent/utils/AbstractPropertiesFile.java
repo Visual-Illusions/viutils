@@ -34,11 +34,13 @@ import static net.visualillusionsent.utils.Verify.notNull;
  * Abstract Properties File
  *
  * @author Jason (darkdiplomat)
- * @version 1.3
+ * @version 1.4
  * @since 1.1.0
  */
 public abstract class AbstractPropertiesFile {
 
+    /* 1.4 @ VIUtils 1.4.1 */
+    private static final float classVersion = 1.4F;
     protected File propsFile;
     protected String filePath;
     protected ZipFile zip;
@@ -1554,5 +1556,14 @@ public abstract class AbstractPropertiesFile {
         else {
             return null;
         }
+    }
+
+    /**
+     * Gets this class's version number
+     *
+     * @return the class version
+     */
+    public static float getClassVersion() {
+        return classVersion;
     }
 }

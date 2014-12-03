@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 public final class ProgramChecker {
 
     /* 1.2 @ VIUtils 1.4.1 */
-    private static final float classVersion = 1.1F;
+    private static final float classVersion = 1.2F;
     private static final String progNamePreForm = "program=%s",
             versionForm = "%d.%d.%d",
             userAgentPreForm = MessageFormat.format("Java/{2} ({3} {4}; {5}; %s/%s;) ProgramChecker/{1,number,0.0} VIUtils/{0}",
