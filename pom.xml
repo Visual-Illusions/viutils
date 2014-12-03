@@ -4,7 +4,7 @@
 
     <groupId>net.visualillusionsent</groupId>
     <artifactId>viutils</artifactId>
-    <version>1.4.1</version>
+    <version>1.4.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
