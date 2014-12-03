@@ -35,12 +35,12 @@ import java.util.regex.Pattern;
  * There is an included programchecker.php in the /viutils/php/ folder inside the jar.<br>
  *
  * @author Jason (darkdiplomat)
- * @version 1.1
+ * @version 1.2
  * @since 1.3.0
  */
 public final class ProgramChecker {
 
-    /* 1.1 @ VIUtils 1.4.0 */
+    /* 1.2 @ VIUtils 1.4.1 */
     private static final float classVersion = 1.1F;
     private static final String progNamePreForm = "program=%s",
             versionForm = "%d.%d.%d",
@@ -67,6 +67,7 @@ public final class ProgramChecker {
     private String errorMsg = "ERROR: No query made yet";
     private int connTimeOut = 500;
     private long queryInterval = TimeUnit.MINUTES.toMillis(5);
+    private boolean disabled = false;
 
     /**
      * Creates a new ProgramChecker
@@ -144,6 +145,7 @@ public final class ProgramChecker {
         LATEST,
         UPDATE,
         ERROR,
+        DISABLED
     }
 
     /**
@@ -174,12 +176,30 @@ public final class ProgramChecker {
     }
 
     /**
+     * Disables the ProgramChecker
+     */
+    public final void disable() {
+        this.disabled = true;
+    }
+
+    /**
+     * (Re)Enables the ProgramChecker
+     */
+    public final void enable() {
+        this.disabled = false;
+    }
+
+    /**
      * Parse the input from the PHP Script
      *
      * @return inputLine
      * PHP Script output line of versions/builds
      */
     private String getInput() {
+        if (disabled) {
+            return null;
+        }
+
         String received = "";
         HttpURLConnection httpConn = null;
         try {
@@ -210,6 +230,10 @@ public final class ProgramChecker {
     }
 
     private HttpURLConnection getConnection() throws IOException {
+        if (disabled) {
+            return null;
+        }
+
         HttpURLConnection httpConn = (HttpURLConnection) extURL.openConnection();
         httpConn.setConnectTimeout(connTimeOut);
         httpConn.setReadTimeout(connTimeOut);
@@ -268,13 +292,16 @@ public final class ProgramChecker {
         }
     }
 
-
     /**
      * Checks the status
      *
      * @return {@link net.visualillusionsent.utils.ProgramChecker.Status}
      */
     public final Status checkStatus() {
+        if (disabled) {
+            return Status.DISABLED;
+        }
+
         long currentTime = System.currentTimeMillis();
         if ((lastCheck + queryInterval) <= currentTime) {
             lastCheck = currentTime;
@@ -310,7 +337,7 @@ public final class ProgramChecker {
     }
 
     /**
-     * Gets the {@link net.visualillusionsent.utils.ProgramStatus} reported as latest
+     * Gets the {@link net.visualillusionsent.utils.ProgramStatus} reported
      *
      * @return {@link net.visualillusionsent.utils.ProgramStatus} reported
      */
@@ -332,6 +359,8 @@ public final class ProgramChecker {
                 return "An update is available for: '".concat(progName).concat("' - v").concat(getVersionReported()).concat(" ".concat(checkStatus.toString()));
             case LATEST:
                 return "Current Version of: '".concat(progName).concat("' is installed");
+            case DISABLED:
+                return "(ProgramChecker Disabled)";
             default:
                 return errorMsg;
         }
