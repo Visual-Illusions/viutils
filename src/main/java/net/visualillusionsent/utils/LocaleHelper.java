@@ -34,13 +34,13 @@ import java.util.logging.Logger;
  * The directory should be set up the same as though it is inside the Jar file.
  *
  * @author Jason (darkdiplomat)
- * @version 1.4
+ * @version 1.5
  * @since 1.0.0
  */
 public abstract class LocaleHelper {
 
-    /* 1.4 @ VIUtils 1.4.0 */
-    private static final float classVersion = 1.4F;
+    /* 1.5 @ VIUtils 1.4.2 */
+    private static final float classVersion = 1.5F;
     /* languages.txt quick reference */
     private static final String langTXT = "languages.txt";
     /** Map of supported languages */
@@ -126,14 +126,14 @@ public abstract class LocaleHelper {
             utils_lang = new UnmodifiablePropertiesFile(extDir.concat(langTXT));
         }
         loadLang("en_US");
-        if (this.defaultLocale != null && this.defaultLocale.matches("([a-z]{2,3})_([A-Z]{2,3})")) {
+        if (this.defaultLocale != null && this.defaultLocale.matches("([a-z]{2,3})_([A-Z]{2,3})") && utils_lang.containsKey(defaultLocale)) {
             loadLang(this.defaultLocale);
         }
     }
 
     public final String localeTranslate(String key, String locale) {
         try {
-            if (locale != null && locale.matches("([a-z]{2,3})_([A-Z]{2,3})") && utils_lang.containsKey(defaultLocale)) {
+            if (locale != null && locale.matches("([a-z]{2,3})_([A-Z]{2,3})") && utils_lang.containsKey(locale)) {
                 if (!langs.containsKey(locale)) {
                     loadLang(locale);
                 }
@@ -159,7 +159,7 @@ public abstract class LocaleHelper {
      */
     public final String systemTranslate(String key) {
         try {
-            if (defaultLocale != null && langs.get(defaultLocale).containsKey(key)) {
+            if (defaultLocale != null && langs.containsKey(defaultLocale) && langs.get(defaultLocale).containsKey(key)) {
                 return langs.get(defaultLocale).getString(key);
             }
         }
@@ -198,7 +198,7 @@ public abstract class LocaleHelper {
 
     public final String localeTranslate(String key, String locale, Object... form) {
         try {
-            if (locale != null && locale.matches("([a-z]{2,3})_([A-Z]{2,3})") && utils_lang.containsKey(defaultLocale)) {
+            if (locale != null && locale.matches("([a-z]{2,3})_([A-Z]{2,3})") && utils_lang.containsKey(locale)) {
                 if (!langs.containsKey(locale)) {
                     loadLang(locale);
                 }
@@ -228,7 +228,7 @@ public abstract class LocaleHelper {
      */
     public final String systemTranslate(String key, Object... form) {
         try {
-            if (defaultLocale != null && langs.get(defaultLocale).containsKey(key)) {
+            if (defaultLocale != null && langs.containsKey(defaultLocale) && langs.get(defaultLocale).containsKey(key)) {
                 return MessageFormat.format(langs.get(defaultLocale).getString(key), form);
             }
         }
