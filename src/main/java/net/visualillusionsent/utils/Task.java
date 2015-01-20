@@ -1,7 +1,7 @@
 /*
  * This file is part of VIUtils.
  *
- * Copyright © 2012-2014 Visual Illusions Entertainment
+ * Copyright © 2012-2015 Visual Illusions Entertainment
  *
  * VIUtils is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -64,13 +64,22 @@ final class Task {
     @Override
     public final boolean equals(Object obj) {
         if (obj instanceof Task) {
-            return obj == this;
+            return ((Task)obj).task.equals(task);
         }
+        System.out.println(task.equals(obj));
         return task.equals(obj);
     }
 
     @Override
     public final int hashCode() {
         return task.hashCode();
+    }
+
+    static Task wrap(Runnable runnable) {
+        return new Task(runnable);
+    }
+
+    static Task wrap(Callable<?> callable) {
+        return new Task(callable);
     }
 }

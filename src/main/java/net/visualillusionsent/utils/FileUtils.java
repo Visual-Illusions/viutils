@@ -1,7 +1,7 @@
 /*
  * This file is part of VIUtils.
  *
- * Copyright © 2012-2014 Visual Illusions Entertainment
+ * Copyright © 2012-2015 Visual Illusions Entertainment
  *
  * VIUtils is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -17,7 +17,15 @@
  */
 package net.visualillusionsent.utils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -31,8 +39,14 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import static net.visualillusionsent.utils.Verify.FileAction.*;
-import static net.visualillusionsent.utils.Verify.*;
+import static net.visualillusionsent.utils.Verify.FileAction.EXISTS;
+import static net.visualillusionsent.utils.Verify.FileAction.ISFILE;
+import static net.visualillusionsent.utils.Verify.FileAction.NOTDIRECTORY;
+import static net.visualillusionsent.utils.Verify.FileAction.READ;
+import static net.visualillusionsent.utils.Verify.FileAction.WRITE;
+import static net.visualillusionsent.utils.Verify.fileCheck;
+import static net.visualillusionsent.utils.Verify.notEmpty;
+import static net.visualillusionsent.utils.Verify.notNull;
 
 /**
  * Provides static methods to help with {@link File} manipulations

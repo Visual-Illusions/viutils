@@ -1,7 +1,7 @@
 /*
  * This file is part of VIUtils.
  *
- * Copyright © 2012-2014 Visual Illusions Entertainment
+ * Copyright © 2012-2015 Visual Illusions Entertainment
  *
  * VIUtils is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -540,9 +540,10 @@ public final class TaskManager {
      */
     public static boolean removeTask(Runnable task) {
         boolean check = false;
-        if (tasks.containsKey(task)) {
-            check = tasks.get(task).cancel(true);
-            tasks.remove(task);
+        Task wrappedTask = Task.wrap(task);
+        if (tasks.containsKey(wrappedTask)) {
+            check = tasks.get(wrappedTask).cancel(true);
+            tasks.remove(wrappedTask);
         }
         if (!check) {
             check = threadPool.remove(task);
@@ -563,9 +564,13 @@ public final class TaskManager {
      */
     public static boolean removeTask(Callable<?> task) {
         boolean check = false;
-        if (tasks.containsKey(task)) {
-            check = tasks.get(task).cancel(true);
-            tasks.remove(task);
+        Task wrappedTask = Task.wrap(task);
+        if (tasks.containsKey(wrappedTask)) {
+            check = tasks.get(wrappedTask).cancel(true);
+            tasks.remove(wrappedTask);
+        }
+        if (check) {
+            threadPool.purge();
         }
         return check;
     }
