@@ -65,6 +65,9 @@ public abstract class AbstractPropertiesFile {
 
         this.filePath = filePath;
         propsFile = new File(filePath);
+        if (!propsFile.exists() || propsFile.isDirectory()) {
+           throw new IllegalArgumentException("File for properties \"" + filePath + "\" is non-existent or a directory.");
+        }
     }
 
     /**
