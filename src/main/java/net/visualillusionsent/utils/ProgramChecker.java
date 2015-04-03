@@ -249,13 +249,12 @@ public final class ProgramChecker {
         Matcher matcher = inputPattern.matcher(input);
         if (matcher.matches()) {
             long versionMajor, versionMinor, versionRev;
-            ProgramStatus status;
 
             try {
                 versionMajor = Long.parseLong(matcher.group(1).replace("\"", "")); // DIGIT for MAJOR, remove any quotes that may be present
                 versionMinor = Long.parseLong(matcher.group(2).replace("\"", "")); // DIGIT for MINOR, remove any quotes that may be present
                 versionRev = Long.parseLong(matcher.group(3).replace("\"", "")); // DIGIT for REVISION, remove any quotes that may be present
-                status = ProgramStatus.fromString(matcher.group(4)); // STATUS name
+                checkStatus = ProgramStatus.fromString(matcher.group(4)); // STATUS name
             }
             catch (NumberFormatException nfex) {
                 //This probably won't happen given the regex works as intended
@@ -279,7 +278,7 @@ public final class ProgramChecker {
                         this.checkResponse = Status.LATEST;
                     }
                     else if (this.version[2] == versionRev) {
-                        if (this.status.ordinal() >= status.ordinal()) {
+                        if (this.status.ordinal() >= checkStatus.ordinal()) {
                             this.checkResponse = Status.LATEST;
                         }
                     }
